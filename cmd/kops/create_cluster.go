@@ -69,6 +69,7 @@ type CreateClusterOptions struct {
 	ControlPlaneVolumeSize     int32
 	NodeVolumeSize             int32
 	NodeVolumeType             string
+	ControlPlaneVolumeType     string
 	ContainerRuntime           string
 	OutDir                     string
 	DisableSubnetTags          bool
@@ -303,6 +304,7 @@ func NewCmdCreateCluster(f *util.Factory, out io.Writer) *cobra.Command {
 	cmd.Flags().Int32Var(&options.NodeVolumeSize, "node-volume-size", options.NodeVolumeSize, "Instance volume size (in GB) for worker nodes")
 
 	cmd.Flags().StringVar(&options.NodeVolumeType, "node-volume-type", options.NodeVolumeType, "Instance volume type (e.g. gp2, gp3, io1) for worker nodes")
+	cmd.Flags().StringVar(&options.ControlPlaneVolumeType, "control-plane-volume-type", options.ControlPlaneVolumeType, "Instance volume type for control-plane nodes")
 
 	cmd.Flags().StringVar(&options.NetworkID, "vpc", options.NetworkID, "Shared Network or VPC to use")
 	cmd.Flags().MarkDeprecated("vpc", "use --network-id instead")
@@ -616,6 +618,15 @@ func RunCreateCluster(ctx context.Context, f *util.Factory, out io.Writer, c *Cr
 				group.Spec.RootVolume = &api.InstanceRootVolumeSpec{}
 			}
 			group.Spec.RootVolume.Size = fi.PtrTo(c.ControlPlaneVolumeSize)
+		}
+	}
+
+	if c.ControlPlaneVolumeType != "" {
+		for _, group := range controlPlanes {
+			if group.Spec.RootVolume == nil {
+				group.Spec.RootVolume = &api.InstanceRootVolumeSpec{}
+			}
+			group.Spec.RootVolume.Type = fi.PtrTo(c.ControlPlaneVolumeType)
 		}
 	}
 
