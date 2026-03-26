@@ -90,7 +90,7 @@ require (
 	k8s.io/cloud-provider-gcp/providers v0.28.2
 	k8s.io/component-base v0.34.3
 	k8s.io/gengo v0.0.0-20250922181213-ec3ebc5fd46b
-	k8s.io/klog/v2 v2.130.1
+	k8s.io/klog/v2 v2.140.0
 	k8s.io/kubectl v0.34.3
 	k8s.io/kubelet v0.34.3
 	k8s.io/mount-utils v0.34.3

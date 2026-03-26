@@ -104,6 +104,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	klog.InitFlags(nil)
+	// Opt into fixed stderrthreshold behavior (kubernetes/klog#212).
+	_ = goflag.Set("legacy_stderr_threshold_behavior", "false")
+	_ = goflag.Set("stderrthreshold", "INFO")
 
 	factory := util.NewFactory(&rootCommand.FactoryOptions)
 	rootCommand.factory = factory
