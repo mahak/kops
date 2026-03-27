@@ -17,7 +17,7 @@ require (
 	k8s.io/api v0.35.1
 	k8s.io/apimachinery v0.35.1
 	k8s.io/client-go v0.35.1
-	k8s.io/klog/v2 v2.130.1
+	k8s.io/klog/v2 v2.140.0
 	k8s.io/kops v1.34.1
 	k8s.io/release v0.20.0
 	sigs.k8s.io/boskos v0.0.0-20250922191614-14f95fc7cd0b
