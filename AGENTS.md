@@ -113,3 +113,7 @@ The project follows the conventional commit message format.
 
 Contributions are welcome! Before submitting a pull request, please open an issue to discuss your proposed changes. All pull requests must be reviewed and approved by a maintainer before they can be merged.
 
+## E2E CI Failure Troubleshooting
+
+For investigating E2E CI job failures — including locating artifacts, diagnosing root causes, and finding correlations across failing jobs — see [docs/e2e-failure-troubleshooting.md](docs/e2e-failure-troubleshooting.md).
+
