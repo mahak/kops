@@ -282,7 +282,7 @@ func (p *S3Path) getServerSideEncryption(ctx context.Context) (sse types.ServerS
 		if err != nil {
 			return "", "", err
 		}
-		defaultEncryption := bucketDetails.hasServerSideEncryptionByDefault(ctx)
+		defaultEncryption := bucketDetails.hasServerSideEncryptionByDefault(ctx, p.scheme)
 		if defaultEncryption {
 			sseLog = "DefaultBucketEncryption"
 		} else {
@@ -529,7 +529,7 @@ func (p *S3Path) client(ctx context.Context) (*s3.Client, error) {
 		return nil, err
 	}
 
-	client, err := p.s3Context.getClient(ctx, bucketDetails.region)
+	client, err := p.s3Context.getClient(ctx, bucketDetails.region, p.scheme)
 	if err != nil {
 		return nil, err
 	}
