@@ -84,49 +84,39 @@ func (*ResolverV2) ResolveEndpoint(ctx context.Context, params s3.EndpointParame
 	return s3.NewDefaultEndpointResolverV2().ResolveEndpoint(ctx, params)
 }
 
-func (s *S3Context) getClient(ctx context.Context, region string, scheme string) (*s3.Client, error) {
+func (s *S3Context) getClient(ctx context.Context, region string, optFn func(*s3.Options)) (*s3.Client, error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
-	// Client configuration is currently determined by region and process-wide environment.
-	s3Client := s.clients[region]
-	if s3Client == nil {
-		_, span := tracer.Start(ctx, "S3Context::getClient")
-		defer span.End()
-
-		var config aws.Config
-		var err error
-		endpoint := os.Getenv("S3_ENDPOINT")
-		if endpoint == "" {
-			config, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithRegion(region))
-			if err != nil {
-				return nil, fmt.Errorf("error loading AWS config: %v", err)
-			}
-		} else {
-			// Use customized S3 storage
-			klog.V(2).Infof("Found S3_ENDPOINT=%q, using as non-AWS S3 backend", endpoint)
-			config, err = getCustomS3Config(ctx, region)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		s3Client = s3.NewFromConfig(config, func(o *s3.Options) {
-			if endpoint != "" {
-				o.BaseEndpoint = aws.String(endpoint)
-				o.UsePathStyle = true
-				o.DisableLogOutputChecksumValidationSkipped = true
-				// Linode (Akamai) requires checksum-when-required behavior
-				if scheme == "linode" {
-					o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
-					o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
-				}
-			} else {
-				o.EndpointResolverV2 = &ResolverV2{}
-			}
-		})
-		s.clients[region] = s3Client
+	if s3Client := s.clients[region]; s3Client != nil {
+		return s3Client, nil
 	}
+
+	// Client configuration is determined by region and process-wide environment.
+	// The first request for a region creates the shared client for that region.
+	_, span := tracer.Start(ctx, "S3Context::getClient")
+	defer span.End()
+
+	var config aws.Config
+	var err error
+	endpoint := os.Getenv("S3_ENDPOINT")
+	if endpoint == "" {
+		config, err = awsconfig.LoadDefaultConfig(ctx, awsconfig.WithRegion(region))
+		if err != nil {
+			return nil, fmt.Errorf("error loading AWS config: %v", err)
+		}
+	} else {
+		// Use customized S3 storage
+		klog.V(2).Infof("Found S3_ENDPOINT=%q, using as non-AWS S3 backend", endpoint)
+		config, err = getCustomS3Config(ctx, region)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	s3Client := s3.NewFromConfig(config, optFn)
+
+	s.clients[region] = s3Client
 
 	return s3Client, nil
 }
@@ -204,7 +194,9 @@ func (s *S3Context) getDetailsForBucket(ctx context.Context, bucket string) (*S3
 	}
 	var response *s3.GetBucketLocationOutput
 
-	s3Client, err := s.getClient(ctx, awsRegion, "s3")
+	s3Client, err := s.getClient(ctx, awsRegion, func(o *s3.Options) {
+		o.EndpointResolverV2 = &ResolverV2{}
+	})
 	if err != nil {
 		return bucketDetails, fmt.Errorf("error connecting to S3: %s", err)
 	}
@@ -241,7 +233,7 @@ func (s *S3Context) getDetailsForBucket(ctx context.Context, bucket string) (*S3
 	return bucketDetails, nil
 }
 
-func (b *S3BucketDetails) hasServerSideEncryptionByDefault(ctx context.Context, scheme string) bool {
+func (b *S3BucketDetails) hasServerSideEncryptionByDefault(ctx context.Context, optFn func(*s3.Options)) bool {
 	b.mutex.Lock()
 	defer b.mutex.Unlock()
 
@@ -257,7 +249,7 @@ func (b *S3BucketDetails) hasServerSideEncryptionByDefault(ctx context.Context, 
 	// We only make one attempt to find the SSE policy (even if there's an error)
 	b.applyServerSideEncryptionByDefault = &applyServerSideEncryptionByDefault
 
-	client, err := b.context.getClient(ctx, b.region, scheme)
+	client, err := b.context.getClient(ctx, b.region, optFn)
 	if err != nil {
 		klog.Warningf("Unable to read bucket encryption policy for %q in region %q: will encrypt using AES256", b.name, b.region)
 		return false

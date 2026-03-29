@@ -28,8 +28,10 @@ import (
 	"time"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gophercloud/gophercloud/v2"
 	"google.golang.org/api/option"
 	storage "google.golang.org/api/storage/v1"
@@ -329,6 +331,8 @@ func RetryWithBackoff(backoff wait.Backoff, condition func() (bool, error)) (boo
 }
 
 func (c *VFSContext) buildS3Path(p string) (*S3Path, error) {
+	endpoint := os.Getenv("S3_ENDPOINT")
+
 	u, err := url.Parse(p)
 	if err != nil {
 		return nil, fmt.Errorf("invalid s3 path: %q", p)
@@ -342,11 +346,24 @@ func (c *VFSContext) buildS3Path(p string) (*S3Path, error) {
 		return nil, fmt.Errorf("invalid s3 path: %q", p)
 	}
 
-	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, true)
+	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, true, func(o *s3.Options) {
+		if endpoint != "" {
+			o.BaseEndpoint = aws.String(endpoint)
+			o.UsePathStyle = true
+			o.DisableLogOutputChecksumValidationSkipped = true
+		} else {
+			o.EndpointResolverV2 = &ResolverV2{}
+		}
+	})
 	return s3path, nil
 }
 
 func (c *VFSContext) buildDOPath(p string) (*S3Path, error) {
+	endpoint := os.Getenv("S3_ENDPOINT")
+	if endpoint == "" {
+		return nil, fmt.Errorf("required S3_ENDPOINT env var for path: %q", p)
+	}
+
 	u, err := url.Parse(p)
 	if err != nil {
 		return nil, fmt.Errorf("invalid spaces path: %q", p)
@@ -360,11 +377,20 @@ func (c *VFSContext) buildDOPath(p string) (*S3Path, error) {
 		return nil, fmt.Errorf("invalid spaces path: %q", p)
 	}
 
-	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false)
+	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(endpoint)
+		o.UsePathStyle = true
+		o.DisableLogOutputChecksumValidationSkipped = true
+	})
 	return s3path, nil
 }
 
 func (c *VFSContext) buildLinodePath(p string) (*S3Path, error) {
+	endpoint := os.Getenv("S3_ENDPOINT")
+	if endpoint == "" {
+		return nil, fmt.Errorf("required S3_ENDPOINT env var for path: %q", p)
+	}
+
 	u, err := url.Parse(p)
 	if err != nil {
 		return nil, fmt.Errorf("invalid Linode object storage path: %q", p)
@@ -378,11 +404,23 @@ func (c *VFSContext) buildLinodePath(p string) (*S3Path, error) {
 		return nil, fmt.Errorf("invalid Linode object storage path: %q", p)
 	}
 
-	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false)
+	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(endpoint)
+		o.UsePathStyle = true
+		o.DisableLogOutputChecksumValidationSkipped = true
+		// Linode (Akamai) requires checksum-when-required behavior
+		o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+		o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
+	})
 	return s3path, nil
 }
 
 func (c *VFSContext) buildHetznerPath(p string) (*S3Path, error) {
+	endpoint := os.Getenv("S3_ENDPOINT")
+	if endpoint == "" {
+		return nil, fmt.Errorf("required S3_ENDPOINT env var for path: %q", p)
+	}
+
 	u, err := url.Parse(p)
 	if err != nil {
 		return nil, fmt.Errorf("invalid Hetzner Object Storage path: %q", p)
@@ -396,7 +434,11 @@ func (c *VFSContext) buildHetznerPath(p string) (*S3Path, error) {
 		return nil, fmt.Errorf("invalid Hetzner object storage path: %q", p)
 	}
 
-	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false)
+	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(endpoint)
+		o.UsePathStyle = true
+		o.DisableLogOutputChecksumValidationSkipped = true
+	})
 	return s3path, nil
 }
 
@@ -546,6 +588,11 @@ func (c *VFSContext) getAzureBlobClient(ctx context.Context) (*azblob.Client, er
 }
 
 func (c *VFSContext) buildSCWPath(p string) (*S3Path, error) {
+	endpoint := os.Getenv("S3_ENDPOINT")
+	if endpoint == "" {
+		return nil, fmt.Errorf("required S3_ENDPOINT env var for path: %q", p)
+	}
+
 	u, err := url.Parse(p)
 	if err != nil {
 		return nil, fmt.Errorf("invalid bucket path: %q", p)
@@ -559,6 +606,10 @@ func (c *VFSContext) buildSCWPath(p string) (*S3Path, error) {
 		return nil, fmt.Errorf("invalid bucket path: %q", p)
 	}
 
-	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false)
+	s3path := newS3Path(c.s3Context, u.Scheme, bucket, u.Path, false, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(endpoint)
+		o.UsePathStyle = true
+		o.DisableLogOutputChecksumValidationSkipped = true
+	})
 	return s3path, nil
 }
