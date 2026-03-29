@@ -474,7 +474,10 @@ func (t *Tester) addCSIDriverFlags() error {
 		return fmt.Errorf("writing driver.yaml: %w", err)
 	}
 
-	driverFlags := fmt.Sprintf(" --storage.testdriver=%s --storage.migratedPlugins=%s", driverPath, migratedPlugin)
+	driverFlags := fmt.Sprintf(" --storage.testdriver=%s", driverPath)
+	if migratedPlugin != "" {
+		driverFlags += fmt.Sprintf(" --storage.migrated-plugin=%s", migratedPlugin)
+	}
 	klog.Infof("Setting %v", driverFlags)
 	t.TestArgs += driverFlags
 	return nil
