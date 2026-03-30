@@ -116,6 +116,11 @@ func (s *S3Context) getClient(ctx context.Context, region string, scheme string)
 				o.BaseEndpoint = aws.String(endpoint)
 				o.UsePathStyle = true
 				o.DisableLogOutputChecksumValidationSkipped = true
+				// Linode (Akamai) requires checksum-when-required behavior
+				if scheme == "linode" {
+					o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
+					o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
+				}
 			} else {
 				o.EndpointResolverV2 = &ResolverV2{}
 			}
