@@ -424,19 +424,21 @@ func (t *Tester) addCSIDriverFlags() error {
 	}
 
 	var provider, migratedPlugin string
-	if cluster.Spec.CloudConfig != nil {
-		switch {
-		case cluster.Spec.CloudConfig.AWSEBSCSIDriver != nil &&
-			cluster.Spec.CloudConfig.AWSEBSCSIDriver.Enabled != nil &&
-			*cluster.Spec.CloudConfig.AWSEBSCSIDriver.Enabled:
-			provider = "aws-ebs"
-			migratedPlugin = "kubernetes.io/aws-ebs"
-		case cluster.Spec.CloudConfig.GCPPDCSIDriver != nil &&
-			cluster.Spec.CloudConfig.GCPPDCSIDriver.Enabled != nil &&
-			*cluster.Spec.CloudConfig.GCPPDCSIDriver.Enabled:
-			provider = "gcp-pd"
-			migratedPlugin = "kubernetes.io/gce-pd"
-		}
+	switch {
+	case cluster.Spec.CloudConfig != nil &&
+		cluster.Spec.CloudConfig.AWSEBSCSIDriver != nil &&
+		cluster.Spec.CloudConfig.AWSEBSCSIDriver.Enabled != nil &&
+		*cluster.Spec.CloudConfig.AWSEBSCSIDriver.Enabled:
+		provider = "aws-ebs"
+		migratedPlugin = "kubernetes.io/aws-ebs"
+	case cluster.Spec.CloudConfig != nil &&
+		cluster.Spec.CloudConfig.GCPPDCSIDriver != nil &&
+		cluster.Spec.CloudConfig.GCPPDCSIDriver.Enabled != nil &&
+		*cluster.Spec.CloudConfig.GCPPDCSIDriver.Enabled:
+		provider = "gcp-pd"
+		migratedPlugin = "kubernetes.io/gce-pd"
+	case cluster.Spec.LegacyCloudProvider == "digitalocean":
+		provider = "dobs"
 	}
 
 	if provider == "" {
@@ -474,7 +476,10 @@ func (t *Tester) addCSIDriverFlags() error {
 		return fmt.Errorf("writing driver.yaml: %w", err)
 	}
 
-	driverFlags := fmt.Sprintf(" --storage.testdriver=%s --storage.migratedPlugins=%s", driverPath, migratedPlugin)
+	driverFlags := fmt.Sprintf(" --storage.testdriver=%s", driverPath)
+	if migratedPlugin != "" {
+		driverFlags += fmt.Sprintf(" --storage.migratedPlugins=%s", migratedPlugin)
+	}
 	klog.Infof("Setting %v", driverFlags)
 	t.TestArgs += driverFlags
 	return nil
