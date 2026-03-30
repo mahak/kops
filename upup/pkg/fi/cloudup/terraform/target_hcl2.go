@@ -28,6 +28,10 @@ import (
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
 )
 
+type subscriptionIDProvider interface {
+	SubscriptionID() string
+}
+
 func (t *TerraformTarget) finishHCL2() error {
 	buf := &bytes.Buffer{}
 
@@ -118,12 +122,20 @@ func (t *TerraformTarget) writeProviders(buf *bytes.Buffer) {
 	if t.Cloud.ProviderID() == kops.CloudProviderHetzner {
 		providerName = "hcloud"
 	}
+	if t.Cloud.ProviderID() == kops.CloudProviderAzure {
+		providerName = "azurerm"
+	}
 	providerBody := map[string]string{}
 	if t.Cloud.ProviderID() == kops.CloudProviderGCE {
 		providerBody["project"] = t.Project
 	}
-	if t.Cloud.ProviderID() != kops.CloudProviderHetzner && t.Cloud.ProviderID() != kops.CloudProviderDO {
+	if t.Cloud.ProviderID() != kops.CloudProviderHetzner && t.Cloud.ProviderID() != kops.CloudProviderDO && t.Cloud.ProviderID() != kops.CloudProviderAzure {
 		providerBody["region"] = t.Cloud.Region()
+	}
+	if t.Cloud.ProviderID() == kops.CloudProviderAzure {
+		if cloud, ok := t.Cloud.(subscriptionIDProvider); ok && cloud.SubscriptionID() != "" {
+			providerBody["subscription_id"] = cloud.SubscriptionID()
+		}
 	}
 	if t.Cloud.ProviderID() == kops.CloudProviderScaleway {
 		providerBody["zone"] = t.Cloud.(scaleway.ScwCloud).Zone()
@@ -131,9 +143,12 @@ func (t *TerraformTarget) writeProviders(buf *bytes.Buffer) {
 	for k, v := range tfGetProviderExtraConfig(t.clusterSpecTarget) {
 		providerBody[k] = v
 	}
-	mapToElement(providerBody).
-		ToObject().
-		Write(buf, 0, fmt.Sprintf("provider %q", providerName))
+	obj := mapToElement(providerBody).ToObject().(*object)
+	if providerName == "azurerm" {
+		// azurerm provider requires a features block
+		obj.field["features"] = &object{field: map[string]element{}}
+	}
+	obj.Write(buf, 0, fmt.Sprintf("provider %q", providerName))
 	buf.WriteString("\n")
 
 	// Add any additional provider definition for managed files
@@ -148,9 +163,11 @@ func (t *TerraformTarget) writeProviders(buf *bytes.Buffer) {
 		for k, v := range tfGetFilesProviderExtraConfig(t.clusterSpecTarget) {
 			providerBody[k] = v
 		}
-		mapToElement(providerBody).
-			ToObject().
-			Write(buf, 0, fmt.Sprintf("provider %q", provider.Name))
+		obj := mapToElement(providerBody).ToObject().(*object)
+		if provider.Name == "azurerm" {
+			obj.field["features"] = &object{field: map[string]element{}}
+		}
+		obj.Write(buf, 0, fmt.Sprintf("provider %q", provider.Name))
 		buf.WriteString("\n")
 	}
 }
@@ -226,6 +243,8 @@ func (t *TerraformTarget) writeTerraform(buf *bytes.Buffer) {
 		}
 	} else if t.Cloud.ProviderID() == kops.CloudProviderDO {
 		providers["digitalocean"] = true
+	} else if t.Cloud.ProviderID() == kops.CloudProviderAzure {
+		providers["azurerm"] = true
 	}
 
 	for _, tfProvider := range t.TerraformWriter.Providers {
@@ -261,6 +280,10 @@ func (t *TerraformTarget) writeTerraform(buf *bytes.Buffer) {
 			"digitalocean": {
 				"source":  "digitalocean/digitalocean",
 				"version": "~>2.0",
+			},
+			"azurerm": {
+				"source":  "hashicorp/azurerm",
+				"version": ">= 4.0.0",
 			},
 		}
 

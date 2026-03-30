@@ -37,12 +37,13 @@ import (
 )
 
 const (
-	testClusterName = "test-cluster"
+	testClusterName = "test-cluster.k8s"
 )
 
 // MockAzureCloud is a mock implementation of AzureCloud.
 type MockAzureCloud struct {
 	Location                        string
+	subscriptionID                  string
 	ResourceGroupsClient            *MockResourceGroupsClient
 	VirtualNetworksClient           *MockVirtualNetworksClient
 	SubnetsClient                   *MockSubnetsClient
@@ -61,6 +62,14 @@ type MockAzureCloud struct {
 }
 
 var _ azure.AzureCloud = (*MockAzureCloud)(nil)
+
+// InstallMockAzureCloud registers a MockAzureCloud implementation for the specified subscription & resource group.
+func InstallMockAzureCloud(location string, subscriptionID string, resourceGroupName string) *MockAzureCloud {
+	c := NewMockAzureCloud(location)
+	c.subscriptionID = subscriptionID
+	azure.CacheAzureCloudInstance(subscriptionID, resourceGroupName, c)
+	return c
+}
 
 // NewMockAzureCloud returns a new MockAzureCloud.
 func NewMockAzureCloud(location string) *MockAzureCloud {
@@ -190,7 +199,7 @@ func (c *MockAzureCloud) GetApiIngressStatus(cluster *kops.Cluster) ([]fi.ApiIng
 
 // SubscriptionID returns the subscription ID.
 func (c *MockAzureCloud) SubscriptionID() string {
-	return ""
+	return c.subscriptionID
 }
 
 // ResourceGroup returns the resource group client.

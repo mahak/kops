@@ -31,6 +31,7 @@ import (
 type RouteTable struct {
 	Name          *string
 	Lifecycle     fi.Lifecycle
+	ID            *string
 	ResourceGroup *ResourceGroup
 	Tags          map[string]*string
 	Shared        *bool
@@ -64,9 +65,13 @@ func (r *RouteTable) Find(c *fi.CloudupContext) (*RouteTable, error) {
 	if found == nil {
 		return nil, nil
 	}
+
+	r.ID = found.ID
+
 	return &RouteTable{
 		Name:      r.Name,
 		Lifecycle: r.Lifecycle,
+		ID:        found.ID,
 		Shared:    r.Shared,
 		ResourceGroup: &ResourceGroup{
 			Name: r.ResourceGroup.Name,
@@ -114,11 +119,16 @@ func (*RouteTable) RenderAzure(t *azure.AzureAPITarget, a, e, changes *RouteTabl
 		Location: to.Ptr(t.Cloud.Region()),
 		Tags:     e.Tags,
 	}
-	_, err := t.Cloud.RouteTable().CreateOrUpdate(
+	result, err := t.Cloud.RouteTable().CreateOrUpdate(
 		context.TODO(),
 		*e.ResourceGroup.Name,
 		*e.Name,
 		rt)
+	if err != nil {
+		return err
+	}
 
-	return err
+	e.ID = result.ID
+
+	return nil
 }

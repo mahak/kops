@@ -285,20 +285,6 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 	}
 	c.AddTask(ngwTask)
 
-	for _, subnetSpec := range b.Cluster.Spec.Networking.Subnets {
-		subnetTask := &azuretasks.Subnet{
-			Name:                 fi.PtrTo(subnetSpec.Name),
-			Lifecycle:            b.Lifecycle,
-			ResourceGroup:        b.LinkToResourceGroup(),
-			VirtualNetwork:       b.LinkToVirtualNetwork(),
-			NatGateway:           ngwTask,
-			NetworkSecurityGroup: nsgTask,
-			CIDR:                 fi.PtrTo(subnetSpec.CIDR),
-			Shared:               fi.PtrTo(b.Cluster.SharedVPC()),
-		}
-		c.AddTask(subnetTask)
-	}
-
 	rtTask := &azuretasks.RouteTable{
 		Name:          fi.PtrTo(b.NameForRouteTable()),
 		Lifecycle:     b.Lifecycle,
@@ -307,6 +293,21 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 		Shared:        fi.PtrTo(b.Cluster.IsSharedAzureRouteTable()),
 	}
 	c.AddTask(rtTask)
+
+	for _, subnetSpec := range b.Cluster.Spec.Networking.Subnets {
+		subnetTask := &azuretasks.Subnet{
+			Name:                 fi.PtrTo(subnetSpec.Name),
+			Lifecycle:            b.Lifecycle,
+			ResourceGroup:        b.LinkToResourceGroup(),
+			VirtualNetwork:       b.LinkToVirtualNetwork(),
+			NatGateway:           ngwTask,
+			NetworkSecurityGroup: nsgTask,
+			RouteTable:           rtTask,
+			CIDR:                 fi.PtrTo(subnetSpec.CIDR),
+			Shared:               fi.PtrTo(b.Cluster.SharedVPC()),
+		}
+		c.AddTask(subnetTask)
+	}
 
 	return nil
 }

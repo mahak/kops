@@ -80,6 +80,8 @@ var (
 	ClusterAddons = new("ClusterAddons", Bool(false))
 	// Azure toggles the Azure support.
 	Azure = new("Azure", Bool(false))
+	// AzureTerraform toggles the Azure terraform support.
+	AzureTerraform = new("AzureTerraform", Bool(false))
 	// APIServerNodes enables ability to provision nodes that only run the kube-apiserver.
 	APIServerNodes = new("APIServerNodes", Bool(false))
 	// UseAddonOperators activates experimental addon operator support

@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/storage/armstorage"
@@ -88,8 +89,28 @@ type azureCloudImplementation struct {
 
 var _ fi.Cloud = (*azureCloudImplementation)(nil)
 
-// NewAzureCloud creates a new AzureCloud.
+var azureCloudInstances = make(map[string]AzureCloud)
+var azureCloudInstancesMutex = sync.RWMutex{}
+
+// CacheAzureCloudInstance registers a cloud instance in the cache, used by NewAzureCloud.
+func CacheAzureCloudInstance(subscriptionID, resourceGroupName string, cloud AzureCloud) {
+	azureCloudInstancesMutex.Lock()
+	defer azureCloudInstancesMutex.Unlock()
+	azureCloudInstances[subscriptionID+"::"+resourceGroupName] = cloud
+}
+
+// NewAzureCloud creates a new AzureCloud, or returns a cached instance for the given subscription and resource group.
 func NewAzureCloud(subscriptionID, resourceGroupName, location string, tags map[string]string) (AzureCloud, error) {
+	azureCloudInstancesMutex.RLock()
+	i := azureCloudInstances[subscriptionID+"::"+resourceGroupName]
+	azureCloudInstancesMutex.RUnlock()
+	if i != nil {
+		return i, nil
+	}
+	return newAzureCloud(subscriptionID, resourceGroupName, location, tags)
+}
+
+func newAzureCloud(subscriptionID, resourceGroupName, location string, tags map[string]string) (AzureCloud, error) {
 	cred, err := azidentity.NewDefaultAzureCredential(nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating an identity: %s", err)
@@ -147,6 +168,8 @@ func NewAzureCloud(subscriptionID, resourceGroupName, location string, tags map[
 	if azureCloudImpl.storageAccountsClient, err = newStorageAccountsClientImpl(subscriptionID, cred); err != nil {
 		return nil, err
 	}
+
+	CacheAzureCloudInstance(subscriptionID, resourceGroupName, azureCloudImpl)
 
 	return azureCloudImpl, nil
 }
