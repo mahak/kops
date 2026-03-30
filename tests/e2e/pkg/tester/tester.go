@@ -478,7 +478,7 @@ func (t *Tester) addCSIDriverFlags() error {
 
 	driverFlags := fmt.Sprintf(" --storage.testdriver=%s", driverPath)
 	if migratedPlugin != "" {
-		driverFlags += fmt.Sprintf(" --storage.migrated-plugin=%s", migratedPlugin)
+		driverFlags += fmt.Sprintf(" --storage.migratedPlugins=%s", migratedPlugin)
 	}
 	klog.Infof("Setting %v", driverFlags)
 	t.TestArgs += driverFlags
