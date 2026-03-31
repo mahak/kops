@@ -644,6 +644,10 @@ func (p *S3Path) IsBucketPublic(ctx context.Context) (bool, error) {
 }
 
 func (p *S3Path) IsPublic() (bool, error) {
+	if p.scheme == "linode" {
+		// Linode (Akamai) does not implement GetObjectAcl. In that case we conservatively treat the object as non-public and continue.
+		return false, nil
+	}
 	ctx := context.TODO()
 	client, err := p.client(ctx)
 	if err != nil {
