@@ -6218,6 +6218,12 @@ spec:
                       Only used in Queue Processor mode.
                       Default: false
                     type: boolean
+                  enableOutOfServiceTaint:
+                    description: |-
+                      EnableOutOfServiceTaint makes node termination handler apply the node.kubernetes.io/out-of-service taint
+                      to nodes during non-graceful shutdown, allowing Kubernetes to quickly detach volumes and reschedule pods.
+                      Default: false
+                    type: boolean
                   enableRebalanceDraining:
                     description: |-
                       EnableRebalanceDraining makes node termination handler drain nodes when the rebalance recommendation notice is received.

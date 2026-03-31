@@ -192,6 +192,8 @@ spec:
               value: "false"
             - name: TAINT_NODE
               value: "{{ WithDefaultBool .TaintNode false }}"
+            - name: ENABLE_OUT_OF_SERVICE_TAINT
+              value: "{{ WithDefaultBool .EnableOutOfServiceTaint false }}"
             - name: EXCLUDE_FROM_LOAD_BALANCERS
               value: "{{ .ExcludeFromLoadBalancers }}"
             - name: DELETE_LOCAL_DATA
@@ -367,6 +369,8 @@ spec:
               value: "false"
             - name: TAINT_NODE
               value: "{{ WithDefaultBool .TaintNode false }}"
+            - name: ENABLE_OUT_OF_SERVICE_TAINT
+              value: "{{ WithDefaultBool .EnableOutOfServiceTaint false }}"
             - name: EXCLUDE_FROM_LOAD_BALANCERS
               value: "{{ WithDefaultBool .ExcludeFromLoadBalancers true }}"
             - name: DELETE_LOCAL_DATA

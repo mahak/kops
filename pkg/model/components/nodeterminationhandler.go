@@ -66,6 +66,10 @@ func (b *NodeTerminationHandlerOptionsBuilder) BuildOptions(o *kops.Cluster) err
 		nth.EnableRebalanceDraining = fi.PtrTo(false)
 	}
 
+	if nth.EnableOutOfServiceTaint == nil {
+		nth.EnableOutOfServiceTaint = fi.PtrTo(false)
+	}
+
 	if nth.EnablePrometheusMetrics == nil {
 		nth.EnablePrometheusMetrics = fi.PtrTo(false)
 	}
