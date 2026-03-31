@@ -101,7 +101,7 @@ func (b *NodeTerminationHandlerOptionsBuilder) BuildOptions(o *kops.Cluster) err
 	}
 
 	if nth.Version == nil {
-		nth.Version = fi.PtrTo("v1.22.0")
+		nth.Version = fi.PtrTo("v1.25.5")
 	}
 
 	return nil
