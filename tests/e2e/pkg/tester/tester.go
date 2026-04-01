@@ -150,10 +150,8 @@ func (t *Tester) addProviderFlag() error {
 
 	provider := ""
 	switch cluster.Spec.LegacyCloudProvider {
-	case "aws", "gce":
+	case "aws", "azure", "gce":
 		provider = cluster.Spec.LegacyCloudProvider
-	case "azure":
-		// TODO: Enable when Azure Disk and FIle CSI drivers are added
 	case "digitalocean":
 	default:
 		klog.Warningf("unhandled cluster.spec.cloudProvider %q for determining ginkgo Provider", cluster.Spec.LegacyCloudProvider)
@@ -437,6 +435,9 @@ func (t *Tester) addCSIDriverFlags() error {
 		*cluster.Spec.CloudConfig.GCPPDCSIDriver.Enabled:
 		provider = "gcp-pd"
 		migratedPlugin = "kubernetes.io/gce-pd"
+	case cluster.Spec.LegacyCloudProvider == "azure":
+		provider = "azure-disk"
+		migratedPlugin = "kubernetes.io/azure-disk"
 	case cluster.Spec.LegacyCloudProvider == "digitalocean":
 		provider = "dobs"
 	}

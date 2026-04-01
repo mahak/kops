@@ -102,6 +102,18 @@ func (t *Tester) setSkipRegexFlag() error {
 		skipRegex += "|Services.should.respect.internalTrafficPolicy=Local.Pod.and.Node,.to.Pod"
 	}
 
+	if cluster.Spec.LegacyCloudProvider == "azure" {
+		// The Azure File CSI driver is not yet deployed by kOps, so all in-tree azure-file tests fail
+		// because CSI migration expects file.csi.azure.com to be present.
+		skipRegex += "|In-tree.Volumes.\\[Driver:.azure-file\\]"
+		// The in-tree azure-disk topology tests use the deprecated failure-domain.beta.kubernetes.io/zone label
+		// which is no longer present on nodes.
+		skipRegex += "|In-tree.Volumes.\\[Driver:.azure-disk\\].*topology"
+		// kOps does not yet deploy the full Azure cloud-controller-manager (only cloud-node-manager),
+		// so the service controller for LoadBalancer provisioning is not available.
+		skipRegex += "|should.not.disrupt.a.cloud.load-balancer"
+	}
+
 	if cluster.Spec.LegacyCloudProvider == "gce" {
 		// this test assumes the cluster runs COS but kOps uses Ubuntu by default
 		// ref: https://github.com/kubernetes/test-infra/pull/22190
