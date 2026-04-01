@@ -88,6 +88,7 @@ fi
 # in the upgrade test.
 ${KUBETEST2} \
     --up \
+    --env-file="${WORKSPACE}/env" \
     --kops-binary-path="${KOPS_A}" \
     --kubernetes-version="${K8S_VERSION_A}" \
     --control-plane-size="${KOPS_CONTROL_PLANE_COUNT:-1}" \
