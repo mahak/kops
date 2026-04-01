@@ -18,5 +18,5 @@ package csimanifests
 
 import "embed"
 
-//go:embed aws-ebs/* gcp-pd/* dobs/*
+//go:embed aws-ebs/* azure-disk/* dobs/* gcp-pd/*
 var FS embed.FS

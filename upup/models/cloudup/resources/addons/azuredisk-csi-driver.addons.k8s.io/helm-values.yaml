@@ -1,0 +1,35 @@
+# Helm values for azuredisk-csi-driver chart v1.34.0
+# To regenerate the manifest:
+#   helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
+#   cd upup/models/cloudup/resources/addons/azuredisk-csi-driver.addons.k8s.io
+#   helm template azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
+#     --version 1.34.0 --namespace kube-system -f helm-values.yaml > k8s-1.31.yaml.template
+#
+# After generating, apply kops-specific patches:
+#   1. Prepend the StorageClass block from the bottom of this file
+#   2. Replace AZURE_CREDENTIAL_FILE env var (both controller and node azuredisk containers):
+#        from: valueFrom: configMapKeyRef: ...
+#        to:   value: /etc/kubernetes/cloud.config
+#   3. Add readOnly: true to controller azure-cred volume mount
+#
+# Note: StorageClass is managed separately via storage-azure.addons.k8s.io
+
+controller:
+  replicas: 1
+  runOnControlPlane: true
+  hostNetwork: true
+  logLevel: 5
+
+linux:
+  enabled: true
+  hostNetwork: true
+
+windows:
+  enabled: false
+
+snapshot:
+  enabled: false
+
+driver:
+  userAgentSuffix: "kops"
+
