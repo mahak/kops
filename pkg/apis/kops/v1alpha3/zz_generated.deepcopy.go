@@ -5085,6 +5085,11 @@ func (in *NodeTerminationHandlerSpec) DeepCopyInto(out *NodeTerminationHandlerSp
 		*out = new(bool)
 		**out = **in
 	}
+	if in.EnableOutOfServiceTaint != nil {
+		in, out := &in.EnableOutOfServiceTaint, &out.EnableOutOfServiceTaint
+		*out = new(bool)
+		**out = **in
+	}
 	if in.EnablePrometheusMetrics != nil {
 		in, out := &in.EnablePrometheusMetrics, &out.EnablePrometheusMetrics
 		*out = new(bool)

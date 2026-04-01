@@ -185,6 +185,7 @@ spec:
   nodeTerminationHandler:
     cpuRequest: 50m
     deleteSQSMsgIfNodeNotFound: false
+    enableOutOfServiceTaint: false
     enableRebalanceDraining: false
     enableRebalanceMonitoring: false
     enableScheduledEventDraining: true
@@ -196,7 +197,7 @@ spec:
     podTerminationGracePeriod: -1
     prometheusEnable: false
     taintNode: false
-    version: v1.22.0
+    version: v1.25.5
   nonMasqueradeCIDR: ::/0
   secretStore: memfs://clusters.example.com/minimal-ipv6.example.com/secrets
   serviceClusterIPRange: fd00:5e4f:ce::/108

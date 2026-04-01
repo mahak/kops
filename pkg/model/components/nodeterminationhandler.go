@@ -66,6 +66,10 @@ func (b *NodeTerminationHandlerOptionsBuilder) BuildOptions(o *kops.Cluster) err
 		nth.EnableRebalanceDraining = fi.PtrTo(false)
 	}
 
+	if nth.EnableOutOfServiceTaint == nil {
+		nth.EnableOutOfServiceTaint = fi.PtrTo(false)
+	}
+
 	if nth.EnablePrometheusMetrics == nil {
 		nth.EnablePrometheusMetrics = fi.PtrTo(false)
 	}
@@ -97,7 +101,7 @@ func (b *NodeTerminationHandlerOptionsBuilder) BuildOptions(o *kops.Cluster) err
 	}
 
 	if nth.Version == nil {
-		nth.Version = fi.PtrTo("v1.22.0")
+		nth.Version = fi.PtrTo("v1.25.5")
 	}
 
 	return nil

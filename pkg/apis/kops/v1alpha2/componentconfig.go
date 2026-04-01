@@ -1109,6 +1109,11 @@ type NodeTerminationHandlerSpec struct {
 	// Default: false
 	EnableRebalanceDraining *bool `json:"enableRebalanceDraining,omitempty"`
 
+	// EnableOutOfServiceTaint makes node termination handler apply the node.kubernetes.io/out-of-service taint
+	// to nodes during non-graceful shutdown, allowing Kubernetes to quickly detach volumes and reschedule pods.
+	// Default: false
+	EnableOutOfServiceTaint *bool `json:"enableOutOfServiceTaint,omitempty"`
+
 	// EnablePrometheusMetrics enables the "/metrics" endpoint.
 	// Default: false
 	EnablePrometheusMetrics *bool `json:"prometheusEnable,omitempty"`
