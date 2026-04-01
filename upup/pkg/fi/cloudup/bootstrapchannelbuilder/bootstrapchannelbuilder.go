@@ -696,6 +696,23 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 				})
 			}
 		}
+
+		if b.Cluster.GetCloudProvider() == kops.CloudProviderAzure {
+			key := "storage-azure.addons.k8s.io"
+
+			{
+				id := "k8s-1.31"
+				location := key + "/" + id + ".yaml"
+
+				addon := addons.Add(&channelsapi.AddonSpec{
+					Name:     fi.PtrTo(key),
+					Selector: map[string]string{"k8s-addon": key},
+					Manifest: fi.PtrTo(location),
+					Id:       id,
+				})
+				addon.BuildPrune = true
+			}
+		}
 	}
 
 	if b.Cluster.GetCloudProvider() == kops.CloudProviderDO {
@@ -767,6 +784,22 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 				Manifest: fi.PtrTo(location),
 				Id:       id,
 			})
+		}
+	}
+
+	if b.Cluster.IsKubernetesGTE("1.31") && b.Cluster.GetCloudProvider() == kops.CloudProviderAzure {
+		{
+			key := "azuredisk-csi-driver.addons.k8s.io"
+			id := "k8s-1.31"
+			location := key + "/" + id + ".yaml"
+
+			addon := addons.Add(&channelsapi.AddonSpec{
+				Name:     fi.PtrTo(key),
+				Selector: map[string]string{"k8s-addon": key},
+				Manifest: fi.PtrTo(location),
+				Id:       id,
+			})
+			addon.BuildPrune = true
 		}
 	}
 
