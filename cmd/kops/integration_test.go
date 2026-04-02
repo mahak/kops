@@ -397,6 +397,20 @@ func TestMinimalGCEInternalLoadBalancer(t *testing.T) {
 		runTestTerraformGCE(t)
 }
 
+// TestMinimalGCEInternalLoadBalancerCiliumEtcd runs tests on a minimal GCE configuration with an internal load balancer and cilium-etcd.
+func TestMinimalGCEInternalLoadBalancerCiliumEtcd(t *testing.T) {
+	newIntegrationTest("minimal-gce-ilb-cilium-etcd.example.com", "minimal_gce_ilb_cilium_etcd").
+		withCiliumEtcd().
+		withManagedFiles("etcd-cluster-spec-cilium", "manifests-etcdmanager-cilium-master-us-test1-a").
+		withAddons(
+			ciliumAddon,
+			dnsControllerAddon,
+			gcpCCMAddon,
+			gcpPDCSIAddon,
+		).
+		runTestTerraformGCE(t)
+}
+
 // TestMinimalGCEPublicLoadBalancer runs tests on a minimal GCE configuration with a public load balancer.
 func TestMinimalGCEPublicLoadBalancer(t *testing.T) {
 	newIntegrationTest("minimal-gce-plb.example.com", "minimal_gce_plb").
