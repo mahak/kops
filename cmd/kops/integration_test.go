@@ -77,6 +77,13 @@ type integrationTest struct {
 	startupScript bool
 	// verify "kops get assets" functionality
 	testGetAssets bool
+	// gceAPIServerIGs is a list of APIServer instance group names and their zones for GCE
+	gceAPIServerIGs []gceAPIServerIG
+}
+
+type gceAPIServerIG struct {
+	name string
+	zone string
 }
 
 func newIntegrationTest(clusterName, srcDir string) *integrationTest {
@@ -148,6 +155,11 @@ func (i *integrationTest) withBastionUserData() *integrationTest {
 
 func (i *integrationTest) withCiliumEtcd() *integrationTest {
 	i.ciliumEtcd = true
+	return i
+}
+
+func (i *integrationTest) withGCEDedicatedAPIServer(name, zone string) *integrationTest {
+	i.gceAPIServerIGs = append(i.gceAPIServerIGs, gceAPIServerIG{name: name, zone: zone})
 	return i
 }
 
@@ -405,6 +417,21 @@ func TestMinimalGCEPublicLoadBalancer(t *testing.T) {
 			gcpCCMAddon,
 			gcpPDCSIAddon,
 		).
+		runTestTerraformGCE(t)
+}
+
+// TestMinimalGCEPublicLoadBalancerAPIServer runs tests on a minimal GCE configuration with a public load balancer and an APIServer instance group.
+func TestMinimalGCEPublicLoadBalancerAPIServer(t *testing.T) {
+	featureflag.ParseFlags("+APIServerNodes")
+	defer featureflag.ParseFlags("-APIServerNodes")
+
+	newIntegrationTest("minimal-gce-plb-apiserver.example.com", "minimal_gce_plb_apiserver").
+		withAddons(
+			dnsControllerAddon,
+			gcpCCMAddon,
+			gcpPDCSIAddon,
+		).
+		withGCEDedicatedAPIServer("apiserver-us-test1-a", "us-test1-a").
 		runTestTerraformGCE(t)
 }
 
@@ -1674,6 +1701,17 @@ func (i *integrationTest) runTestTerraformGCE(t *testing.T) {
 		expectedFilenames = append(expectedFilenames, "aws_s3_object_nodeupconfig-master-"+zone+"_content")
 
 		prefix := "google_compute_instance_template_master-" + zone + "-" + gce.SafeClusterName(i.clusterName) + "_metadata_"
+		if !i.startupScript {
+			expectedFilenames = append(expectedFilenames, prefix+"user-data")
+		} else {
+			expectedFilenames = append(expectedFilenames, prefix+"startup-script")
+		}
+	}
+
+	for _, ig := range i.gceAPIServerIGs {
+		expectedFilenames = append(expectedFilenames, "aws_s3_object_nodeupconfig-"+ig.name+"_content")
+
+		prefix := "google_compute_instance_template_" + ig.name + "-" + gce.SafeClusterName(i.clusterName) + "_metadata_"
 		if !i.startupScript {
 			expectedFilenames = append(expectedFilenames, prefix+"user-data")
 		} else {
