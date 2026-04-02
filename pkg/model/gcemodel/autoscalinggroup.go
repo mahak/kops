@@ -214,6 +214,10 @@ func (b *AutoscalingGroupModelBuilder) buildInstanceTemplate(c *fi.CloudupModelB
 			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleControlPlane))
 			t.Tags = append(t.Tags, b.GCETagForRole("master"))
 
+		case kops.InstanceGroupRoleAPIServer:
+			t.Scopes = append(t.Scopes, "https://www.googleapis.com/auth/ndev.clouddns.readwrite")
+			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleControlPlane))
+
 		case kops.InstanceGroupRoleNode:
 			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleNode))
 
@@ -349,8 +353,8 @@ func (b *AutoscalingGroupModelBuilder) Build(c *fi.CloudupModelBuilderContext) e
 				ListManagedInstancesResults: "PAGINATED",
 			}
 
-			// Attach masters to load balancer if we're using one
-			if ig.Spec.Role == kops.InstanceGroupRoleControlPlane {
+			// Attach API server instances to load balancer if we're using one
+			if ig.HasAPIServer() {
 				if b.UseLoadBalancerForAPI() {
 					lbSpec := b.Cluster.Spec.API.LoadBalancer
 					if lbSpec != nil {

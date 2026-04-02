@@ -146,7 +146,7 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 	c.AddTask(hc)
 	var igms []*gcetasks.InstanceGroupManager
 	for _, ig := range b.InstanceGroups {
-		if ig.Spec.Role != kops.InstanceGroupRoleControlPlane {
+		if !ig.HasAPIServer() {
 			continue
 		}
 		if len(ig.Spec.Zones) > 1 {
