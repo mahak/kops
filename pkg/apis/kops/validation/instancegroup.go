@@ -239,8 +239,8 @@ func CrossValidateInstanceGroup(g *kops.InstanceGroup, cluster *kops.Cluster, cl
 	}
 
 	if g.Spec.Role == kops.InstanceGroupRoleAPIServer {
-		if cluster.GetCloudProvider() != kops.CloudProviderAWS {
-			allErrs = append(allErrs, field.Forbidden(field.NewPath("spec", "role"), "APIServer role only supported on AWS"))
+		if cluster.GetCloudProvider() != kops.CloudProviderAWS && cluster.GetCloudProvider() != kops.CloudProviderGCE {
+			allErrs = append(allErrs, field.Forbidden(field.NewPath("spec", "role"), "APIServer role only supported on AWS and GCE"))
 		}
 		if cluster.UsesNoneDNS() {
 			allErrs = append(allErrs, field.Forbidden(field.NewPath("spec", "role"), "APIServer cannot be used with topology.dns.type=None"))

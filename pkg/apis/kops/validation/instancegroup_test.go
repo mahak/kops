@@ -510,3 +510,69 @@ func createMinimalInstanceGroup() *kops.InstanceGroup {
 	}
 	return ig
 }
+
+func TestCrossValidateAPIServerRole(t *testing.T) {
+	grid := []struct {
+		Description    string
+		Cluster        *kops.Cluster
+		ExpectedErrors int
+	}{
+		{
+			Description: "APIServer role allowed on AWS",
+			Cluster: &kops.Cluster{
+				Spec: kops.ClusterSpec{
+					CloudProvider: kops.CloudProviderSpec{
+						AWS: &kops.AWSSpec{},
+					},
+				},
+			},
+			ExpectedErrors: 0,
+		},
+		{
+			Description: "APIServer role allowed on GCE",
+			Cluster: &kops.Cluster{
+				Spec: kops.ClusterSpec{
+					CloudProvider: kops.CloudProviderSpec{
+						GCE: &kops.GCESpec{},
+					},
+				},
+			},
+			ExpectedErrors: 0,
+		},
+		{
+			Description: "APIServer role forbidden on DO",
+			Cluster: &kops.Cluster{
+				Spec: kops.ClusterSpec{
+					CloudProvider: kops.CloudProviderSpec{
+						DO: &kops.DOSpec{},
+					},
+				},
+			},
+			ExpectedErrors: 1,
+		},
+	}
+
+	for _, g := range grid {
+		t.Run(g.Description, func(t *testing.T) {
+			ig := &kops.InstanceGroup{
+				ObjectMeta: v1.ObjectMeta{
+					Name: "apiserver",
+				},
+				Spec: kops.InstanceGroupSpec{
+					Role:    kops.InstanceGroupRoleAPIServer,
+					Subnets: []string{"eu-central-1a"},
+					MaxSize: fi.PtrTo(int32(1)),
+					MinSize: fi.PtrTo(int32(1)),
+					Image:   "my-image",
+				},
+			}
+			g.Cluster.Spec.Networking.Subnets = []kops.ClusterSubnetSpec{
+				{Name: "eu-central-1a", Region: "eu-central-1"},
+			}
+			errs := CrossValidateInstanceGroup(ig, g.Cluster, nil, true)
+			if len(errs) != g.ExpectedErrors {
+				t.Errorf("expected %d errors, got %d: %v", g.ExpectedErrors, len(errs), errs)
+			}
+		})
+	}
+}
