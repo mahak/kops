@@ -22,6 +22,7 @@ import (
 
 	"golang.org/x/exp/slices"
 	"k8s.io/kops/pkg/apis/kops"
+	"k8s.io/kops/pkg/apis/kops/model"
 	"k8s.io/kops/pkg/wellknownports"
 	"k8s.io/kops/pkg/wellknownservices"
 	"k8s.io/kops/upup/pkg/fi"
@@ -125,6 +126,16 @@ func (b *APILoadBalancerBuilder) addFirewallRules(c *fi.CloudupModelBuilderConte
 				SourceRanges: b.Cluster.Spec.API.Access,
 				TargetTags:   []string{b.GCETagForRole(kops.InstanceGroupRoleControlPlane)},
 				Allowed:      []string{"tcp:" + strconv.Itoa(wellknownports.KopsControllerPort)},
+			})
+		}
+
+		if model.UseCiliumEtcd(b.Cluster) {
+			b.AddFirewallRulesTasks(c, "cilium-etcd", &gcetasks.FirewallRule{
+				Lifecycle:    b.Lifecycle,
+				Network:      network,
+				SourceRanges: b.Cluster.Spec.API.Access,
+				TargetTags:   []string{b.GCETagForRole(kops.InstanceGroupRoleControlPlane)},
+				Allowed:      []string{"tcp:" + strconv.Itoa(wellknownports.EtcdCiliumClientPort)},
 			})
 		}
 	}
@@ -233,6 +244,24 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 			fr.PruneForwardingRulesWithName(b.NameForForwardingRule("kops-controller")) // , "Removing legacy external load balancer for kops-controller")
 
 			c.AddTask(fr)
+		}
+
+		if model.UseCiliumEtcd(b.Cluster) {
+			c.AddTask(&gcetasks.ForwardingRule{
+				Name:                s(b.NameForForwardingRule("cilium-etcd-" + sn.Name)),
+				Lifecycle:           b.Lifecycle,
+				BackendService:      bs,
+				Ports:               []string{strconv.Itoa(wellknownports.EtcdCiliumClientPort)},
+				IPAddress:           ipAddress,
+				IPProtocol:          "TCP",
+				LoadBalancingScheme: s("INTERNAL"),
+				Network:             network,
+				Subnetwork:          subnet,
+				Labels: map[string]string{
+					clusterLabel.Key: clusterLabel.Value,
+					"name":           "cilium-etcd-" + sn.Name,
+				},
+			})
 		}
 	}
 	return nil
