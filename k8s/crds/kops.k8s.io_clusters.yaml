@@ -5574,6 +5574,11 @@ spec:
                           EnableEndpointHealthChecking enables connectivity health checking between virtual endpoints.
                           Default: true
                         type: boolean
+                      enableHostFirewall:
+                        description: |-
+                          EnableHostFirewall enables the host firewall in the Cilium agent.
+                          Default: false
+                        type: boolean
                       enableHostReachableServices:
                         description: |-
                           EnableHostReachableServices configures Cilium to enable services to be

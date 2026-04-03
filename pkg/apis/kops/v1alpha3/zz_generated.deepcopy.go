@@ -693,6 +693,11 @@ func (in *CiliumNetworkingSpec) DeepCopyInto(out *CiliumNetworkingSpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.EnableHostFirewall != nil {
+		in, out := &in.EnableHostFirewall, &out.EnableHostFirewall
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Masquerade != nil {
 		in, out := &in.Masquerade, &out.Masquerade
 		*out = new(bool)
