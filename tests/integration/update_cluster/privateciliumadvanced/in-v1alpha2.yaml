@@ -33,6 +33,7 @@ spec:
   networking:
     cilium:
       enableNodePort: true
+      enableHostFirewall: true
       etcdManaged: true
       disableMasquerade: false
       ipam: eni
