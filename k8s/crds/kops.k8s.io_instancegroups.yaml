@@ -559,6 +559,12 @@ spec:
                       to this value.  If 0, unlimited.
                     format: int32
                     type: integer
+                  eventRecordQPS:
+                    description: |-
+                      EventRecordQPS is the maximum event creations per second. If 0, there is no limit enforced.
+                      Default: 50
+                    format: int32
+                    type: integer
                   evictionHard:
                     description: Comma-delimited list of hard eviction expressions.  For
                       example, 'memory.available<300Mi'.
@@ -728,6 +734,12 @@ spec:
                     description: NodeLabels to add when registering the node in the
                       cluster.
                     type: object
+                  nodeLeaseDurationSeconds:
+                    description: |-
+                      NodeLeaseDurationSeconds is the duration the Kubelet will set on its corresponding Lease, in seconds.
+                      Default: 40
+                    format: int32
+                    type: integer
                   nodeStatusUpdateFrequency:
                     description: |-
                       NodeStatusUpdateFrequency Specifies how often kubelet posts node status to master (default 10s)
