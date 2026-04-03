@@ -193,7 +193,7 @@ type client struct {
 
 // newClient returns a new Client.
 func newClient() (*client, error) {
-	metadata, err := queryComputeInstanceMetadata()
+	metadata, err := QueryComputeInstanceMetadata()
 	if err != nil || metadata == nil {
 		return nil, fmt.Errorf("getting instance metadata: %w", err)
 	}

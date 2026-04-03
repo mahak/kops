@@ -18,15 +18,13 @@ package azure
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	compute "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
+	azurecloud "k8s.io/kops/upup/pkg/fi/cloudup/azure"
 )
 
 // client is an Azure client.
@@ -38,7 +36,7 @@ type client struct {
 
 // newClient returns a new Client.
 func newClient() (*client, error) {
-	metadata, err := queryComputeInstanceMetadata()
+	metadata, err := azurecloud.QueryComputeInstanceMetadata()
 	if err != nil {
 		return nil, fmt.Errorf("error querying instance metadata: %s", err)
 	}
@@ -93,41 +91,4 @@ func (c *client) getVMTags(ctx context.Context, providerID string) (map[string]*
 	default:
 		return nil, fmt.Errorf("unsupported resource type %q for %q", res.ResourceType, providerID)
 	}
-}
-
-type instanceMetadata struct {
-	SubscriptionID    string `json:"subscriptionId"`
-	ResourceGroupName string `json:"resourceGroupName"`
-}
-
-// queryComputeInstanceMetadata queries Azure Instance Metadata.
-// https://docs.microsoft.com/en-us/azure/virtual-machines/windows/instance-metadata-service
-func queryComputeInstanceMetadata() (*instanceMetadata, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", "http://169.254.169.254/metadata/instance/compute", nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating a new request: %s", err)
-	}
-	req.Header.Add("Metadata", "True")
-
-	q := req.URL.Query()
-	q.Add("api-version", "2025-04-07")
-	q.Add("format", "json")
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request to the metadata server: %s", err)
-	}
-
-	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading a response from the metadata server: %s", err)
-	}
-	metadata := &instanceMetadata{}
-	if err := json.Unmarshal(body, metadata); err != nil {
-		return nil, fmt.Errorf("error unmarshalling metadata: %s", err)
-	}
-	return metadata, nil
 }

@@ -37,7 +37,7 @@ func NewAzureAuthenticator() (bootstrap.Authenticator, error) {
 }
 
 func (h *azureAuthenticator) CreateToken(body []byte) (string, error) {
-	metadata, err := queryComputeInstanceMetadata()
+	metadata, err := QueryComputeInstanceMetadata()
 	if err != nil {
 		return "", fmt.Errorf("querying instance metadata: %w", err)
 	}
@@ -50,16 +50,17 @@ func (h *azureAuthenticator) CreateToken(body []byte) (string, error) {
 	return AzureAuthenticationTokenPrefix + token, nil
 }
 
-type instanceMetadata struct {
+// InstanceMetadata contains compute instance metadata from the Azure IMDS.
+type InstanceMetadata struct {
 	SubscriptionID    string `json:"subscriptionId"`
 	ResourceGroupName string `json:"resourceGroupName"`
 	ResourceID        string `json:"resourceId"`
 	VMID              string `json:"vmId"`
 }
 
-// queryComputeInstanceMetadata queries Azure Instance Metadata Service (IMDS)
+// QueryComputeInstanceMetadata queries Azure Instance Metadata Service (IMDS)
 // https://learn.microsoft.com/en-us/azure/virtual-machines/instance-metadata-service
-func queryComputeInstanceMetadata() (*instanceMetadata, error) {
+func QueryComputeInstanceMetadata() (*InstanceMetadata, error) {
 	transport := &http.Transport{Proxy: nil}
 
 	client := http.Client{Transport: transport}
@@ -85,7 +86,7 @@ func queryComputeInstanceMetadata() (*instanceMetadata, error) {
 	if err != nil {
 		return nil, fmt.Errorf("reading a response from the metadata server: %w", err)
 	}
-	metadata := &instanceMetadata{}
+	metadata := &InstanceMetadata{}
 	err = json.Unmarshal(body, metadata)
 	if err != nil {
 		return nil, fmt.Errorf("unmarshalling instance metadata: %w", err)
