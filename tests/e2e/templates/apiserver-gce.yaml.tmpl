@@ -39,12 +39,13 @@ spec:
   nodePortAccess:
     - 0.0.0.0/0
   nonMasqueradeCIDR: 100.64.0.0/10
+  project: {{.project}}
   sshAccess:
     - {{.publicIP}}
   subnets:
   - cidr: 10.0.16.0/20
-    name: {{$zone}}
-    region: {{$zone}}
+    name: {{.region}}
+    region: {{.region}}
     type: Public
   topology:
     dns:
@@ -77,7 +78,7 @@ spec:
   role: Node
   rootVolumeSize: 100
   subnets:
-  - {{$zone}}
+  - {{.region}}
   zones:
   - {{$zone}}
 
@@ -97,7 +98,7 @@ spec:
   role: Master
   rootVolumeSize: 48
   subnets:
-  - {{$zone}}
+  - {{.region}}
   zones:
   - {{$zone}}
 
@@ -117,6 +118,6 @@ spec:
   role: APIServer
   rootVolumeSize: 48
   subnets:
-  - {{$zone}}
+  - {{.region}}
   zones:
   - {{$zone}}
