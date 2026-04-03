@@ -38,6 +38,10 @@ type NetworkSecurityGroup struct {
 
 	SecurityRules []*NetworkSecurityRule
 
+	// ApplicationSecurityGroups are the ASGs referenced by security rules.
+	// This field is used for dependency ordering and is not rendered to the cloud.
+	ApplicationSecurityGroups []*ApplicationSecurityGroup
+
 	Tags map[string]*string
 }
 
