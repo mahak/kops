@@ -198,6 +198,7 @@ spec:
       disableMasquerade: true
       enableBPFMasquerade: false
       enableEndpointHealthChecking: true
+      enableHostFirewall: false
       enableL7Proxy: true
       enableLocalRedirectPolicy: false
       enableRemoteNodeIdentity: true
