@@ -112,6 +112,11 @@ func (t *Tester) setSkipRegexFlag() error {
 		// kOps does not yet deploy the full Azure cloud-controller-manager (only cloud-node-manager),
 		// so the service controller for LoadBalancer provisioning is not available.
 		skipRegex += "|should.not.disrupt.a.cloud.load-balancer"
+		// Skipped upstream in azuredisk-csi-driver external E2E:
+		// https://github.com/kubernetes-sigs/azuredisk-csi-driver/blob/master/test/external-e2e/run.sh
+		skipRegex += "|should.resize.volume.when.PVC.is.edited.while.pod.is.using.it"
+		skipRegex += "|should.provision.storage.with.any.volume.data.source"
+		skipRegex += "|should.mount.multiple.PV.pointing.to.the.same.storage.on.the.same.node"
 	}
 
 	if cluster.Spec.LegacyCloudProvider == "gce" {

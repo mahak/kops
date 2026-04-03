@@ -238,8 +238,8 @@ func (d *deployer) createCluster(zones []string, adminAccess string, yes bool) e
 		}
 	case "azure":
 		// Use SKUs for which there is enough quota
-		args = appendIfUnset(args, "--control-plane-size", "Standard_D4s_v3")
-		args = appendIfUnset(args, "--node-size", "Standard_D2s_v3")
+		args = appendIfUnset(args, "--control-plane-size", "Standard_D4als_v7")
+		args = appendIfUnset(args, "--node-size", "Standard_D4als_v7")
 	case "gce":
 		if isArm {
 			args = appendIfUnset(args, "--control-plane-size", "t2a-standard-2")
