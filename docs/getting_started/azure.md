@@ -6,6 +6,7 @@
 
 * Create, update and delete clusters
 * Create, edit and delete instance groups
+* Generate Terraform configuration with `--target=terraform` (experimental, requires `AzureTerraform` feature flag)
 * ...
 
 ## Requirements
@@ -83,7 +84,6 @@ kOps for Azure currently does not support the following features:
 * Azure Disk volumes
 * Azure Load Balancer
 * Autoscaling (using Cluster Autoscaler or Karpenter)
-* Terraform support
 * Multi-master clusters
 * ...
 

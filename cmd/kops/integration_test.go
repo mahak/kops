@@ -323,6 +323,13 @@ func TestMinimal_v1_34(t *testing.T) {
 		runTestTerraformAWS(t)
 }
 
+// TestMinimalAzure runs the test on a minimum Azure configuration.
+func TestMinimalAzure(t *testing.T) {
+	newIntegrationTest("minimal-azure.example.com", "minimal_azure").
+		withVersion("v1alpha3").
+		runTestTerraformAzure(t)
+}
+
 // TestMinimal_NoneDNS runs the test on a minimum configuration with --dns=none
 func TestMinimal_NoneDNS(t *testing.T) {
 	newIntegrationTest("minimal.example.com", "minimal-dns-none").
@@ -1734,6 +1741,111 @@ func (i *integrationTest) runTestTerraformGCE(t *testing.T) {
 	}
 
 	i.runTest(t, ctx, h, expectedFilenames, "", "", nil)
+}
+
+func (i *integrationTest) runTestTerraformAzure(t *testing.T) {
+	t.Setenv("AZURE_STORAGE_ACCOUNT", "teststorage")
+	t.Setenv("KOPS_RUN_TOO_NEW_VERSION", "1")
+
+	featureflag.ParseFlags("+Azure,+AzureTerraform")
+	defer featureflag.ParseFlags("-Azure,-AzureTerraform")
+
+	ctx := testcontext.ForTest(t)
+	h := testutils.NewIntegrationTestHarness(t)
+	defer h.Close()
+
+	h.MockKopsVersion("1.34.0-beta.1")
+	h.SetupMockAzure()
+
+	var stdout bytes.Buffer
+
+	i.srcDir = updateClusterTestBase + i.srcDir
+	inputYAML := "in-" + i.version + ".yaml"
+
+	factory := i.setupCluster(t, ctx, inputYAML, stdout)
+
+	options := &UpdateClusterOptions{}
+	options.InitDefaults()
+	options.Target = "terraform"
+	options.OutDir = path.Join(h.TempDir, "out")
+	options.RunTasksOptions.MaxTaskDuration = 30 * time.Second
+	options.CreateKubecfg = false
+	options.ClusterName = i.clusterName
+
+	updateClusterResults, err := RunUpdateCluster(ctx, factory, &stdout, options)
+	if err != nil {
+		t.Fatalf("error running update cluster %q: %v", i.clusterName, err)
+	}
+
+	for key, task := range updateClusterResults.TaskMap {
+		if _, err := json.Marshal(task); err != nil {
+			t.Errorf("unable to marshal task %q of type %T to json: %v", key, task, err)
+		}
+	}
+
+	files, err := os.ReadDir(path.Join(h.TempDir, "out"))
+	if err != nil {
+		t.Fatalf("failed to read dir: %v", err)
+	}
+
+	var fileNames []string
+	for _, f := range files {
+		fileNames = append(fileNames, f.Name())
+	}
+	sort.Strings(fileNames)
+	if actual, expected := strings.Join(fileNames, ","), "data,kubernetes.tf"; actual != expected {
+		t.Fatalf("unexpected files.  actual=%q, expected=%q, test=%q", actual, expected, "kubernetes.tf")
+	}
+
+	actualTF, err := os.ReadFile(path.Join(h.TempDir, "out", "kubernetes.tf"))
+	if err != nil {
+		t.Fatalf("unexpected error reading actual terraform output: %v", err)
+	}
+	golden.AssertMatchesFile(t, string(actualTF), path.Join(i.srcDir, "kubernetes.tf"))
+
+	actualDataDir := filepath.Join(h.TempDir, "out", "data")
+	actualDataFiles, err := os.ReadDir(actualDataDir)
+	if err != nil {
+		t.Fatalf("failed to read data dir %q: %v", actualDataDir, err)
+	}
+
+	var actualDataFilenames []string
+	for _, f := range actualDataFiles {
+		actualDataFilenames = append(actualDataFilenames, f.Name())
+	}
+	sort.Strings(actualDataFilenames)
+
+	expectedDataDir := filepath.Join(i.srcDir, "data")
+	expectedDataFilenames := actualDataFilenames
+	if !golden.UpdateExpectedOutput() {
+		expectedDataFiles, err := os.ReadDir(expectedDataDir)
+		if err != nil {
+			t.Fatalf("failed to read data dir %q: %v", expectedDataDir, err)
+		}
+		expectedDataFilenames = make([]string, 0, len(expectedDataFiles))
+		for _, f := range expectedDataFiles {
+			expectedDataFilenames = append(expectedDataFilenames, f.Name())
+		}
+		sort.Strings(expectedDataFilenames)
+	}
+
+	for _, filename := range expectedDataFilenames {
+		expectedPath := filepath.Join(expectedDataDir, filename)
+		actualPath := filepath.Join(actualDataDir, filename)
+		actualDataContent, err := os.ReadFile(actualPath)
+		if err != nil {
+			t.Errorf("failed to read actual data file %q: %v", actualPath, err)
+			continue
+		}
+		golden.AssertMatchesFile(t, string(actualDataContent), expectedPath)
+	}
+
+	if !reflect.DeepEqual(actualDataFilenames, expectedDataFilenames) {
+		actual := strings.Join(actualDataFilenames, "\n")
+		expected := strings.Join(expectedDataFilenames, "\n")
+		t.Log(diff.FormatDiff(actual, expected))
+		t.Error("unexpected data files.")
+	}
 }
 
 func (i *integrationTest) runTestTerraformHetzner(t *testing.T) {

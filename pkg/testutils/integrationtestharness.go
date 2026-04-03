@@ -59,6 +59,7 @@ import (
 	"k8s.io/kops/pkg/pki"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/awsup"
+	"k8s.io/kops/upup/pkg/fi/cloudup/azuretasks"
 	"k8s.io/kops/upup/pkg/fi/cloudup/openstack"
 	"k8s.io/kops/util/pkg/vfs"
 )
@@ -131,6 +132,10 @@ func (h *IntegrationTestHarness) Close() {
 	if h.originalPKIDefaultPrivateKeySize != 0 {
 		pki.DefaultPrivateKeySize = h.originalPKIDefaultPrivateKeySize
 	}
+}
+
+func (h *IntegrationTestHarness) SetupMockAzure() *azuretasks.MockAzureCloud {
+	return azuretasks.InstallMockAzureCloud("eastus", "sub-123", "minimal-azure.example.com")
 }
 
 func (h *IntegrationTestHarness) SetupMockAWS() *awsup.MockAWSCloud {

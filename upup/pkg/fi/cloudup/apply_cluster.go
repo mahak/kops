@@ -25,6 +25,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/blang/semver/v4"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog/v2"
@@ -80,6 +81,7 @@ const (
 // TerraformCloudProviders is the list of cloud providers with terraform target support
 var TerraformCloudProviders = []kops.CloudProviderID{
 	kops.CloudProviderAWS,
+	kops.CloudProviderAzure,
 	kops.CloudProviderGCE,
 	kops.CloudProviderHetzner,
 	kops.CloudProviderScaleway,
@@ -160,8 +162,11 @@ func (c *ApplyClusterCmd) Run(ctx context.Context) (*ApplyResults, error) {
 		if !found {
 			return nil, fmt.Errorf("cloud provider %v does not support the terraform target", c.Cloud.ProviderID())
 		}
+		if c.Cloud.ProviderID() == kops.CloudProviderAzure && !featureflag.AzureTerraform.Enabled() {
+			return nil, fmt.Errorf("cloud provider Azure requires the AzureTerraform feature flag to enable the terraform target")
+		}
 		if c.Cloud.ProviderID() == kops.CloudProviderDO && !featureflag.DOTerraform.Enabled() {
-			return nil, fmt.Errorf("DO Terraform requires the DOTerraform feature flag to be enabled")
+			return nil, fmt.Errorf("cloud provider DigitalOcean requires the DOTerraform feature flag to enable the terraform target")
 		}
 	}
 	if c.InstanceGroups == nil {
@@ -744,6 +749,22 @@ func (c *ApplyClusterCmd) Run(ctx context.Context) (*ApplyResults, error) {
 	case TargetTerraform:
 		outDir := c.OutDir
 		tf := terraform.NewTerraformTarget(cloud, project, outDir, cluster.Spec.Target)
+
+		// Register an azurerm provider alias for state storage blobs.
+		// If the storage account is in a different subscription, pass subscription_id.
+		if azureSpec := cluster.Spec.CloudProvider.Azure; azureSpec != nil {
+			args := map[string]string{}
+			if azureSpec.StorageAccountID != "" {
+				storageAccountID, err := arm.ParseResourceID(azureSpec.StorageAccountID)
+				if err != nil {
+					return nil, fmt.Errorf("parsing StorageAccountID: %w", err)
+				}
+				if storageAccountID.SubscriptionID != azureSpec.SubscriptionID {
+					args["subscription_id"] = storageAccountID.SubscriptionID
+				}
+			}
+			tf.EnsureTerraformProvider("azurerm", args)
+		}
 
 		// We include a few "util" variables in the TF output
 		if err := tf.AddOutputVariable("region", terraformWriter.LiteralFromStringValue(cloud.Region())); err != nil {

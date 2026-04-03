@@ -39,6 +39,7 @@ type Subnet struct {
 	VirtualNetwork       *VirtualNetwork
 	NatGateway           *NatGateway
 	NetworkSecurityGroup *NetworkSecurityGroup
+	RouteTable           *RouteTable
 
 	CIDR   *string
 	Shared *bool
@@ -114,6 +115,11 @@ func (s *Subnet) Find(c *fi.CloudupContext) (*Subnet, error) {
 			ID: found.Properties.NetworkSecurityGroup.ID,
 		}
 	}
+	if found.Properties.RouteTable != nil {
+		fs.RouteTable = &RouteTable{
+			ID: found.Properties.RouteTable.ID,
+		}
+	}
 
 	return fs, nil
 }
@@ -161,6 +167,11 @@ func (*Subnet) RenderAzure(t *azure.AzureAPITarget, a, e, changes *Subnet) error
 	if e.NetworkSecurityGroup != nil {
 		subnet.Properties.NetworkSecurityGroup = &network.SecurityGroup{
 			ID: e.NetworkSecurityGroup.ID,
+		}
+	}
+	if e.RouteTable != nil {
+		subnet.Properties.RouteTable = &network.RouteTable{
+			ID: e.RouteTable.ID,
 		}
 	}
 
