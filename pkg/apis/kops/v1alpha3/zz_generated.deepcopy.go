@@ -4423,6 +4423,16 @@ func (in *KubeletConfigSpec) DeepCopyInto(out *KubeletConfigSpec) {
 		*out = new(int32)
 		**out = **in
 	}
+	if in.EventRecordQPS != nil {
+		in, out := &in.EventRecordQPS, &out.EventRecordQPS
+		*out = new(int32)
+		**out = **in
+	}
+	if in.NodeLeaseDurationSeconds != nil {
+		in, out := &in.NodeLeaseDurationSeconds, &out.NodeLeaseDurationSeconds
+		*out = new(int32)
+		**out = **in
+	}
 	return
 }
 

@@ -5875,6 +5875,8 @@ func autoConvert_v1alpha2_KubeletConfigSpec_To_kops_KubeletConfigSpec(in *Kubele
 	out.MemorySwapBehavior = in.MemorySwapBehavior
 	out.CrashLoopBackOffMaxContainerRestartPeriod = in.CrashLoopBackOffMaxContainerRestartPeriod
 	out.KubeAPIQPS = in.KubeAPIQPS
+	out.EventRecordQPS = in.EventRecordQPS
+	out.NodeLeaseDurationSeconds = in.NodeLeaseDurationSeconds
 	return nil
 }
 
@@ -5982,6 +5984,8 @@ func autoConvert_kops_KubeletConfigSpec_To_v1alpha2_KubeletConfigSpec(in *kops.K
 	out.MemorySwapBehavior = in.MemorySwapBehavior
 	out.CrashLoopBackOffMaxContainerRestartPeriod = in.CrashLoopBackOffMaxContainerRestartPeriod
 	out.KubeAPIQPS = in.KubeAPIQPS
+	out.EventRecordQPS = in.EventRecordQPS
+	out.NodeLeaseDurationSeconds = in.NodeLeaseDurationSeconds
 	return nil
 }
 
