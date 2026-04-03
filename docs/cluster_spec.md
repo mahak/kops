@@ -867,11 +867,11 @@ This block contains configurations for `kube-scheduler`.  See https://kubernetes
 ```yaml
 spec:
   kubeScheduler:
-    usePolicyConfigMap: true
     enableProfiling: false
 ```
 
-Will make kube-scheduler use the scheduler policy from configmap "scheduler-policy" in namespace kube-system.
+For advanced scheduler configuration (e.g. custom profiles and plugins), see
+[addon_objects.md](addon_objects.md#kubeschedulerconfiguration-group-kubeschedulerconfigk8sio).
 
 ### LogFormat
 
