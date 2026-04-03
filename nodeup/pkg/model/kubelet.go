@@ -260,6 +260,10 @@ func buildKubeletComponentConfig(kubeletConfig *kops.KubeletConfigSpec, provider
 	}
 	componentConfig.MaxParallelImagePulls = kubeletConfig.MaxParallelImagePulls
 	componentConfig.MemorySwap.SwapBehavior = kubeletConfig.MemorySwapBehavior
+	componentConfig.EventRecordQPS = kubeletConfig.EventRecordQPS
+	if kubeletConfig.NodeLeaseDurationSeconds != nil {
+		componentConfig.NodeLeaseDurationSeconds = *kubeletConfig.NodeLeaseDurationSeconds
+	}
 
 	s := runtime.NewScheme()
 	if err := kubelet.AddToScheme(s); err != nil {
