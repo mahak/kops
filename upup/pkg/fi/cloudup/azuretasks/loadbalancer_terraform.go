@@ -89,10 +89,7 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 		Name: fi.PtrTo(terraformAzureLoadBalancerFrontendName),
 	}
 	if fi.ValueOf(e.External) {
-		frontend.PublicIPAddressID = (&PublicIPAddress{
-			Name:          e.Name,
-			ResourceGroup: e.ResourceGroup,
-		}).terraformID()
+		frontend.PublicIPAddressID = e.PublicIPAddress.terraformID()
 	} else {
 		allocationMethod := "Dynamic"
 		frontend.PrivateIPAllocationMethod = &allocationMethod
