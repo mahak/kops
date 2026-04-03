@@ -107,6 +107,7 @@ kops create cluster [CLUSTER] [flags]
       --node-size strings                       Machine type(s) for worker nodes
       --node-tenancy string                     Tenancy of the node group (AWS only): default or dedicated
       --node-volume-size int32                  Instance volume size (in GB) for worker nodes
+      --node-volume-type string                 Instance volume type (e.g. gp2, gp3, io1) for worker nodes
       --os-dns-servers string                   comma separated list of DNS Servers which is used in network
       --os-ext-net string                       External network to use with the openstack router
       --os-ext-subnet string                    External floating subnet to use with the openstack router
