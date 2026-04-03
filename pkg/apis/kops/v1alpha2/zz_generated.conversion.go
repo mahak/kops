@@ -2083,6 +2083,7 @@ func autoConvert_v1alpha2_CiliumNetworkingSpec_To_kops_CiliumNetworkingSpec(in *
 	out.EnableLocalRedirectPolicy = in.EnableLocalRedirectPolicy
 	out.EnableBPFMasquerade = in.EnableBPFMasquerade
 	out.EnableEndpointHealthChecking = in.EnableEndpointHealthChecking
+	out.EnableHostFirewall = in.EnableHostFirewall
 	// INFO: in.EnableTracing opted out of conversion generation
 	out.EnablePrometheusMetrics = in.EnablePrometheusMetrics
 	out.EnableEncryption = in.EnableEncryption
@@ -2205,6 +2206,7 @@ func autoConvert_kops_CiliumNetworkingSpec_To_v1alpha2_CiliumNetworkingSpec(in *
 	out.EnableLocalRedirectPolicy = in.EnableLocalRedirectPolicy
 	out.EnableBPFMasquerade = in.EnableBPFMasquerade
 	out.EnableEndpointHealthChecking = in.EnableEndpointHealthChecking
+	out.EnableHostFirewall = in.EnableHostFirewall
 	out.EnablePrometheusMetrics = in.EnablePrometheusMetrics
 	out.EnableEncryption = in.EnableEncryption
 	out.EncryptionType = CiliumEncryptionType(in.EncryptionType)

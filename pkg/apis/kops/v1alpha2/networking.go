@@ -395,6 +395,9 @@ type CiliumNetworkingSpec struct {
 	// EnableEndpointHealthChecking enables connectivity health checking between virtual endpoints.
 	// Default: true
 	EnableEndpointHealthChecking *bool `json:"enableEndpointHealthChecking,omitempty"`
+	// EnableHostFirewall enables the host firewall in the Cilium agent.
+	// Default: false
+	EnableHostFirewall *bool `json:"enableHostFirewall,omitempty"`
 	// EnableTracing is unused.
 	// +k8s:conversion-gen=false
 	EnableTracing bool `json:"enableTracing,omitempty"`

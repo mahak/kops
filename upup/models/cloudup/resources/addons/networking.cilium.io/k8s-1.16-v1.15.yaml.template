@@ -364,6 +364,7 @@ data:
   cni-log-file: "/var/run/cilium/cilium-cni.log"
   # Disable health checking, when chaining mode is not set to portmap or none
   enable-endpoint-health-checking: "{{ .EnableEndpointHealthChecking }}"
+  enable-host-firewall: "{{ .EnableHostFirewall }}"
   enable-health-checking: "true"
   health-check-icmp-failure-threshold: "3"
   enable-well-known-identities: "false"

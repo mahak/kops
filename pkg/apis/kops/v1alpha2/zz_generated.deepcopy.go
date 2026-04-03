@@ -649,6 +649,11 @@ func (in *CiliumNetworkingSpec) DeepCopyInto(out *CiliumNetworkingSpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.EnableHostFirewall != nil {
+		in, out := &in.EnableHostFirewall, &out.EnableHostFirewall
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Labels != nil {
 		in, out := &in.Labels, &out.Labels
 		*out = make([]string, len(*in))

@@ -47,6 +47,10 @@ func (b *CiliumOptionsBuilder) BuildOptions(o *kops.Cluster) error {
 		c.EnableEndpointHealthChecking = fi.PtrTo(true)
 	}
 
+	if c.EnableHostFirewall == nil {
+		c.EnableHostFirewall = fi.PtrTo(false)
+	}
+
 	if c.IdentityAllocationMode == "" {
 		c.IdentityAllocationMode = "crd"
 	}
