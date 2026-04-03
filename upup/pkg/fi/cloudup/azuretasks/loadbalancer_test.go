@@ -44,7 +44,10 @@ func newTestLoadBalancer() *LoadBalancer {
 				Name: to.Ptr("vnet"),
 			},
 		},
-		External:          to.Ptr(true),
+		External: to.Ptr(true),
+		PublicIPAddress: &PublicIPAddress{
+			ID: to.Ptr("/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/loadbalancer"),
+		},
 		WellKnownServices: []wellknownservices.WellKnownService{wellknownservices.KubeAPIServer},
 		Tags: map[string]*string{
 			testTagKey: to.Ptr(testTagValue),

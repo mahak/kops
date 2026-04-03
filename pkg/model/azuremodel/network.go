@@ -51,7 +51,11 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 		Name:          fi.PtrTo(b.NameForVirtualNetwork()),
 		Lifecycle:     b.Lifecycle,
 		ResourceGroup: b.LinkToResourceGroup(),
-		Tags:          map[string]*string{},
+		ApplicationSecurityGroups: []*azuretasks.ApplicationSecurityGroup{
+			b.LinkToApplicationSecurityGroupControlPlane(),
+			b.LinkToApplicationSecurityGroupNodes(),
+		},
+		Tags: map[string]*string{},
 	}
 	sshAccessIPv4 := ipv4CIDRs(b.Cluster.Spec.SSHAccess)
 	if len(sshAccessIPv4) > 0 {

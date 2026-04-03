@@ -76,6 +76,7 @@ func (b *APILoadBalancerModelBuilder) Build(c *fi.CloudupModelBuilderContext) er
 			Tags:          map[string]*string{},
 		}
 		c.AddTask(p)
+		lb.PublicIPAddress = p
 	default:
 		return fmt.Errorf("unknown load balancer Type: %q", lbSpec.Type)
 	}

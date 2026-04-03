@@ -42,6 +42,9 @@ type LoadBalancer struct {
 	// External is set to true when the loadbalancer is used for external traffic
 	External *bool
 
+	// PublicIPAddress is the public IP address for external load balancers.
+	PublicIPAddress *PublicIPAddress
+
 	Tags map[string]*string
 
 	// WellKnownServices indicates which services are supported by this resource.
@@ -135,6 +138,11 @@ func (lb *LoadBalancer) Find(c *fi.CloudupContext) (*LoadBalancer, error) {
 			Name: subnet.Name,
 		}
 	}
+	if feConfig.Properties.PublicIPAddress != nil {
+		actual.PublicIPAddress = &PublicIPAddress{
+			ID: feConfig.Properties.PublicIPAddress.ID,
+		}
+	}
 
 	return actual, nil
 }
@@ -178,7 +186,7 @@ func (*LoadBalancer) RenderAzure(t *azure.AzureAPITarget, a, e, changes *LoadBal
 	feConfigProperties := &network.FrontendIPConfigurationPropertiesFormat{}
 	if *e.External {
 		feConfigProperties.PublicIPAddress = &network.PublicIPAddress{
-			ID: to.Ptr(fmt.Sprintf("/%s/publicIPAddresses/%s", idPrefix, *e.Name)),
+			ID: e.PublicIPAddress.ID,
 		}
 	} else {
 		feConfigProperties.PrivateIPAllocationMethod = to.Ptr(network.IPAllocationMethodDynamic)
