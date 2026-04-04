@@ -103,7 +103,7 @@ func (b *APILoadBalancerBuilder) addFirewallRules(c *fi.CloudupModelBuilderConte
 			Lifecycle:    b.Lifecycle,
 			Network:      network,
 			SourceRanges: b.Cluster.Spec.API.Access,
-			TargetTags:   []string{b.GCETagForRole(kops.InstanceGroupRoleControlPlane)},
+			TargetTags:   b.GCETagsForAPIServerTargets(),
 			Allowed:      []string{"tcp:" + strconv.Itoa(wellknownports.KubeAPIServer)},
 		})
 
@@ -114,7 +114,7 @@ func (b *APILoadBalancerBuilder) addFirewallRules(c *fi.CloudupModelBuilderConte
 				Network:      network,
 				Family:       gcetasks.AddressFamilyIPv4, // ip alias is always ipv4
 				SourceRanges: []string{b.Cluster.Spec.Networking.PodCIDR},
-				TargetTags:   []string{b.GCETagForRole(kops.InstanceGroupRoleControlPlane)},
+				TargetTags:   b.GCETagsForAPIServerTargets(),
 				Allowed:      []string{"tcp:" + strconv.Itoa(wellknownports.KubeAPIServer)},
 			})
 		}
