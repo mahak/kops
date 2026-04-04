@@ -222,7 +222,7 @@ resource "google_compute_firewall" "https-api-ipv6-minimal-gce-plb-apiserver-exa
   name          = "https-api-ipv6-minimal-gce-plb-apiserver-example-com"
   network       = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_ranges = ["::/0"]
-  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane"]
+  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver"]
 }
 
 resource "google_compute_firewall" "https-api-minimal-gce-plb-apiserver-example-com" {
@@ -234,7 +234,7 @@ resource "google_compute_firewall" "https-api-minimal-gce-plb-apiserver-example-
   name          = "https-api-minimal-gce-plb-apiserver-example-com"
   network       = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane"]
+  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver"]
 }
 
 resource "google_compute_firewall" "lb-health-checks-minimal-gce-plb-apiserver-example-com" {
@@ -245,7 +245,7 @@ resource "google_compute_firewall" "lb-health-checks-minimal-gce-plb-apiserver-e
   name          = "lb-health-checks-minimal-gce-plb-apiserver-example-com"
   network       = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22", "209.85.204.0/22", "209.85.152.0/22"]
-  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane"]
+  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver"]
 }
 
 resource "google_compute_firewall" "master-to-master-minimal-gce-plb-apiserver-example-com" {
@@ -270,8 +270,8 @@ resource "google_compute_firewall" "master-to-master-minimal-gce-plb-apiserver-e
   disabled    = false
   name        = "master-to-master-minimal-gce-plb-apiserver-example-com"
   network     = google_compute_network.minimal-gce-plb-apiserver-example-com.name
-  source_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
-  target_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  source_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  target_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
 }
 
 resource "google_compute_firewall" "master-to-node-minimal-gce-plb-apiserver-example-com" {
@@ -296,7 +296,7 @@ resource "google_compute_firewall" "master-to-node-minimal-gce-plb-apiserver-exa
   disabled    = false
   name        = "master-to-node-minimal-gce-plb-apiserver-example-com"
   network     = google_compute_network.minimal-gce-plb-apiserver-example-com.name
-  source_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  source_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
   target_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-node"]
 }
 
@@ -317,7 +317,7 @@ resource "google_compute_firewall" "node-to-master-minimal-gce-plb-apiserver-exa
   name        = "node-to-master-minimal-gce-plb-apiserver-example-com"
   network     = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-node"]
-  target_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  target_tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
 }
 
 resource "google_compute_firewall" "node-to-node-minimal-gce-plb-apiserver-example-com" {
@@ -387,7 +387,7 @@ resource "google_compute_firewall" "ssh-external-to-master-ipv6-minimal-gce-plb-
   name          = "ssh-external-to-master-ipv6-minimal-gce-plb-apiserver-ex-eie140"
   network       = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_ranges = ["::/0"]
-  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
 }
 
 resource "google_compute_firewall" "ssh-external-to-master-minimal-gce-plb-apiserver-example-com" {
@@ -399,7 +399,7 @@ resource "google_compute_firewall" "ssh-external-to-master-minimal-gce-plb-apise
   name          = "ssh-external-to-master-minimal-gce-plb-apiserver-example-com"
   network       = google_compute_network.minimal-gce-plb-apiserver-example-com.name
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
+  target_tags   = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane", "minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver", "minimal-gce-plb-apiserver-example-com-k8s-io-role-master"]
 }
 
 resource "google_compute_firewall" "ssh-external-to-node-ipv6-minimal-gce-plb-apiserver-example-com" {
@@ -582,7 +582,7 @@ resource "google_compute_instance_template" "apiserver-us-test1-a-minimal-gce-pl
     email  = "default"
     scopes = ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/monitoring", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/devstorage.read_only", "https://www.googleapis.com/auth/ndev.clouddns.readwrite"]
   }
-  tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-control-plane"]
+  tags = ["minimal-gce-plb-apiserver-example-com-k8s-io-role-apiserver"]
 }
 
 resource "google_compute_instance_template" "master-us-test1-a-minimal-gce-plb-apiserver-example-com" {

@@ -216,7 +216,7 @@ func (b *AutoscalingGroupModelBuilder) buildInstanceTemplate(c *fi.CloudupModelB
 
 		case kops.InstanceGroupRoleAPIServer:
 			t.Scopes = append(t.Scopes, "https://www.googleapis.com/auth/ndev.clouddns.readwrite")
-			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleControlPlane))
+			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleAPIServer))
 
 		case kops.InstanceGroupRoleNode:
 			t.Tags = append(t.Tags, b.GCETagForRole(kops.InstanceGroupRoleNode))
