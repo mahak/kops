@@ -512,6 +512,7 @@ func createMinimalInstanceGroup() *kops.InstanceGroup {
 }
 
 func TestCrossValidateAPIServerRole(t *testing.T) {
+	noneDNSTopology := &kops.TopologySpec{DNS: kops.DNSTypeNone}
 	grid := []struct {
 		Description    string
 		Cluster        *kops.Cluster
@@ -538,6 +539,30 @@ func TestCrossValidateAPIServerRole(t *testing.T) {
 				},
 			},
 			ExpectedErrors: 0,
+		},
+		{
+			Description: "APIServer role allowed on GCE with dns=None",
+			Cluster: &kops.Cluster{
+				Spec: kops.ClusterSpec{
+					CloudProvider: kops.CloudProviderSpec{
+						GCE: &kops.GCESpec{},
+					},
+					Networking: kops.NetworkingSpec{Topology: noneDNSTopology},
+				},
+			},
+			ExpectedErrors: 0,
+		},
+		{
+			Description: "APIServer role forbidden on AWS with dns=None",
+			Cluster: &kops.Cluster{
+				Spec: kops.ClusterSpec{
+					CloudProvider: kops.CloudProviderSpec{
+						AWS: &kops.AWSSpec{},
+					},
+					Networking: kops.NetworkingSpec{Topology: noneDNSTopology},
+				},
+			},
+			ExpectedErrors: 1,
 		},
 		{
 			Description: "APIServer role forbidden on DO",
