@@ -23,6 +23,7 @@ import (
 	"k8s.io/kops/upup/pkg/fi/cloudup/do"
 	gcetpm "k8s.io/kops/upup/pkg/fi/cloudup/gce/tpm"
 	"k8s.io/kops/upup/pkg/fi/cloudup/hetzner"
+	"k8s.io/kops/upup/pkg/fi/cloudup/linode"
 	"k8s.io/kops/upup/pkg/fi/cloudup/openstack"
 	"k8s.io/kops/upup/pkg/fi/cloudup/scaleway"
 )
@@ -92,6 +93,7 @@ type ServerProviderOptions struct {
 	DigitalOcean *do.DigitalOceanVerifierOptions     `json:"do,omitempty"`
 	Scaleway     *scaleway.ScalewayVerifierOptions   `json:"scaleway,omitempty"`
 	Azure        *azure.AzureVerifierOptions         `json:"azure,omitempty"`
+	Linode       *linode.LinodeVerifierOptions       `json:"linode,omitempty"`
 }
 
 // DiscoveryOptions configures our support for discovery, particularly gossip DNS (i.e. k8s.local)
