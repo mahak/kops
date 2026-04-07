@@ -155,7 +155,12 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 		Lifecycle: b.Lifecycle,
 	}
 	c.AddTask(hc)
-	var igms []*gcetasks.InstanceGroupManager
+
+	// Collect ControlPlane and APIServer MIGs separately. The API backend service
+	// includes both (both serve the kube-apiserver), while the kops-controller and
+	// etcd backend services only include ControlPlane MIGs.
+	var apiIGMs []*gcetasks.InstanceGroupManager
+	var controlPlaneIGMs []*gcetasks.InstanceGroupManager
 	for _, ig := range b.InstanceGroups {
 		if !ig.HasAPIServer() {
 			continue
@@ -167,7 +172,11 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 			return fmt.Errorf("instance group %q must specify exactly one zone", ig.GetName())
 		}
 		zone := ig.Spec.Zones[0]
-		igms = append(igms, &gcetasks.InstanceGroupManager{Name: s(gce.NameForInstanceGroupManager(b.Cluster.ObjectMeta.Name, ig.ObjectMeta.Name, zone)), Zone: s(zone)})
+		igm := &gcetasks.InstanceGroupManager{Name: s(gce.NameForInstanceGroupManager(b.Cluster.ObjectMeta.Name, ig.ObjectMeta.Name, zone)), Zone: s(zone)}
+		apiIGMs = append(apiIGMs, igm)
+		if ig.IsControlPlane() {
+			controlPlaneIGMs = append(controlPlaneIGMs, igm)
+		}
 	}
 	bs := &gcetasks.BackendService{
 		Name:                  s(b.NameForBackendService("api")),
@@ -175,9 +184,32 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 		HealthChecks:          []*gcetasks.HealthCheck{hc},
 		Lifecycle:             b.Lifecycle,
 		LoadBalancingScheme:   s("INTERNAL"),
-		InstanceGroupManagers: igms,
+		InstanceGroupManagers: apiIGMs,
 	}
 	c.AddTask(bs)
+
+	// controlPlaneBS is a backend service that only targets ControlPlane MIGs.
+	// It is used for kops-controller and etcd forwarding rules, which only run
+	// on ControlPlane nodes. When there are no dedicated APIServer IGs, this is
+	// the same set of backends as the API backend service.
+	controlPlaneBS := bs
+	if b.HasAPIServerOnlyInstanceGroups() {
+		controlPlaneHC := &gcetasks.HealthCheck{
+			Name:      s(b.NameForHealthCheck("kops-controller")),
+			Port:      wellknownports.KopsControllerPort,
+			Lifecycle: b.Lifecycle,
+		}
+		c.AddTask(controlPlaneHC)
+		controlPlaneBS = &gcetasks.BackendService{
+			Name:                  s(b.NameForBackendService("kops-controller")),
+			Protocol:              s("TCP"),
+			HealthChecks:          []*gcetasks.HealthCheck{controlPlaneHC},
+			Lifecycle:             b.Lifecycle,
+			LoadBalancingScheme:   s("INTERNAL"),
+			InstanceGroupManagers: controlPlaneIGMs,
+		}
+		c.AddTask(controlPlaneBS)
+	}
 
 	network, err := b.LinkToNetwork()
 	if err != nil {
@@ -228,7 +260,7 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 			fr := &gcetasks.ForwardingRule{
 				Name:                s(b.NameForForwardingRule("kops-controller-" + sn.Name)),
 				Lifecycle:           b.Lifecycle,
-				BackendService:      bs,
+				BackendService:      controlPlaneBS,
 				Ports:               []string{strconv.Itoa(wellknownports.KopsControllerPort)},
 				IPAddress:           ipAddress,
 				IPProtocol:          "TCP",
@@ -250,7 +282,7 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 			c.AddTask(&gcetasks.ForwardingRule{
 				Name:                s(b.NameForForwardingRule("cilium-etcd-" + sn.Name)),
 				Lifecycle:           b.Lifecycle,
-				BackendService:      bs,
+				BackendService:      controlPlaneBS,
 				Ports:               []string{strconv.Itoa(wellknownports.EtcdCiliumClientPort)},
 				IPAddress:           ipAddress,
 				IPProtocol:          "TCP",
