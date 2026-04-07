@@ -709,10 +709,28 @@ resource "google_compute_region_backend_service" "api-minimal-gce-plb-apiserver-
   protocol              = "TCP"
 }
 
+resource "google_compute_region_backend_service" "kops-controller-minimal-gce-plb-apiserver-example-com" {
+  backend {
+    balancing_mode = "CONNECTION"
+    group          = google_compute_instance_group_manager.a-master-us-test1-a-minimal-gce-plb-apiserver-example-com.instance_group
+  }
+  health_checks         = [google_compute_region_health_check.kops-controller-minimal-gce-plb-apiserver-example-com.id]
+  load_balancing_scheme = "INTERNAL"
+  name                  = "kops-controller-minimal-gce-plb-apiserver-example-com"
+  protocol              = "TCP"
+}
+
 resource "google_compute_region_health_check" "api-minimal-gce-plb-apiserver-example-com" {
   name = "api-minimal-gce-plb-apiserver-example-com"
   tcp_health_check {
     port = 443
+  }
+}
+
+resource "google_compute_region_health_check" "kops-controller-minimal-gce-plb-apiserver-example-com" {
+  name = "kops-controller-minimal-gce-plb-apiserver-example-com"
+  tcp_health_check {
+    port = 3988
   }
 }
 
