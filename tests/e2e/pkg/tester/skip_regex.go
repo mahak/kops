@@ -103,6 +103,10 @@ func (t *Tester) setSkipRegexFlag() error {
 	}
 
 	if cluster.Spec.LegacyCloudProvider == "azure" {
+		// Azure Disk CSI fsgroupchangepolicy tests are flaky due to SCSI device discovery
+		// latency during rapid attach/detach cycles on VMSS nodes.
+		// See https://github.com/kubernetes/kops/issues/17146
+		skipRegex += "|fsgroupchangepolicy"
 		// The Azure File CSI driver is not yet deployed by kOps, so all in-tree azure-file tests fail
 		// because CSI migration expects file.csi.azure.com to be present.
 		skipRegex += "|In-tree.Volumes.\\[Driver:.azure-file\\]"

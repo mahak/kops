@@ -19,6 +19,8 @@ controller:
   runOnControlPlane: true
   hostNetwork: true
   logLevel: 5
+  disableAvailabilitySetNodes: true
+  vmssCacheTTLInSeconds: 60
 
 linux:
   enabled: true
