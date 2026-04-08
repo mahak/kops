@@ -642,14 +642,12 @@ spec:
         - --user-agent-suffix=kops
         - --allow-empty-cloud-config=true
         - --support-zone=true
-        - --get-node-info-from-labels=false
+        - --get-node-info-from-labels=true
         - --get-nodeid-from-imds=false
         - --enable-otel-tracing=false
         - --metrics-address=0.0.0.0:29605
         - --remove-not-ready-taint=true
         env:
-        - name: AZURE_CREDENTIAL_FILE
-          value: /etc/kubernetes/cloud.config
         - name: CSI_ENDPOINT
           value: unix:///csi/csi.sock
         - name: KUBE_NODE_NAME

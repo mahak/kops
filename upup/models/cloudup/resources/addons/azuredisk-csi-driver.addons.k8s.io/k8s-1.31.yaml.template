@@ -1,5 +1,5 @@
 # Generated from azuredisk-csi-driver Helm chart v1.34.0 with helm-values.yaml
-# kops-specific patches: AZURE_CREDENTIAL_FILE, readOnly mount
+# kops-specific patches: controller AZURE_CREDENTIAL_FILE, readOnly mount, remove node AZURE_CREDENTIAL_FILE
 ---
 # Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-controller.yaml
 apiVersion: v1
@@ -416,7 +416,7 @@ spec:
             - "--user-agent-suffix=kops"
             - "--allow-empty-cloud-config=true"
             - "--support-zone=true"
-            - "--get-node-info-from-labels=false"
+            - "--get-node-info-from-labels=true"
             - "--get-nodeid-from-imds=false"
             - "--enable-otel-tracing=false"
             - "--metrics-address=0.0.0.0:29605"
@@ -437,8 +437,6 @@ spec:
             timeoutSeconds: 30
             periodSeconds: 30
           env:
-            - name: AZURE_CREDENTIAL_FILE
-              value: /etc/kubernetes/cloud.config
             - name: CSI_ENDPOINT
               value: unix:///csi/csi.sock
             - name: KUBE_NODE_NAME
