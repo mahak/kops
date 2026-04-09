@@ -155,6 +155,12 @@ func (b *KubeAPIServerOptionsBuilder) BuildOptions(cluster *kops.Cluster) error 
 				scheme = "http"
 			}
 			c.EtcdServersOverrides = append(c.EtcdServersOverrides, fmt.Sprintf("/events#%s://127.0.0.1:%d", scheme, wellknownports.EtcdEventsClientPort))
+		case "leases":
+			scheme := "https"
+			if featureflag.EtcdEventsHTTP.Enabled() {
+				scheme = "http"
+			}
+			c.EtcdServersOverrides = append(c.EtcdServersOverrides, fmt.Sprintf("coordination.k8s.io/leases#%s://127.0.0.1:%d", scheme, wellknownports.EtcdLeasesClientPort))
 		}
 	}
 
