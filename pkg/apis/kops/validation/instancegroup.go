@@ -287,7 +287,6 @@ func CrossValidateInstanceGroup(g *kops.InstanceGroup, cluster *kops.Cluster, cl
 			allErrs = append(allErrs, field.Invalid(field.NewPath("spec", "warmPool", "minSize"), warmPool.MinSize, "warm pool minSize cannot be negative"))
 		}
 	}
-	//TODO: Add RootVolume validation for other cloud providers ex. GCE
 
 	if g.Spec.Containerd != nil {
 		allErrs = append(allErrs, validateContainerdConfig(cluster, g.Spec.Containerd, field.NewPath("spec", "containerd"), false)...)
@@ -311,10 +310,6 @@ func ValidateControlPlaneInstanceGroup(g *kops.InstanceGroup, cluster *kops.Clus
 		}
 	}
 	return allErrs
-}
-
-func validateRootVolumeType(g *kops.InstanceGroup) {
-
 }
 
 var validUserDataTypes = []string{
