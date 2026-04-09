@@ -197,7 +197,6 @@ func (b *APILoadBalancerBuilder) createInternalLB(c *fi.CloudupModelBuilderConte
 		controlPlaneHC := &gcetasks.HealthCheck{
 			Name:      s(b.NameForHealthCheck("kops-controller")),
 			Port:      wellknownports.KopsControllerPort,
-			Protocol:  gcetasks.HealthCheckProtocolSSL,
 			Lifecycle: b.Lifecycle,
 		}
 		c.AddTask(controlPlaneHC)

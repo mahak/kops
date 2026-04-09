@@ -729,7 +729,7 @@ resource "google_compute_region_health_check" "api-minimal-gce-plb-apiserver-exa
 
 resource "google_compute_region_health_check" "kops-controller-minimal-gce-plb-apiserver-example-com" {
   name = "kops-controller-minimal-gce-plb-apiserver-example-com"
-  ssl_health_check {
+  tcp_health_check {
     port = 3988
   }
 }
