@@ -953,7 +953,7 @@ func (b *ConfigBuilder) GetBootstrapData(ctx context.Context) (*BootstrapData, e
 		bootstrapData.NodeupScriptAdditionalFiles[p] = nodeupConfigBytes
 
 		// Copy any static manifests we need on the control plane
-		for _, staticManifest := range assetBuilder.StaticManifests {
+		for _, staticManifest := range assetBuilder.StaticManifests() {
 			if !staticManifest.AppliesToRole(bootConfig.InstanceGroupRole) {
 				continue
 			}

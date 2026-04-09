@@ -62,7 +62,7 @@ func (b *KubeApiserverBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 		Name:      fi.PtrTo("manifests-static-" + key),
 	})
 
-	b.AssetBuilder.StaticManifests = append(b.AssetBuilder.StaticManifests, &assets.StaticManifest{
+	b.AssetBuilder.AddStaticManifest(&assets.StaticManifest{
 		Key:      key,
 		Path:     location,
 		Contents: manifestYAML,

@@ -290,16 +290,18 @@ func (t *DryRunTarget[T]) PrintReport(taskMap map[string]Task[T], out io.Writer)
 		}
 	}
 
-	if len(t.assetBuilder.ImageAssets) != 0 {
+	imageAssets := t.assetBuilder.ImageAssets()
+	if len(imageAssets) != 0 {
 		klog.V(4).Infof("ImageAssets:")
-		for _, a := range t.assetBuilder.ImageAssets {
+		for _, a := range imageAssets {
 			klog.V(4).Infof("  %s %s", a.DownloadLocation, a.CanonicalLocation)
 		}
 	}
 
-	if len(t.assetBuilder.FileAssets) != 0 {
+	fileAssets := t.assetBuilder.FileAssets()
+	if len(fileAssets) != 0 {
 		klog.V(4).Infof("FileAssets:")
-		for _, a := range t.assetBuilder.FileAssets {
+		for _, a := range fileAssets {
 			if a.DownloadURL != nil {
 				klog.V(4).Infof("  %s %s", a.DownloadURL.String(), a.CanonicalURL.String())
 			}
