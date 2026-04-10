@@ -46,6 +46,7 @@ import (
 	nodeidentitydo "k8s.io/kops/pkg/nodeidentity/do"
 	nodeidentitygce "k8s.io/kops/pkg/nodeidentity/gce"
 	nodeidentityhetzner "k8s.io/kops/pkg/nodeidentity/hetzner"
+	nodeidentitylinode "k8s.io/kops/pkg/nodeidentity/linode"
 	nodeidentitymetal "k8s.io/kops/pkg/nodeidentity/metal"
 	nodeidentityos "k8s.io/kops/pkg/nodeidentity/openstack"
 	nodeidentityscw "k8s.io/kops/pkg/nodeidentity/scaleway"
@@ -54,6 +55,7 @@ import (
 	"k8s.io/kops/upup/pkg/fi/cloudup/do"
 	"k8s.io/kops/upup/pkg/fi/cloudup/gce/tpm/gcetpmverifier"
 	"k8s.io/kops/upup/pkg/fi/cloudup/hetzner"
+	linodecloudup "k8s.io/kops/upup/pkg/fi/cloudup/linode"
 	"k8s.io/kops/upup/pkg/fi/cloudup/openstack"
 	"k8s.io/kops/upup/pkg/fi/cloudup/scaleway"
 	"k8s.io/kops/util/pkg/vfs"
@@ -192,6 +194,14 @@ func main() {
 		}
 		if opt.Server.Provider.Azure != nil {
 			verifier, err := azure.NewAzureVerifier(ctx, opt.Server.Provider.Azure)
+			if err != nil {
+				setupLog.Error(err, "unable to create verifier")
+				os.Exit(1)
+			}
+			verifiers = append(verifiers, verifier)
+		}
+		if opt.Server.Provider.Linode != nil {
+			verifier, err := linodecloudup.NewLinodeVerifier(opt.Server.Provider.Linode)
 			if err != nil {
 				setupLog.Error(err, "unable to create verifier")
 				os.Exit(1)
@@ -350,6 +360,12 @@ func addNodeController(ctx context.Context, mgr manager.Manager, vfsContext *vfs
 		identifier, err = nodeidentitymetal.New()
 		if err != nil {
 			return fmt.Errorf("error building metal node identifier: %w", err)
+		}
+
+	case "linode":
+		identifier, err = nodeidentitylinode.New(opt.CacheNodeidentityInfo)
+		if err != nil {
+			return fmt.Errorf("error building linode node identifier: %w", err)
 		}
 
 	case "":

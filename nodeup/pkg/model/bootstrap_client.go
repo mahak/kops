@@ -33,6 +33,7 @@ import (
 	"k8s.io/kops/upup/pkg/fi/cloudup/do"
 	"k8s.io/kops/upup/pkg/fi/cloudup/gce/tpm/gcetpmsigner"
 	"k8s.io/kops/upup/pkg/fi/cloudup/hetzner"
+	"k8s.io/kops/upup/pkg/fi/cloudup/linode"
 	"k8s.io/kops/upup/pkg/fi/cloudup/openstack"
 	"k8s.io/kops/upup/pkg/fi/cloudup/scaleway"
 	"k8s.io/kops/upup/pkg/fi/nodeup/nodetasks"
@@ -89,6 +90,12 @@ func (b BootstrapClientBuilder) Build(c *fi.NodeupModelBuilderContext) error {
 		authenticator = a
 	case kops.CloudProviderAzure:
 		a, err := azure.NewAzureAuthenticator()
+		if err != nil {
+			return err
+		}
+		authenticator = a
+	case kops.CloudProviderLinode:
+		a, err := linode.NewLinodeAuthenticator()
 		if err != nil {
 			return err
 		}

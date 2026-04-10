@@ -58,6 +58,7 @@ import (
 	"k8s.io/kops/upup/pkg/fi/cloudup/do"
 	"k8s.io/kops/upup/pkg/fi/cloudup/gce/tpm/gcetpmsigner"
 	"k8s.io/kops/upup/pkg/fi/cloudup/hetzner"
+	"k8s.io/kops/upup/pkg/fi/cloudup/linode"
 	"k8s.io/kops/upup/pkg/fi/cloudup/openstack"
 	"k8s.io/kops/upup/pkg/fi/cloudup/scaleway"
 	"k8s.io/kops/upup/pkg/fi/nodeup/local"
@@ -327,6 +328,7 @@ func (c *NodeUpCommand) Run(out io.Writer) error {
 	loader.Builders = append(loader.Builders, &model.CrictlBuilder{NodeupModelContext: modelContext})
 	// Cloud-specific configuration
 	loader.Builders = append(loader.Builders, &model.AzureBuilder{NodeupModelContext: modelContext})
+	loader.Builders = append(loader.Builders, &model.LinodeBuilder{NodeupModelContext: modelContext})
 
 	loader.Builders = append(loader.Builders, &networking.CommonBuilder{NodeupModelContext: modelContext})
 	loader.Builders = append(loader.Builders, &networking.CalicoBuilder{NodeupModelContext: modelContext})
@@ -499,6 +501,23 @@ func evaluateHostnameOverride(cloudProvider api.CloudProviderID) (string, error)
 		}
 
 		return hostname, nil
+	case api.CloudProviderLinode:
+		label, err := linode.GetMetadataValue(context.TODO(), "label")
+		if err != nil {
+			return "", fmt.Errorf("error reading hostname from Linode metadata: %v", err)
+		}
+
+		// Linode cloud-init does not set the OS hostname.
+		// Set it here so the OS hostname matches the kubelet hostname override.
+		if err := os.WriteFile("/etc/hostname", []byte(label+"\n"), 0644); err != nil {
+			klog.Warningf("Failed to write /etc/hostname: %v", err)
+		} else if err := exec.Command("hostname", label).Run(); err != nil {
+			klog.Warningf("Failed to set runtime hostname %q: %v", label, err)
+		} else {
+			klog.Infof("Set OS hostname to %q", label)
+		}
+
+		return label, nil
 	}
 
 	return "", nil
@@ -677,6 +696,12 @@ func getNodeConfigFromServers(ctx context.Context, bootConfig *nodeup.BootConfig
 
 	case "metal":
 		a, err := pkibootstrap.NewAuthenticatorFromFile("/etc/kubernetes/kops/pki/machine/private.pem")
+		if err != nil {
+			return nil, err
+		}
+		authenticator = a
+	case api.CloudProviderLinode:
+		a, err := linode.NewLinodeAuthenticator()
 		if err != nil {
 			return nil, err
 		}
