@@ -31,6 +31,8 @@ func UseChallengeCallback(cloudProvider kops.CloudProviderID) bool {
 		return true
 	case kops.CloudProviderAzure:
 		return true
+	case kops.CloudProviderLinode:
+		return true
 	default:
 		return false
 	}

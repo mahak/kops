@@ -76,6 +76,9 @@ func BuildSystemComponentEnvVars(spec *kops.ClusterSpec) EnvVars {
 	// Hetzner Cloud related values.
 	vars.addEnvVariableIfExist("HCLOUD_TOKEN")
 
+	// Linode (Akamai) related values.
+	vars.addEnvVariableIfExist("LINODE_TOKEN")
+
 	// Azure related values.
 	vars.addEnvVariableIfExist("AZURE_STORAGE_ACCOUNT")
 

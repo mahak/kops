@@ -1851,3 +1851,83 @@ func Test_Validate_NriConfig(t *testing.T) {
 		testErrors(t, g.Input.Containerd, errs, g.ExpectedErrors)
 	}
 }
+
+func newLinodeClusterForNetworkingValidation(networking kops.NetworkingSpec) *kops.Cluster {
+	return &kops.Cluster{
+		Spec: kops.ClusterSpec{
+			CloudProvider: kops.CloudProviderSpec{
+				Linode: &kops.LinodeSpec{},
+			},
+			Networking: networking,
+		},
+	}
+}
+
+func validLinodeNetworkingSpec() kops.NetworkingSpec {
+	return kops.NetworkingSpec{
+		NetworkCIDR:           "10.0.0.0/8",
+		NonMasqueradeCIDR:     "100.64.0.0/10",
+		PodCIDR:               "100.96.0.0/11",
+		ServiceClusterIPRange: "100.64.0.0/13",
+		Subnets: []kops.ClusterSubnetSpec{
+			{
+				Name:   "subnet-us-east",
+				CIDR:   "10.11.0.0/16",
+				Type:   kops.SubnetTypePublic,
+				Region: "us-east",
+			},
+		},
+	}
+}
+
+func TestValidateNetworkingLinode(t *testing.T) {
+	tests := []struct {
+		name     string
+		network  kops.NetworkingSpec
+		expected []*field.Error
+	}{
+		{
+			name:    "accepts private network CIDR",
+			network: validLinodeNetworkingSpec(),
+		},
+		{
+			name: "rejects public network CIDR",
+			network: func() kops.NetworkingSpec {
+				n := validLinodeNetworkingSpec()
+				n.NetworkCIDR = "8.8.8.0/24"
+				n.Subnets[0].CIDR = "8.8.8.0/25"
+				return n
+			}(),
+			expected: []*field.Error{
+				{
+					Type:   field.ErrorTypeInvalid,
+					Field:  "networking.networkCIDR",
+					Detail: "networkCIDR must be within a private IP range",
+				},
+			},
+		},
+		{
+			name: "rejects networkID with networkCIDR",
+			network: func() kops.NetworkingSpec {
+				n := validLinodeNetworkingSpec()
+				n.NetworkID = "123456"
+				return n
+			}(),
+			expected: []*field.Error{
+				{
+					Type:   field.ErrorTypeForbidden,
+					Field:  "networking.networkCIDR",
+					Detail: "Linode (Akamai) doesn't support specifying both NetworkID and NetworkCIDR",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cluster := newLinodeClusterForNetworkingValidation(tt.network)
+			errList := validateNetworking(cluster, &cluster.Spec.Networking, field.NewPath("networking"), true, &cloudProviderConstraints{})
+			testFieldErrors(t, errList, tt.expected)
+		})
+	}
+}

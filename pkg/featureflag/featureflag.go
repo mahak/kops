@@ -109,6 +109,8 @@ var (
 	ClusterAPI = new("ClusterAPI", Bool(false))
 	// DiscoveryService enables support for OIDC discovery via a hosted service.
 	DiscoveryService = new("DiscoveryService", Bool(false))
+	// Linode toggles the Linode (Akamai) Cloud support.
+	Linode = new("Linode", Bool(false))
 )
 
 // FeatureFlag defines a feature flag

@@ -53,6 +53,11 @@ func TestGuessCloudForPath(t *testing.T) {
 			want: kops.CloudProviderGCE,
 		},
 		{
+			name: "linode_scheme",
+			path: "linode://kops-test/cluster",
+			want: kops.CloudProviderLinode,
+		},
+		{
 			name: "scw",
 			path: "scw://bucket",
 			want: kops.CloudProviderScaleway,
@@ -76,6 +81,13 @@ func TestGuessCloudForPath(t *testing.T) {
 			want:   kops.CloudProviderHetzner,
 		},
 		{
+			name:   "s3_linode",
+			path:   "s3://bucket",
+			env:    "LINODE_TOKEN",
+			envVal: "token",
+			want:   kops.CloudProviderLinode,
+		},
+		{
 			name:    "unknown",
 			path:    "file://local/path",
 			wantErr: true,
@@ -84,10 +96,11 @@ func TestGuessCloudForPath(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			os.Unsetenv("HCLOUD_TOKEN")
+			os.Unsetenv("LINODE_TOKEN")
+
 			if tc.env != "" {
 				os.Setenv(tc.env, tc.envVal)
-			} else {
-				os.Unsetenv("HCLOUD_TOKEN")
 			}
 
 			got, err := GuessCloudForPath(tc.path)
