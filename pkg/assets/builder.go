@@ -22,7 +22,9 @@ import (
 	"os"
 	"path"
 	"regexp"
+	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -40,11 +42,15 @@ import (
 
 // AssetBuilder discovers and remaps assets.
 type AssetBuilder struct {
+	mu          sync.RWMutex
+	imageAssets []*ImageAsset
+	fileAssets  []*FileAsset
+
+	// The following fields are immutable after construction via NewAssetBuilder
+	// and are safe to read without holding mu.
 	vfsContext     *vfs.VFSContext
-	ImageAssets    []*ImageAsset
-	FileAssets     []*FileAsset
-	AssetsLocation *kops.AssetsSpec
-	GetAssets      bool
+	assetsLocation *kops.AssetsSpec
+	getAssets      bool
 
 	// KubeletSupportedVersion is the max version of kubelet that we are currently allowed to run on worker nodes.
 	// This is used to avoid violating the kubelet supported version skew policy,
@@ -53,11 +59,11 @@ type AssetBuilder struct {
 
 	// StaticManifests records manifests used by nodeup:
 	// * e.g. sidecar manifests for static pods run by kubelet
-	StaticManifests []*StaticManifest
+	staticManifests []*StaticManifest
 
 	// StaticFiles records static files:
 	// * Configuration files supporting static pods
-	StaticFiles []*StaticFile
+	staticFiles []*StaticFile
 }
 
 type StaticFile struct {
@@ -117,11 +123,97 @@ type FileAsset struct {
 func NewAssetBuilder(vfsContext *vfs.VFSContext, assets *kops.AssetsSpec, getAssets bool) *AssetBuilder {
 	a := &AssetBuilder{
 		vfsContext:     vfsContext,
-		AssetsLocation: assets,
-		GetAssets:      getAssets,
+		assetsLocation: assets,
+		getAssets:      getAssets,
 	}
 
 	return a
+}
+
+func (a *AssetBuilder) addImageAsset(asset *ImageAsset) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.imageAssets = append(a.imageAssets, asset)
+}
+
+func (a *AssetBuilder) addFileAsset(asset *FileAsset) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.fileAssets = append(a.fileAssets, asset)
+}
+
+// AddStaticManifest records a nodeup static manifest.
+func (a *AssetBuilder) AddStaticManifest(manifest *StaticManifest) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.staticManifests = append(a.staticManifests, manifest)
+}
+
+// AddStaticFile records a nodeup static file.
+func (a *AssetBuilder) AddStaticFile(file *StaticFile) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.staticFiles = append(a.staticFiles, file)
+}
+
+// ImageAssets returns a sorted copy of the collected image assets.
+func (a *AssetBuilder) ImageAssets() []*ImageAsset {
+	a.mu.RLock()
+	snapshot := append([]*ImageAsset(nil), a.imageAssets...)
+	a.mu.RUnlock()
+
+	// CanonicalLocation identifies the source image, so use it to make snapshots deterministic.
+	sort.Slice(snapshot, func(i, j int) bool {
+		return snapshot[i].CanonicalLocation < snapshot[j].CanonicalLocation
+	})
+
+	return snapshot
+}
+
+// FileAssets returns a sorted copy of the collected file assets.
+func (a *AssetBuilder) FileAssets() []*FileAsset {
+	a.mu.RLock()
+	snapshot := append([]*FileAsset(nil), a.fileAssets...)
+	a.mu.RUnlock()
+
+	// CanonicalURL identifies the source file, so use it to make snapshots deterministic.
+	sort.Slice(snapshot, func(i, j int) bool {
+		return snapshot[i].CanonicalURL.String() < snapshot[j].CanonicalURL.String()
+	})
+
+	return snapshot
+}
+
+// StaticManifests returns a sorted copy of the collected static manifests.
+func (a *AssetBuilder) StaticManifests() []*StaticManifest {
+	a.mu.RLock()
+	snapshot := append([]*StaticManifest(nil), a.staticManifests...)
+	a.mu.RUnlock()
+
+	// Key already identifies the static manifest, so use it to make snapshots deterministic.
+	sort.Slice(snapshot, func(i, j int) bool {
+		return snapshot[i].Key < snapshot[j].Key
+	})
+
+	return snapshot
+}
+
+// StaticFiles returns a sorted copy of the collected static files.
+func (a *AssetBuilder) StaticFiles() []*StaticFile {
+	a.mu.RLock()
+	snapshot := append([]*StaticFile(nil), a.staticFiles...)
+	a.mu.RUnlock()
+
+	// Path already identifies the static file on disk, so use it to make snapshots deterministic.
+	sort.Slice(snapshot, func(i, j int) bool {
+		return snapshot[i].Path < snapshot[j].Path
+	})
+
+	return snapshot
 }
 
 // RemapManifest transforms a kubernetes manifest.
@@ -183,7 +275,7 @@ func (a *AssetBuilder) RemapImage(image string) string {
 	image = normalized
 	asset.DownloadLocation = normalized
 
-	a.ImageAssets = append(a.ImageAssets, asset)
+	a.addImageAsset(asset)
 
 	if !featureflag.ImageDigest.Enabled() || os.Getenv("KOPS_BASE_URL") != "" {
 		return image
@@ -216,7 +308,7 @@ func (a *AssetBuilder) RemapFile(canonicalURL *url.URL, knownHash *hashing.Hash)
 		CanonicalURL: canonicalURL,
 	}
 
-	if a.AssetsLocation != nil && a.AssetsLocation.FileRepository != nil {
+	if a.assetsLocation != nil && a.assetsLocation.FileRepository != nil {
 		normalizedFile, err := a.remapURL(canonicalURL)
 		if err != nil {
 			return nil, err
@@ -239,7 +331,7 @@ func (a *AssetBuilder) RemapFile(canonicalURL *url.URL, knownHash *hashing.Hash)
 	fileAsset.SHAValue = knownHash
 
 	klog.V(8).Infof("adding file: %+v", fileAsset)
-	a.FileAssets = append(a.FileAssets, fileAsset)
+	a.addFileAsset(fileAsset)
 
 	return fileAsset, nil
 }
@@ -259,7 +351,7 @@ func (a *AssetBuilder) findHash(file *FileAsset) (*hashing.Hash, error) {
 	// rest of the time. If not we get a chicken and the egg problem where we are reading the sha file
 	// before it exists.
 	u := file.DownloadURL
-	if a.GetAssets {
+	if a.getAssets {
 		u = file.CanonicalURL
 	}
 
@@ -315,7 +407,7 @@ func (a *AssetBuilder) findHash(file *FileAsset) (*hashing.Hash, error) {
 		}
 	}
 
-	if a.AssetsLocation != nil && a.AssetsLocation.FileRepository != nil {
+	if a.assetsLocation != nil && a.assetsLocation.FileRepository != nil {
 		return nil, fmt.Errorf("you might have not staged your files correctly, please execute 'kops get assets --copy'")
 	}
 	return nil, fmt.Errorf("cannot determine hash for %q (have you specified a valid file location?)", u)
@@ -323,8 +415,8 @@ func (a *AssetBuilder) findHash(file *FileAsset) (*hashing.Hash, error) {
 
 func (a *AssetBuilder) remapURL(canonicalURL *url.URL) (*url.URL, error) {
 	f := ""
-	if a.AssetsLocation != nil {
-		f = values.StringValue(a.AssetsLocation.FileRepository)
+	if a.assetsLocation != nil {
+		f = values.StringValue(a.assetsLocation.FileRepository)
 	}
 	if f == "" {
 		return nil, fmt.Errorf("assetsLocation.fileRepository must be set to remap asset %v", canonicalURL)
@@ -341,8 +433,8 @@ func (a *AssetBuilder) remapURL(canonicalURL *url.URL) (*url.URL, error) {
 }
 
 func NormalizeImage(a *AssetBuilder, image string) string {
-	if a.AssetsLocation != nil && a.AssetsLocation.ContainerProxy != nil {
-		containerProxy := strings.TrimSuffix(*a.AssetsLocation.ContainerProxy, "/")
+	if a.assetsLocation != nil && a.assetsLocation.ContainerProxy != nil {
+		containerProxy := strings.TrimSuffix(*a.assetsLocation.ContainerProxy, "/")
 		normalized := image
 
 		// If the image name contains only a single / we need to determine if the image is located on docker-hub or if it's using a convenient URL,
@@ -359,8 +451,8 @@ func NormalizeImage(a *AssetBuilder, image string) string {
 		image = normalized
 	}
 
-	if a.AssetsLocation != nil && a.AssetsLocation.ContainerRegistry != nil {
-		registryMirror := *a.AssetsLocation.ContainerRegistry
+	if a.assetsLocation != nil && a.assetsLocation.ContainerRegistry != nil {
+		registryMirror := *a.assetsLocation.ContainerRegistry
 		normalized := image
 
 		// Remove the 'standard' kubernetes image prefixes, just for sanity

@@ -1,84 +1,84 @@
 files:
-- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubelet
-  download: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubelet
-  sha: 5ad4965598773d56a37a8e8429c3dc3d86b4c5c26d8417ab333ae345c053dae2
-- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
-  download: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
-  sha: 646d58f6d98ee670a71d9cdffbf6625aeea2849d567f214bc43a35f8ccb7bf70
 - canonical: https://artifacts.k8s.io/binaries/cloud-provider-aws/v1.31.7/linux/amd64/ecr-credential-provider-linux-amd64
   download: https://artifacts.k8s.io/binaries/cloud-provider-aws/v1.31.7/linux/amd64/ecr-credential-provider-linux-amd64
   sha: 7644623e4ec9ad443ab352a8a5800a5180ee28741288be805286ba72bb8e7164
-- canonical: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
-  download: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
-  sha: b8e811578fb66023f90d2e238d80cec3bdfca4b44049af74c374d4fae0f9c090
-- canonical: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-amd64.tar.gz
-  download: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-amd64.tar.gz
-  sha: 4793dc5c1f34ebf8402990d0050f3c294aa3c794cd5a4baa403c1cf10602326d
-- canonical: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.amd64
-  download: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.amd64
-  sha: 5966ca40b6187b30e33bfc299c5f1fe72e8c1aa01cf3fefdadf391668f47f103
-- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubelet
-  download: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubelet
-  sha: bda9b2324c96693b38c41ecea051bab4c7c434be5683050b5e19025b50dbc0bf
-- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubectl
-  download: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubectl
-  sha: ba4004f98f3d3a7b7d2954ff0a424caa2c2b06b78c17b1dccf2acc76a311a896
 - canonical: https://artifacts.k8s.io/binaries/cloud-provider-aws/v1.31.7/linux/arm64/ecr-credential-provider-linux-arm64
   download: https://artifacts.k8s.io/binaries/cloud-provider-aws/v1.31.7/linux/arm64/ecr-credential-provider-linux-arm64
   sha: 1980e3a038cb16da48a137743b31fb81de6c0b59fa06c206c2bc20ce0a52f849
-- canonical: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
-  download: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
-  sha: 01e0e22acc7f7004e4588c1fe1871cc86d7ab562cd858e1761c4641d89ebfaa4
+- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
+  download: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubectl
+  sha: 646d58f6d98ee670a71d9cdffbf6625aeea2849d567f214bc43a35f8ccb7bf70
+- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubelet
+  download: https://dl.k8s.io/release/v1.32.0/bin/linux/amd64/kubelet
+  sha: 5ad4965598773d56a37a8e8429c3dc3d86b4c5c26d8417ab333ae345c053dae2
+- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubectl
+  download: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubectl
+  sha: ba4004f98f3d3a7b7d2954ff0a424caa2c2b06b78c17b1dccf2acc76a311a896
+- canonical: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubelet
+  download: https://dl.k8s.io/release/v1.32.0/bin/linux/arm64/kubelet
+  sha: bda9b2324c96693b38c41ecea051bab4c7c434be5683050b5e19025b50dbc0bf
+- canonical: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-amd64.tar.gz
+  download: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-amd64.tar.gz
+  sha: 4793dc5c1f34ebf8402990d0050f3c294aa3c794cd5a4baa403c1cf10602326d
 - canonical: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-arm64.tar.gz
   download: https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-arm64.tar.gz
   sha: 88d6e32348c36628c8500a630c6dd4b3cb8c680b1d18dc8d1d19041f67757c6e
+- canonical: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
+  download: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
+  sha: b8e811578fb66023f90d2e238d80cec3bdfca4b44049af74c374d4fae0f9c090
+- canonical: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
+  download: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
+  sha: 01e0e22acc7f7004e4588c1fe1871cc86d7ab562cd858e1761c4641d89ebfaa4
+- canonical: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.amd64
+  download: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.amd64
+  sha: 5966ca40b6187b30e33bfc299c5f1fe72e8c1aa01cf3fefdadf391668f47f103
 - canonical: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.arm64
   download: https://github.com/opencontainers/runc/releases/download/v1.3.4/runc.arm64
   sha: d6dcab36d1b6af1b72c7f0662e5fcf446a291271ba6006532b95c4144e19d428
 images:
-- canonical: registry.k8s.io/kube-apiserver:v1.32.0
-  download: registry.k8s.io/kube-apiserver:v1.32.0
-- canonical: registry.k8s.io/pause:3.10.1
-  download: registry.k8s.io/pause:3.10.1
-- canonical: registry.k8s.io/kube-controller-manager:v1.32.0
-  download: registry.k8s.io/kube-controller-manager:v1.32.0
-- canonical: registry.k8s.io/kube-scheduler:v1.32.0
-  download: registry.k8s.io/kube-scheduler:v1.32.0
-- canonical: registry.k8s.io/kube-proxy:v1.32.0
-  download: registry.k8s.io/kube-proxy:v1.32.0
-- canonical: registry.k8s.io/kops/kops-controller:1.34.0-beta.1
-  download: registry.k8s.io/kops/kops-controller:1.34.0-beta.1
+- canonical: public.ecr.aws/aws-ec2/aws-node-termination-handler:v1.25.5
+  download: public.ecr.aws/aws-ec2/aws-node-termination-handler:v1.25.5
 - canonical: registry.k8s.io/coredns/coredns:v1.13.2
   download: registry.k8s.io/coredns/coredns:v1.13.2
 - canonical: registry.k8s.io/cpa/cluster-proportional-autoscaler:v1.9.0
   download: registry.k8s.io/cpa/cluster-proportional-autoscaler:v1.9.0
-- canonical: registry.k8s.io/kops/dns-controller:1.34.0-beta.1
-  download: registry.k8s.io/kops/dns-controller:1.34.0-beta.1
-- canonical: public.ecr.aws/aws-ec2/aws-node-termination-handler:v1.25.5
-  download: public.ecr.aws/aws-ec2/aws-node-termination-handler:v1.25.5
-- canonical: registry.k8s.io/provider-aws/cloud-controller-manager:v1.32.5
-  download: registry.k8s.io/provider-aws/cloud-controller-manager:v1.32.5
-- canonical: registry.k8s.io/provider-aws/aws-ebs-csi-driver:v1.47.0
-  download: registry.k8s.io/provider-aws/aws-ebs-csi-driver:v1.47.0
-- canonical: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.14.0
-  download: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.14.0
-- canonical: registry.k8s.io/sig-storage/livenessprobe:v2.16.0
-  download: registry.k8s.io/sig-storage/livenessprobe:v2.16.0
-- canonical: registry.k8s.io/sig-storage/csi-provisioner:v5.3.0
-  download: registry.k8s.io/sig-storage/csi-provisioner:v5.3.0
-- canonical: registry.k8s.io/sig-storage/csi-attacher:v4.9.0
-  download: registry.k8s.io/sig-storage/csi-attacher:v4.9.0
-- canonical: registry.k8s.io/sig-storage/csi-resizer:v1.14.0
-  download: registry.k8s.io/sig-storage/csi-resizer:v1.14.0
-- canonical: registry.k8s.io/kops/kube-apiserver-healthcheck:1.34.0-beta.1
-  download: registry.k8s.io/kops/kube-apiserver-healthcheck:1.34.0-beta.1
-- canonical: registry.k8s.io/kops/kops-utils-cp:1.35.0-beta.1
-  download: registry.k8s.io/kops/kops-utils-cp:1.35.0-beta.1
+- canonical: registry.k8s.io/etcd-manager/etcd-manager-slim:v3.0.20260227
+  download: registry.k8s.io/etcd-manager/etcd-manager-slim:v3.0.20260227
 - canonical: registry.k8s.io/etcd:v3.4.13
   download: registry.k8s.io/etcd:v3.4.13
 - canonical: registry.k8s.io/etcd:v3.5.25
   download: registry.k8s.io/etcd:v3.5.25
 - canonical: registry.k8s.io/etcd:v3.6.6
   download: registry.k8s.io/etcd:v3.6.6
-- canonical: registry.k8s.io/etcd-manager/etcd-manager-slim:v3.0.20260227
-  download: registry.k8s.io/etcd-manager/etcd-manager-slim:v3.0.20260227
+- canonical: registry.k8s.io/kops/dns-controller:1.34.0-beta.1
+  download: registry.k8s.io/kops/dns-controller:1.34.0-beta.1
+- canonical: registry.k8s.io/kops/kops-controller:1.34.0-beta.1
+  download: registry.k8s.io/kops/kops-controller:1.34.0-beta.1
+- canonical: registry.k8s.io/kops/kops-utils-cp:1.35.0-beta.1
+  download: registry.k8s.io/kops/kops-utils-cp:1.35.0-beta.1
+- canonical: registry.k8s.io/kops/kube-apiserver-healthcheck:1.34.0-beta.1
+  download: registry.k8s.io/kops/kube-apiserver-healthcheck:1.34.0-beta.1
+- canonical: registry.k8s.io/kube-apiserver:v1.32.0
+  download: registry.k8s.io/kube-apiserver:v1.32.0
+- canonical: registry.k8s.io/kube-controller-manager:v1.32.0
+  download: registry.k8s.io/kube-controller-manager:v1.32.0
+- canonical: registry.k8s.io/kube-proxy:v1.32.0
+  download: registry.k8s.io/kube-proxy:v1.32.0
+- canonical: registry.k8s.io/kube-scheduler:v1.32.0
+  download: registry.k8s.io/kube-scheduler:v1.32.0
+- canonical: registry.k8s.io/pause:3.10.1
+  download: registry.k8s.io/pause:3.10.1
+- canonical: registry.k8s.io/provider-aws/aws-ebs-csi-driver:v1.47.0
+  download: registry.k8s.io/provider-aws/aws-ebs-csi-driver:v1.47.0
+- canonical: registry.k8s.io/provider-aws/cloud-controller-manager:v1.32.5
+  download: registry.k8s.io/provider-aws/cloud-controller-manager:v1.32.5
+- canonical: registry.k8s.io/sig-storage/csi-attacher:v4.9.0
+  download: registry.k8s.io/sig-storage/csi-attacher:v4.9.0
+- canonical: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.14.0
+  download: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.14.0
+- canonical: registry.k8s.io/sig-storage/csi-provisioner:v5.3.0
+  download: registry.k8s.io/sig-storage/csi-provisioner:v5.3.0
+- canonical: registry.k8s.io/sig-storage/csi-resizer:v1.14.0
+  download: registry.k8s.io/sig-storage/csi-resizer:v1.14.0
+- canonical: registry.k8s.io/sig-storage/livenessprobe:v2.16.0
+  download: registry.k8s.io/sig-storage/livenessprobe:v2.16.0

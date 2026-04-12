@@ -415,7 +415,7 @@ func (n *nodeUpConfigBuilder) BuildConfig(ig *kops.InstanceGroup, wellKnownAddre
 		bootConfig.ConfigBase = fi.PtrTo(n.configBase.Path())
 	}
 
-	for _, manifest := range n.assetBuilder.StaticManifests {
+	for _, manifest := range n.assetBuilder.StaticManifests() {
 		if !manifest.AppliesToRole(role) {
 			continue
 		}
@@ -426,7 +426,7 @@ func (n *nodeUpConfigBuilder) BuildConfig(ig *kops.InstanceGroup, wellKnownAddre
 		})
 	}
 
-	for _, staticFile := range n.assetBuilder.StaticFiles {
+	for _, staticFile := range n.assetBuilder.StaticFiles() {
 		match := false
 		for _, r := range staticFile.Roles {
 			if r == role {
@@ -512,7 +512,7 @@ func (n *nodeUpConfigBuilder) buildWarmPoolImages(ig *kops.InstanceGroup) []stri
 	}
 	assetBuilder := n.assetBuilder
 	if assetBuilder != nil {
-		for _, image := range assetBuilder.ImageAssets {
+		for _, image := range assetBuilder.ImageAssets() {
 			for _, prefix := range desiredImagePrefixes {
 				remappedPrefix := assets.NormalizeImage(assetBuilder, prefix)
 				if strings.HasPrefix(image.DownloadLocation, remappedPrefix) {

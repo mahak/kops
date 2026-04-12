@@ -388,8 +388,8 @@ func RunUpdateCluster(ctx context.Context, f *util.Factory, out io.Writer, c *Up
 
 	results.Target = applyCmd.Target
 	results.TaskMap = applyCmd.TaskMap
-	results.ImageAssets = applyResults.AssetBuilder.ImageAssets
-	results.FileAssets = applyResults.AssetBuilder.FileAssets
+	results.ImageAssets = applyResults.AssetBuilder.ImageAssets()
+	results.FileAssets = applyResults.AssetBuilder.FileAssets()
 	results.Cluster = cluster
 
 	if isDryrun && !c.GetAssets {
