@@ -380,6 +380,16 @@ func validateCloudProvider(c *kops.Cluster, provider *kops.CloudProviderSpec, fi
 		constraints.requiresNetworkCIDR = false
 		constraints.requiresSubnetCIDR = false
 	}
+	if c.Spec.CloudProvider.Linode != nil {
+		if optionTaken {
+			allErrs = append(allErrs, field.Forbidden(fieldSpec.Child("linode"), "only one cloudProvider option permitted"))
+		}
+		optionTaken = true
+		constraints.requiresSubnets = false
+		constraints.requiresSubnetCIDR = false
+		constraints.requiresSubnetRegion = true
+		constraints.requiresNetworkCIDR = false
+	}
 	if c.GetCloudProvider() == kops.CloudProviderMetal {
 		if optionTaken {
 			allErrs = append(allErrs, field.Forbidden(fieldSpec.Child("metal"), "only one cloudProvider option permitted"))
@@ -1016,6 +1026,17 @@ func validateNetworking(cluster *kops.Cluster, v *kops.NetworkingSpec, fldPath *
 			// verify if networkID is not specified. In case of DO, this is mutually exclusive.
 			if v.NetworkID != "" {
 				allErrs = append(allErrs, field.Forbidden(fldPath.Child("networkCIDR"), "DO doesn't support specifying both NetworkID and NetworkCIDR"))
+			}
+		}
+
+		if cluster.GetCloudProvider() == kops.CloudProviderLinode {
+			// verify if the NetworkCIDR is in a private range as per RFC1918
+			if networkCIDR != nil && !networkCIDR.IP.IsPrivate() {
+				allErrs = append(allErrs, field.Invalid(fldPath.Child("networkCIDR"), v.NetworkCIDR, "networkCIDR must be within a private IP range"))
+			}
+			// verify if networkID is not specified. In case of Linode (Akamai), this is mutually exclusive.
+			if v.NetworkID != "" {
+				allErrs = append(allErrs, field.Forbidden(fldPath.Child("networkCIDR"), "Linode (Akamai) doesn't support specifying both NetworkID and NetworkCIDR"))
 			}
 		}
 	}

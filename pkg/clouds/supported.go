@@ -39,6 +39,9 @@ func SupportedClouds() []kops.CloudProviderID {
 	if featureflag.Scaleway.Enabled() {
 		clouds = append(clouds, kops.CloudProviderScaleway)
 	}
+	if featureflag.Linode.Enabled() {
+		clouds = append(clouds, kops.CloudProviderLinode)
+	}
 
 	return clouds
 }
@@ -54,6 +57,8 @@ func GuessCloudForPath(path string) (kops.CloudProviderID, error) {
 		return kops.CloudProviderHetzner, nil
 	case strings.HasPrefix(path, "gs://"):
 		return kops.CloudProviderGCE, nil
+	case strings.HasPrefix(path, "linode://"):
+		return kops.CloudProviderLinode, nil
 	case strings.HasPrefix(path, "scw://"):
 		return kops.CloudProviderScaleway, nil
 	case strings.HasPrefix(path, "swift://"):
@@ -61,6 +66,8 @@ func GuessCloudForPath(path string) (kops.CloudProviderID, error) {
 	case strings.HasPrefix(path, "s3://"):
 		if os.Getenv("HCLOUD_TOKEN") != "" {
 			return kops.CloudProviderHetzner, nil
+		} else if os.Getenv("LINODE_TOKEN") != "" {
+			return kops.CloudProviderLinode, nil
 		}
 		return kops.CloudProviderAWS, nil
 	default:

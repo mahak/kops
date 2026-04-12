@@ -376,6 +376,8 @@ func NewCluster(opt *NewClusterOptions, clientset simple.Clientset) (*NewCluster
 		cloud = osCloud
 	case api.CloudProviderScaleway:
 		cluster.Spec.CloudProvider.Scaleway = &api.ScalewaySpec{}
+	case api.CloudProviderLinode:
+		cluster.Spec.CloudProvider.Linode = &api.LinodeSpec{}
 	case api.CloudProviderMetal:
 		if !featureflag.Metal.Enabled() {
 			return nil, fmt.Errorf("bare-metal support requires the Metal feature flag to be enabled")
@@ -736,6 +738,26 @@ func setupZones(opt *NewClusterOptions, cluster *api.Cluster, allZones sets.Stri
 			subnet = &api.ClusterSubnetSpec{
 				Name: subnetName,
 				// region and zone are the same for DO
+				Region: region,
+				Zone:   region,
+			}
+			cluster.Spec.Networking.Subnets = append(cluster.Spec.Networking.Subnets, *subnet)
+		}
+		zoneToSubnetsMap[region] = append(zoneToSubnetsMap[region], subnet)
+		return zoneToSubnetsMap, nil
+
+	case api.CloudProviderLinode:
+		if len(opt.Zones) > 1 {
+			return nil, fmt.Errorf("linode cloud provider currently supports one region only")
+		}
+
+		// For Linode (Akamai) we pass regions via --zones.
+		region := opt.Zones[0]
+		subnet := model.FindSubnet(cluster, region)
+
+		if subnet == nil {
+			subnet = &api.ClusterSubnetSpec{
+				Name:   region,
 				Region: region,
 				Zone:   region,
 			}
@@ -1656,6 +1678,8 @@ func defaultImage(cluster *api.Cluster, channel *api.Channel, architecture archi
 			return defaultHetznerImageFocal, nil
 		case api.CloudProviderScaleway:
 			return defaultScalewayImageFocal, nil
+		case api.CloudProviderLinode:
+			return defaultLinodeImageFocal, nil
 		}
 	} else if kubernetesVersion.LT(semver.MustParse("1.32.0")) {
 		switch cluster.GetCloudProvider() {
@@ -1665,6 +1689,8 @@ func defaultImage(cluster *api.Cluster, channel *api.Channel, architecture archi
 			return defaultHetznerImageJammy, nil
 		case api.CloudProviderScaleway:
 			return defaultScalewayImageJammy, nil
+		case api.CloudProviderLinode:
+			return defaultLinodeImageJammy, nil
 		case api.CloudProviderMetal:
 			return "dummy-metal-image", nil
 		}
@@ -1676,6 +1702,8 @@ func defaultImage(cluster *api.Cluster, channel *api.Channel, architecture archi
 			return defaultHetznerImageNoble, nil
 		case api.CloudProviderScaleway:
 			return defaultScalewayImageNoble, nil
+		case api.CloudProviderLinode:
+			return defaultLinodeImageNoble, nil
 		case api.CloudProviderMetal:
 			return "dummy-metal-image", nil
 		}
