@@ -113,6 +113,9 @@ func TestLoadBalancerFind(t *testing.T) {
 	// Create a Loadbalancer.
 	loadBalancerParameters := network.LoadBalancer{
 		Location: to.Ptr("eastus"),
+		SKU: &network.LoadBalancerSKU{
+			Name: to.Ptr(network.LoadBalancerSKUNameStandard),
+		},
 		Properties: &network.LoadBalancerPropertiesFormat{
 			FrontendIPConfigurations: []*network.FrontendIPConfiguration{
 				{

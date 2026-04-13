@@ -35,6 +35,13 @@ type PublicIPAddress struct {
 	ID            *string
 	ResourceGroup *ResourceGroup
 
+	// IPVersion is the IP version, e.g. network.IPVersionIPv4.
+	IPVersion network.IPVersion
+	// AllocationMethod is the allocation method, e.g. network.IPAllocationMethodStatic.
+	AllocationMethod network.IPAllocationMethod
+	// SKU is the public IP SKU, e.g. network.PublicIPAddressSKUNameStandard.
+	SKU network.PublicIPAddressSKUName
+
 	Tags map[string]*string
 }
 
@@ -69,7 +76,7 @@ func (p *PublicIPAddress) Find(c *fi.CloudupContext) (*PublicIPAddress, error) {
 
 	p.ID = found.ID
 
-	return &PublicIPAddress{
+	actual := &PublicIPAddress{
 		Name:      p.Name,
 		Lifecycle: p.Lifecycle,
 		ResourceGroup: &ResourceGroup{
@@ -77,7 +84,15 @@ func (p *PublicIPAddress) Find(c *fi.CloudupContext) (*PublicIPAddress, error) {
 		},
 		ID:   found.ID,
 		Tags: found.Tags,
-	}, nil
+	}
+	if found.Properties != nil {
+		actual.IPVersion = fi.ValueOf(found.Properties.PublicIPAddressVersion)
+		actual.AllocationMethod = fi.ValueOf(found.Properties.PublicIPAllocationMethod)
+	}
+	if found.SKU != nil {
+		actual.SKU = fi.ValueOf(found.SKU.Name)
+	}
+	return actual, nil
 }
 
 func (p *PublicIPAddress) Normalize(c *fi.CloudupContext) error {
@@ -119,11 +134,11 @@ func (*PublicIPAddress) RenderAzure(t *azure.AzureAPITarget, a, e, changes *Publ
 		Location: to.Ptr(t.Cloud.Region()),
 		Name:     to.Ptr(*e.Name),
 		Properties: &network.PublicIPAddressPropertiesFormat{
-			PublicIPAddressVersion:   to.Ptr(network.IPVersionIPv4),
-			PublicIPAllocationMethod: to.Ptr(network.IPAllocationMethodStatic),
+			PublicIPAddressVersion:   to.Ptr(e.IPVersion),
+			PublicIPAllocationMethod: to.Ptr(e.AllocationMethod),
 		},
 		SKU: &network.PublicIPAddressSKU{
-			Name: to.Ptr(network.PublicIPAddressSKUNameStandard),
+			Name: to.Ptr(e.SKU),
 		},
 		Tags: e.Tags,
 	}

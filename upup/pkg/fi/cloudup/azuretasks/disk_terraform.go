@@ -19,6 +19,7 @@ package azuretasks
 import (
 	"fmt"
 
+	compute "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraform"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
@@ -40,7 +41,7 @@ func (*Disk) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *Disk) 
 		return fmt.Errorf("expected at most one zone for disk %q, got %d", fi.ValueOf(e.Name), len(e.Zones))
 	}
 
-	createOption := "Empty"
+	createOption := string(compute.DiskCreateOptionEmpty)
 	tf := &terraformAzureManagedDisk{
 		Name:               e.Name,
 		Location:           fi.PtrTo(t.Cloud.Region()),

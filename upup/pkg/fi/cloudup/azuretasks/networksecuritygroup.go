@@ -82,6 +82,8 @@ func (nsg *NetworkSecurityGroup) Find(c *fi.CloudupContext) (*NetworkSecurityGro
 		},
 		ID:   found.ID,
 		Tags: found.Tags,
+		// ApplicationSecurityGroups is for dependency ordering only and is not rendered to the cloud.
+		ApplicationSecurityGroups: nsg.ApplicationSecurityGroups,
 	}
 	for _, rule := range found.Properties.SecurityRules {
 		nsr := &NetworkSecurityRule{

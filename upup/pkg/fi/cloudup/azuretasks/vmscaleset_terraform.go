@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	compute "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/compute/armcompute"
+	network "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraform"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
@@ -99,7 +100,7 @@ func (*VMScaleSet) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *
 		return fmt.Errorf("os disk is required for VMScaleSet %q", fi.ValueOf(e.Name))
 	}
 
-	upgradeMode := "Manual"
+	upgradeMode := string(compute.UpgradeModeManual)
 	disablePasswordAuthentication := true
 	tf := &terraformAzureVMScaleSet{
 		Name:                          e.Name,
@@ -180,7 +181,7 @@ func (vmss *VMScaleSet) terraformIPConfiguration(t *terraform.TerraformTarget) (
 		ApplicationSecurityGroupIDs: applicationSecurityGroupIDs(vmss.ApplicationSecurityGroups),
 	}
 	if fi.ValueOf(vmss.RequirePublicIP) {
-		version := "IPv4"
+		version := string(network.IPVersionIPv4)
 		cfg.PublicIPAddress = &terraformAzureVMScaleSetPublicIPAddress{
 			Name:    vmss.Name,
 			Version: &version,
