@@ -127,7 +127,7 @@ func (d *deployer) verifyBuildFlags() error {
 		}
 		d.StageLocation = stageLocation
 	}
-	if d.KopsBaseURL == "" && os.Getenv("KOPS_BASE_URL") == "" {
+	if !d.BuildOptions.BuildKubernetes && d.KopsBaseURL == "" && os.Getenv("KOPS_BASE_URL") == "" {
 		d.KopsBaseURL = strings.Replace(d.StageLocation, "gs://", "https://storage.googleapis.com/", 1)
 	}
 
