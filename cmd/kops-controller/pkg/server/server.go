@@ -120,6 +120,7 @@ func NewServer(vfsContext *vfs.VFSContext, opt *config.Options, verifier bootstr
 	s.challengeClient = challengeClient
 
 	r := http.NewServeMux()
+	r.Handle("/healthz", http.HandlerFunc(healthCheck))
 	r.Handle("/bootstrap", http.HandlerFunc(s.bootstrap))
 	server.Handler = recovery(r)
 
@@ -152,6 +153,11 @@ func (s *Server) Start(ctx context.Context) error {
 
 	klog.Infof("kops-controller listening on %s", s.opt.Server.Listen)
 	return s.server.ListenAndServeTLS(s.opt.Server.ServerCertificatePath, s.opt.Server.ServerKeyPath)
+}
+
+func healthCheck(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("ok"))
 }
 
 func (s *Server) bootstrap(w http.ResponseWriter, r *http.Request) {

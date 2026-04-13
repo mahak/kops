@@ -61,13 +61,14 @@ resource "azurerm_lb_backend_address_pool" "api-minimal-azure-example-com-backen
   name            = "LoadBalancerBackEnd"
 }
 
-resource "azurerm_lb_probe" "api-minimal-azure-example-com-Health-TCP-3988" {
+resource "azurerm_lb_probe" "api-minimal-azure-example-com-Health-HTTPS-3988" {
   interval_in_seconds = 15
   loadbalancer_id     = azurerm_lb.api-minimal-azure-example-com.id
-  name                = "Health-TCP-3988"
+  name                = "Health-HTTPS-3988"
   number_of_probes    = 4
   port                = 3988
-  protocol            = "Tcp"
+  protocol            = "Https"
+  request_path        = "/healthz"
 }
 
 resource "azurerm_lb_probe" "api-minimal-azure-example-com-Health-TCP-443" {
@@ -89,7 +90,7 @@ resource "azurerm_lb_rule" "api-minimal-azure-example-com-TCP-3988" {
   load_distribution              = "Default"
   loadbalancer_id                = azurerm_lb.api-minimal-azure-example-com.id
   name                           = "TCP-3988"
-  probe_id                       = azurerm_lb_probe.api-minimal-azure-example-com-Health-TCP-3988.id
+  probe_id                       = azurerm_lb_probe.api-minimal-azure-example-com-Health-HTTPS-3988.id
   protocol                       = "Tcp"
 }
 

@@ -250,10 +250,11 @@ func (*LoadBalancer) RenderAzure(t *azure.AzureAPITarget, a, e, changes *LoadBal
 
 	if slices.Contains(e.WellKnownServices, wellknownservices.KopsController) {
 		lb.Properties.Probes = append(lb.Properties.Probes, &network.Probe{
-			Name: to.Ptr("Health-TCP-3988"),
+			Name: to.Ptr("Health-HTTPS-3988"),
 			Properties: &network.ProbePropertiesFormat{
-				Protocol:          to.Ptr(network.ProbeProtocolTCP),
+				Protocol:          to.Ptr(network.ProbeProtocolHTTPS),
 				Port:              to.Ptr[int32](wellknownports.KopsControllerPort),
+				RequestPath:       to.Ptr("/healthz"),
 				IntervalInSeconds: to.Ptr[int32](15),
 				NumberOfProbes:    to.Ptr[int32](4),
 			},
@@ -274,7 +275,7 @@ func (*LoadBalancer) RenderAzure(t *azure.AzureAPITarget, a, e, changes *LoadBal
 					ID: to.Ptr(fmt.Sprintf("/%s/loadbalancers/%s/backendAddressPools/%s", idPrefix, *e.Name, *to.Ptr("LoadBalancerBackEnd"))),
 				},
 				Probe: &network.SubResource{
-					ID: to.Ptr(fmt.Sprintf("/%s/loadbalancers/%s/probes/%s", idPrefix, *e.Name, *to.Ptr("Health-TCP-3988"))),
+					ID: to.Ptr(fmt.Sprintf("/%s/loadbalancers/%s/probes/%s", idPrefix, *e.Name, *to.Ptr("Health-HTTPS-3988"))),
 				},
 			},
 		})
