@@ -51,7 +51,7 @@ func (c *disksClientImpl) CreateOrUpdate(ctx context.Context, resourceGroupName,
 
 func (c *disksClientImpl) List(ctx context.Context, resourceGroupName string) ([]*compute.Disk, error) {
 	var l []*compute.Disk
-	pager := c.c.NewListPager(nil)
+	pager := c.c.NewListByResourceGroupPager(resourceGroupName, nil)
 	for pager.More() {
 		resp, err := pager.NextPage(ctx)
 		if err != nil {

@@ -19,6 +19,7 @@ package azure
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	authz "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/authorization/armauthorization/v3"
@@ -80,11 +81,14 @@ func (g *resourceGetter) listResourcesAzure() (map[string]*resources.Resource, e
 	}
 
 	// Convert a slice of resources to a map of resources keyed by type and ID.
+	// Normalize IDs to lowercase since Azure resource IDs are case-insensitive
+	// but different Azure APIs may return different casing for the same resource.
 	resources := make(map[string]*resources.Resource)
 	for _, r := range rs {
 		if r.Done {
 			continue
 		}
+		r.ID = strings.ToLower(r.ID)
 		resources[toKey(r.Type, r.ID)] = r
 	}
 	return resources, nil
@@ -780,5 +784,5 @@ func (g *resourceGetter) isOwnedByCluster(tags map[string]*string) bool {
 }
 
 func toKey(rtype, id string) string {
-	return rtype + ":" + id
+	return rtype + ":" + strings.ToLower(id)
 }
