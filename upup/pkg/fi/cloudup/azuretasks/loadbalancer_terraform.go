@@ -19,8 +19,6 @@ package azuretasks
 import (
 	"fmt"
 
-	"k8s.io/kops/pkg/wellknownports"
-	"k8s.io/kops/pkg/wellknownservices"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraform"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
@@ -114,38 +112,32 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 		return err
 	}
 
-	for _, service := range e.WellKnownServices {
-		port, err := wellKnownServicePort(service)
-		if err != nil {
-			return err
-		}
-
-		probeProtocol, probeNamePrefix, probeRequestPath := wellKnownServiceProbe(service)
-		probeName := fmt.Sprintf("Health-%s-%d", probeNamePrefix, port)
-		ruleName := fmt.Sprintf("TCP-%d", port)
-		probeResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), probeName)
-		ruleResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), ruleName)
-
-		ruleProtocol := "Tcp"
-		loadDistribution := "Default"
+	for _, probe := range e.Probes {
+		probeResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), probe.Name)
 		if err := t.RenderResource("azurerm_lb_probe", probeResourceName, &terraformAzureLoadBalancerProbe{
-			Name:              &probeName,
+			Name:              fi.PtrTo(probe.Name),
 			LoadBalancerID:    e.terraformID(),
-			Protocol:          &probeProtocol,
-			Port:              fi.PtrTo(port),
-			RequestPath:       probeRequestPath,
-			IntervalInSeconds: fi.PtrTo[int32](15),
-			NumberOfProbes:    fi.PtrTo[int32](4),
+			Protocol:          fi.PtrTo(probe.Protocol),
+			Port:              fi.PtrTo(probe.Port),
+			RequestPath:       probe.RequestPath,
+			IntervalInSeconds: fi.PtrTo(probe.IntervalInSeconds),
+			NumberOfProbes:    fi.PtrTo(probe.NumberOfProbes),
 		}); err != nil {
 			return err
 		}
+	}
 
+	for _, rule := range e.Rules {
+		ruleResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), rule.Name)
+		probeResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), rule.ProbeName)
+		ruleProtocol := "Tcp"
+		loadDistribution := "Default"
 		if err := t.RenderResource("azurerm_lb_rule", ruleResourceName, &terraformAzureLoadBalancerRule{
-			Name:                        &ruleName,
+			Name:                        fi.PtrTo(rule.Name),
 			LoadBalancerID:              e.terraformID(),
 			Protocol:                    &ruleProtocol,
-			FrontendPort:                fi.PtrTo(port),
-			BackendPort:                 fi.PtrTo(port),
+			FrontendPort:                fi.PtrTo(rule.Port),
+			BackendPort:                 fi.PtrTo(rule.Port),
 			FrontendIPConfigurationName: fi.PtrTo(terraformAzureLoadBalancerFrontendName),
 			BackendAddressPoolIDs:       []*terraformWriter.Literal{e.terraformBackendAddressPoolID()},
 			ProbeID:                     terraformWriter.LiteralProperty("azurerm_lb_probe", probeResourceName, "id"),
@@ -166,26 +158,4 @@ func (lb *LoadBalancer) terraformID() *terraformWriter.Literal {
 
 func (lb *LoadBalancer) terraformBackendAddressPoolID() *terraformWriter.Literal {
 	return terraformWriter.LiteralProperty("azurerm_lb_backend_address_pool", fmt.Sprintf("%s-backend-pool", fi.ValueOf(lb.Name)), "id")
-}
-
-// wellKnownServiceProbe returns the probe protocol (for terraform), probe name prefix (for resource naming),
-// and request path for the given service.
-func wellKnownServiceProbe(service wellknownservices.WellKnownService) (protocol string, namePrefix string, requestPath *string) {
-	switch service {
-	case wellknownservices.KopsController:
-		return "Https", "HTTPS", fi.PtrTo("/healthz")
-	default:
-		return "Tcp", "TCP", nil
-	}
-}
-
-func wellKnownServicePort(service wellknownservices.WellKnownService) (int32, error) {
-	switch service {
-	case wellknownservices.KubeAPIServer:
-		return wellknownports.KubeAPIServer, nil
-	case wellknownservices.KopsController:
-		return wellknownports.KopsControllerPort, nil
-	default:
-		return 0, fmt.Errorf("unsupported Azure load balancer service %q", service)
-	}
 }
