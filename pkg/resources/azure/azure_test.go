@@ -19,6 +19,7 @@ package azure
 import (
 	"fmt"
 	"reflect"
+	"slices"
 	"testing"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
@@ -227,11 +228,15 @@ func TestListResourcesAzure(t *testing.T) {
 	toDigests := func(rs map[string]*resources.Resource) map[string]*resourceDigest {
 		d := map[string]*resourceDigest{}
 		for k, r := range rs {
+			blocks := slices.Clone(r.Blocks)
+			blocked := slices.Clone(r.Blocked)
+			slices.Sort(blocks)
+			slices.Sort(blocked)
 			d[k] = &resourceDigest{
 				rtype:   r.Type,
 				name:    r.Name,
-				blocks:  r.Blocks,
-				blocked: r.Blocked,
+				blocks:  blocks,
+				blocked: blocked,
 				shared:  r.Shared,
 			}
 		}
@@ -253,8 +258,8 @@ func TestListResourcesAzure(t *testing.T) {
 			rtype: typeSubnet,
 			name:  subnetName,
 			blocks: []string{
-				toKey(typeVirtualNetwork, vnetID),
 				toKey(typeResourceGroup, rgID),
+				toKey(typeVirtualNetwork, vnetID),
 			},
 		},
 		toKey(typeRouteTable, rtID): {
@@ -267,8 +272,8 @@ func TestListResourcesAzure(t *testing.T) {
 			name:  vmssName,
 			blocks: []string{
 				toKey(typeResourceGroup, rgID),
-				toKey(typeVirtualNetwork, vnetID),
 				toKey(typeSubnet, subnetID),
+				toKey(typeVirtualNetwork, vnetID),
 			},
 			blocked: []string{
 				toKey(typeVMScaleSetVM, vmID),
@@ -278,15 +283,13 @@ func TestListResourcesAzure(t *testing.T) {
 			rtype:   typeDisk,
 			name:    diskName,
 			blocks:  []string{toKey(typeResourceGroup, rgID)},
-			blocked: []string{toKey(typeVMScaleSet, vmssID)},
+			blocked: []string{toKey(typeVMScaleSetVM, vmID)},
 		},
 		toKey(typeRoleAssignment, raID): {
-			rtype: typeRoleAssignment,
-			name:  raName,
-			blocks: []string{
-				toKey(typeResourceGroup, rgID),
-				toKey(typeVMScaleSet, vmssID),
-			},
+			rtype:   typeRoleAssignment,
+			name:    raName,
+			blocks:  []string{toKey(typeResourceGroup, rgID)},
+			blocked: []string{toKey(typeVMScaleSet, vmssID)},
 		},
 		toKey(typeLoadBalancer, lbID): {
 			rtype:  typeLoadBalancer,

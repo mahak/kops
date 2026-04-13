@@ -575,10 +575,7 @@ func (g *resourceGetter) listDisks(ctx context.Context) ([]*resources.Resource, 
 func (g *resourceGetter) toDiskResource(disk *compute.Disk) *resources.Resource {
 	var blocked []string
 	if disk.ManagedBy != nil {
-		vm, err := arm.ParseResourceID(*disk.ManagedBy)
-		if err == nil {
-			blocked = append(blocked, toKey(typeVMScaleSet, vm.Parent.String()))
-		}
+		blocked = append(blocked, toKey(typeVMScaleSetVM, *disk.ManagedBy))
 	}
 
 	return &resources.Resource{
@@ -626,8 +623,10 @@ func (g *resourceGetter) toRoleAssignmentResource(ra *authz.RoleAssignment, vmss
 		Deleter: g.deleteRoleAssignment,
 		Blocks: []string{
 			toKey(typeResourceGroup, g.resourceGroupID()),
-			toKey(typeVMScaleSet, *vmss.ID),
 		},
+		// Wait for the VMSS to be deleted before removing role assignments,
+		// to avoid permission issues during VMSS teardown.
+		Blocked: []string{toKey(typeVMScaleSet, *vmss.ID)},
 	}
 }
 
