@@ -395,7 +395,7 @@ func (t *Tester) addNodeOSArchFlag() error {
 		return err
 	}
 	for _, ig := range igs {
-		if strings.Contains(ig.Spec.Image, "arm64") {
+		if strings.Contains(ig.Spec.Image, "arm64") || strings.Contains(ig.Spec.Image, "aarch64") {
 			klog.Info("Setting --node-os-arch=arm64")
 			t.TestArgs += " --node-os-arch=arm64"
 			break
