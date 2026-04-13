@@ -648,6 +648,12 @@ spec:
         - --metrics-address=0.0.0.0:29605
         - --remove-not-ready-taint=true
         env:
+        - name: AZURE_CREDENTIAL_FILE
+          valueFrom:
+            configMapKeyRef:
+              key: path
+              name: azure-cred-file
+              optional: true
         - name: CSI_ENDPOINT
           value: unix:///csi/csi.sock
         - name: KUBE_NODE_NAME
@@ -939,7 +945,11 @@ spec:
         - --vmss-detach-timeout-seconds=20
         env:
         - name: AZURE_CREDENTIAL_FILE
-          value: /etc/kubernetes/cloud.config
+          valueFrom:
+            configMapKeyRef:
+              key: path
+              name: azure-cred-file
+              optional: true
         - name: CSI_ENDPOINT
           value: unix:///csi/csi.sock
         - name: AZURE_GO_SDK_LOG_LEVEL
@@ -975,7 +985,6 @@ spec:
           name: socket-dir
         - mountPath: /etc/kubernetes/
           name: azure-cred
-          readOnly: true
       hostNetwork: true
       nodeSelector:
         kubernetes.io/os: linux

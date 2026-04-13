@@ -5,15 +5,9 @@
 #   helm template azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
 #     --version 1.34.0 --namespace kube-system -f helm-values.yaml > k8s-1.31.yaml.template
 #
-# After generating, apply kops-specific patches:
-#   1. In the controller azuredisk container, replace AZURE_CREDENTIAL_FILE env var:
-#        from: valueFrom: configMapKeyRef: ...
-#        to:   value: /etc/kubernetes/cloud.config
-#   2. Add readOnly: true to controller azure-cred volume mount
-#   3. In the node azuredisk container, remove the AZURE_CREDENTIAL_FILE env var.
-#      The node driver does not need cloud config — it uses --get-node-info-from-labels
-#      and --allow-empty-cloud-config=true, since cloud.config is only available on
-#      control-plane nodes.
+# Note: No kops-specific patches are needed. The driver finds the cloud config
+# at /etc/kubernetes/azure.json (its default path) on control-plane nodes.
+# Node pods use --get-node-info-from-labels and --allow-empty-cloud-config=true.
 #
 # Note: StorageClass is managed separately via storage-azure.addons.k8s.io
 
