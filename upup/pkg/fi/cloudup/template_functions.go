@@ -549,7 +549,12 @@ func (tf *TemplateFunctions) CloudControllerConfigArgv() ([]string, error) {
 		argv = append(argv, fmt.Sprintf("--use-service-account-credentials=%t", true))
 	}
 
-	if cluster.GetCloudProvider() != kops.CloudProviderHetzner {
+	switch cluster.GetCloudProvider() {
+	case kops.CloudProviderHetzner:
+		// Hetzner does not use cloud config.
+	case kops.CloudProviderAzure:
+		argv = append(argv, "--cloud-config=/etc/kubernetes/azure.json")
+	default:
 		argv = append(argv, "--cloud-config=/etc/kubernetes/cloud.config")
 	}
 

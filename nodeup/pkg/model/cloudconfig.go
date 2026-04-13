@@ -29,6 +29,7 @@ import (
 
 const (
 	CloudConfigFilePath       = "/etc/kubernetes/cloud.config"
+	AzureCloudConfigFilePath  = "/etc/kubernetes/azure.json"
 	InTreeCloudConfigFilePath = "/etc/kubernetes/in-tree-cloud.config"
 
 	// VM UUID is set by cloud-init
@@ -155,6 +156,8 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 	path := CloudConfigFilePath
 	if inTree {
 		path = InTreeCloudConfigFilePath
+	} else if cloudProvider == kops.CloudProviderAzure {
+		path = AzureCloudConfigFilePath
 	}
 	t := &nodetasks.File{
 		Path:     path,
