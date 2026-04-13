@@ -30,6 +30,10 @@ linux:
   hostNetwork: true
   getNodeInfoFromLabels: true
 
+node:
+  cloudConfigSecretName: ""
+  cloudConfigSecretNamespace: ""
+
 windows:
   enabled: false
 
