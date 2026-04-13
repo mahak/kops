@@ -409,7 +409,9 @@ func (g *resourceGetter) listVMScaleSetsAndRoleAssignments(ctx context.Context) 
 		}
 		rs = append(rs, r)
 
-		principalIDs[*vmss.Identity.PrincipalID] = vmss
+		if vmss.Identity != nil && vmss.Identity.PrincipalID != nil {
+			principalIDs[*vmss.Identity.PrincipalID] = vmss
+		}
 	}
 
 	resourceGroupRAs, err := g.listRoleAssignments(ctx, principalIDs, g.resourceGroupID())
@@ -445,8 +447,17 @@ func (g *resourceGetter) toVMScaleSetResource(vmss *compute.VirtualMachineScaleS
 	subnets := set.New[string]()
 	asgs := set.New[string]()
 	lbs := set.New[string]()
+	if vmss.Properties == nil || vmss.Properties.VirtualMachineProfile == nil || vmss.Properties.VirtualMachineProfile.NetworkProfile == nil {
+		return nil, fmt.Errorf("VMSS %s has no network profile", fi.ValueOf(vmss.Name))
+	}
 	for _, iface := range vmss.Properties.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations {
+		if iface.Properties == nil {
+			continue
+		}
 		for _, ip := range iface.Properties.IPConfigurations {
+			if ip.Properties == nil || ip.Properties.Subnet == nil {
+				continue
+			}
 			subnet, err := arm.ParseResourceID(*ip.Properties.Subnet.ID)
 			if err != nil {
 				return nil, err
