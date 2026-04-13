@@ -231,8 +231,16 @@ func (g *resourceGetter) toSubnetResource(subnet *network.Subnet, vnetID string)
 	blocks = append(blocks, toKey(typeVirtualNetwork, vnetID))
 	blocks = append(blocks, toKey(typeResourceGroup, g.resourceGroupID()))
 
-	if subnet.Properties != nil && subnet.Properties.NatGateway != nil && subnet.Properties.NatGateway.ID != nil {
-		blocks = append(blocks, toKey(typeNatGateway, *subnet.Properties.NatGateway.ID))
+	if subnet.Properties != nil {
+		if subnet.Properties.NatGateway != nil && subnet.Properties.NatGateway.ID != nil {
+			blocks = append(blocks, toKey(typeNatGateway, *subnet.Properties.NatGateway.ID))
+		}
+		if subnet.Properties.RouteTable != nil && subnet.Properties.RouteTable.ID != nil {
+			blocks = append(blocks, toKey(typeRouteTable, *subnet.Properties.RouteTable.ID))
+		}
+		if subnet.Properties.NetworkSecurityGroup != nil && subnet.Properties.NetworkSecurityGroup.ID != nil {
+			blocks = append(blocks, toKey(typeNetworkSecurityGroup, *subnet.Properties.NetworkSecurityGroup.ID))
+		}
 	}
 
 	vnet, err := arm.ParseResourceID(vnetID)
