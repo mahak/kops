@@ -579,7 +579,13 @@ func (g *resourceGetter) listDisks(ctx context.Context) ([]*resources.Resource, 
 func (g *resourceGetter) toDiskResource(disk *compute.Disk) *resources.Resource {
 	var blocked []string
 	if disk.ManagedBy != nil {
-		blocked = append(blocked, toKey(typeVMScaleSetVM, *disk.ManagedBy))
+		// Block on the parent VMScaleSet, not the individual VM instance.
+		// The raw ManagedBy path may not match the listed VM's resource ID,
+		// but parsing it to extract the parent VMSS gives a reliable match.
+		vmID, err := arm.ParseResourceID(*disk.ManagedBy)
+		if err == nil && vmID.Parent != nil {
+			blocked = append(blocked, toKey(typeVMScaleSet, vmID.Parent.String()))
+		}
 	}
 
 	return &resources.Resource{
