@@ -65,6 +65,10 @@ func (r *RouteTable) Find(c *fi.CloudupContext) (*RouteTable, error) {
 	if found == nil {
 		return nil, nil
 	}
+	if found.Properties != nil && found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found route table %q in failed provisioning state", *r.Name)
+		return nil, nil
+	}
 
 	r.ID = found.ID
 

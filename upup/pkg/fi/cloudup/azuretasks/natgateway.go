@@ -67,6 +67,10 @@ func (ngw *NatGateway) Find(c *fi.CloudupContext) (*NatGateway, error) {
 	if found == nil {
 		return nil, nil
 	}
+	if found.Properties != nil && found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found NAT gateway %q in failed provisioning state", *ngw.Name)
+		return nil, nil
+	}
 
 	ngw.ID = found.ID
 

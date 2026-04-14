@@ -89,6 +89,10 @@ func (s *Subnet) Find(c *fi.CloudupContext) (*Subnet, error) {
 	if found.Properties == nil {
 		return nil, fmt.Errorf("found subnet without properties")
 	}
+	if found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found subnet %q in failed provisioning state", *s.Name)
+		return nil, nil
+	}
 
 	s.ID = found.ID
 

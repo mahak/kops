@@ -155,6 +155,10 @@ func (lb *LoadBalancer) Find(c *fi.CloudupContext) (*LoadBalancer, error) {
 	if found == nil {
 		return nil, nil
 	}
+	if found.Properties != nil && found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found load balancer %q in failed provisioning state", *lb.Name)
+		return nil, nil
+	}
 
 	lbProperties := found.Properties
 
