@@ -281,10 +281,13 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 	c.AddTask(nsgTask)
 
 	ngwPipTask := &azuretasks.PublicIPAddress{
-		Name:          fi.PtrTo(b.NameForVirtualNetwork()),
-		Lifecycle:     b.Lifecycle,
-		ResourceGroup: b.LinkToResourceGroup(),
-		Tags:          map[string]*string{},
+		Name:             fi.PtrTo(b.NameForVirtualNetwork()),
+		Lifecycle:        b.Lifecycle,
+		ResourceGroup:    b.LinkToResourceGroup(),
+		IPVersion:        network.IPVersionIPv4,
+		AllocationMethod: network.IPAllocationMethodStatic,
+		SKU:              network.PublicIPAddressSKUNameStandard,
+		Tags:             map[string]*string{},
 	}
 	c.AddTask(ngwPipTask)
 	ngwTask := &azuretasks.NatGateway{
@@ -292,6 +295,7 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 		Lifecycle:         b.Lifecycle,
 		PublicIPAddresses: []*azuretasks.PublicIPAddress{ngwPipTask},
 		ResourceGroup:     b.LinkToResourceGroup(),
+		SKU:               network.NatGatewaySKUNameStandard,
 		Tags:              map[string]*string{},
 	}
 	c.AddTask(ngwTask)

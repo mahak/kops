@@ -38,7 +38,7 @@ type terraformAzureNatGatewayPublicIPAssociation struct {
 }
 
 func (*NatGateway) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *NatGateway) error {
-	skuName := "Standard"
+	skuName := string(e.SKU)
 	tf := &terraformAzureNatGateway{
 		Name:              e.Name,
 		Location:          fi.PtrTo(t.Cloud.Region()),

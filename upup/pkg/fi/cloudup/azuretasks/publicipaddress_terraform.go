@@ -33,9 +33,9 @@ type terraformAzurePublicIPAddress struct {
 }
 
 func (*PublicIPAddress) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *PublicIPAddress) error {
-	allocationMethod := "Static"
-	sku := "Standard"
-	ipVersion := "IPv4"
+	allocationMethod := string(e.AllocationMethod)
+	sku := string(e.SKU)
+	ipVersion := string(e.IPVersion)
 	tf := &terraformAzurePublicIPAddress{
 		Name:              e.Name,
 		Location:          fi.PtrTo(t.Cloud.Region()),

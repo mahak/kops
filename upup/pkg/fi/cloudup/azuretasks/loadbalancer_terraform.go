@@ -19,6 +19,7 @@ package azuretasks
 import (
 	"fmt"
 
+	network "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraform"
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
@@ -75,7 +76,7 @@ type terraformAzureLoadBalancerRule struct {
 }
 
 func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *LoadBalancer) error {
-	sku := "Standard"
+	sku := string(e.SKU)
 	tf := &terraformAzureLoadBalancer{
 		Name:              e.Name,
 		Location:          fi.PtrTo(t.Cloud.Region()),
@@ -90,7 +91,7 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 	if fi.ValueOf(e.External) {
 		frontend.PublicIPAddressID = e.PublicIPAddress.terraformID()
 	} else {
-		allocationMethod := "Dynamic"
+		allocationMethod := string(network.IPAllocationMethodDynamic)
 		frontend.PrivateIPAllocationMethod = &allocationMethod
 		subnetID, err := e.Subnet.terraformID(t)
 		if err != nil {
@@ -117,7 +118,7 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 		if err := t.RenderResource("azurerm_lb_probe", probeResourceName, &terraformAzureLoadBalancerProbe{
 			Name:              fi.PtrTo(probe.Name),
 			LoadBalancerID:    e.terraformID(),
-			Protocol:          fi.PtrTo(probe.Protocol),
+			Protocol:          fi.PtrTo(string(probe.Protocol)),
 			Port:              fi.PtrTo(probe.Port),
 			RequestPath:       probe.RequestPath,
 			IntervalInSeconds: fi.PtrTo(probe.IntervalInSeconds),
@@ -130,8 +131,8 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 	for _, rule := range e.Rules {
 		ruleResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), rule.Name)
 		probeResourceName := fmt.Sprintf("%s-%s", fi.ValueOf(e.Name), rule.ProbeName)
-		ruleProtocol := "Tcp"
-		loadDistribution := "Default"
+		ruleProtocol := string(rule.Protocol)
+		loadDistribution := string(rule.LoadDistribution)
 		if err := t.RenderResource("azurerm_lb_rule", ruleResourceName, &terraformAzureLoadBalancerRule{
 			Name:                        fi.PtrTo(rule.Name),
 			LoadBalancerID:              e.terraformID(),
@@ -141,8 +142,8 @@ func (*LoadBalancer) RenderTerraform(t *terraform.TerraformTarget, a, e, changes
 			FrontendIPConfigurationName: fi.PtrTo(terraformAzureLoadBalancerFrontendName),
 			BackendAddressPoolIDs:       []*terraformWriter.Literal{e.terraformBackendAddressPoolID()},
 			ProbeID:                     terraformWriter.LiteralProperty("azurerm_lb_probe", probeResourceName, "id"),
-			IdleTimeoutInMinutes:        fi.PtrTo[int32](4),
-			FloatingIPEnabled:           fi.PtrTo(false),
+			IdleTimeoutInMinutes:        fi.PtrTo(rule.IdleTimeoutInMinutes),
+			FloatingIPEnabled:           fi.PtrTo(rule.EnableFloatingIP),
 			LoadDistribution:            &loadDistribution,
 		}); err != nil {
 			return err

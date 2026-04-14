@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path"
 
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	network "github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/network/armnetwork"
@@ -48,6 +49,7 @@ type Subnet struct {
 var (
 	_ fi.CloudupTask   = &Subnet{}
 	_ fi.CompareWithID = &Subnet{}
+	// Subnet does not implement CloudupTaskNormalize because Azure subnets do not support tags.
 )
 
 // CompareWithID returns the Name of the VM Scale Set.
@@ -121,7 +123,8 @@ func (s *Subnet) Find(c *fi.CloudupContext) (*Subnet, error) {
 	}
 	if found.Properties.RouteTable != nil {
 		fs.RouteTable = &RouteTable{
-			ID: found.Properties.RouteTable.ID,
+			Name: fi.PtrTo(path.Base(fi.ValueOf(found.Properties.RouteTable.ID))),
+			ID:   found.Properties.RouteTable.ID,
 		}
 	}
 
@@ -146,6 +149,9 @@ func (*Subnet) CheckChanges(a, e, changes *Subnet) error {
 	// Check if unchangeable fields won't be changed.
 	if changes.Name != nil {
 		return fi.CannotChangeField("Name")
+	}
+	if changes.CIDR != nil {
+		return fi.CannotChangeField("CIDR")
 	}
 	return nil
 }

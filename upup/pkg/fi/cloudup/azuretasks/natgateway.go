@@ -36,6 +36,9 @@ type NatGateway struct {
 	PublicIPAddresses []*PublicIPAddress
 	ResourceGroup     *ResourceGroup
 
+	// SKU is the NAT gateway SKU, e.g. network.NatGatewaySKUNameStandard.
+	SKU network.NatGatewaySKUName
+
 	Tags map[string]*string
 }
 
@@ -84,14 +87,18 @@ func (ngw *NatGateway) Find(c *fi.CloudupContext) (*NatGateway, error) {
 		}
 	}
 
-	return &NatGateway{
+	actual := &NatGateway{
 		Name:              ngw.Name,
 		Lifecycle:         ngw.Lifecycle,
 		ResourceGroup:     &ResourceGroup{Name: ngw.ResourceGroup.Name},
 		ID:                found.ID,
 		PublicIPAddresses: pips,
 		Tags:              found.Tags,
-	}, nil
+	}
+	if found.SKU != nil {
+		actual.SKU = fi.ValueOf(found.SKU.Name)
+	}
+	return actual, nil
 }
 
 func (ngw *NatGateway) Normalize(c *fi.CloudupContext) error {
@@ -134,7 +141,7 @@ func (*NatGateway) RenderAzure(t *azure.AzureAPITarget, a, e, changes *NatGatewa
 		Name:       to.Ptr(*e.Name),
 		Properties: &network.NatGatewayPropertiesFormat{},
 		SKU: &network.NatGatewaySKU{
-			Name: to.Ptr(network.NatGatewaySKUNameStandard),
+			Name: to.Ptr(e.SKU),
 		},
 		Tags: e.Tags,
 	}

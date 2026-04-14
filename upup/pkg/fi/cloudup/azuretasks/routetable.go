@@ -27,6 +27,7 @@ import (
 )
 
 // RouteTable is an Azure Route Table.
+// Routes are not managed here; they are maintained by the CNI or Azure networking layer.
 // +kops:fitask
 type RouteTable struct {
 	Name          *string
