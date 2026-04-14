@@ -774,7 +774,7 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 
 	if b.Cluster.IsKubernetesGTE("1.31") && b.Cluster.GetCloudProvider() == kops.CloudProviderAzure {
 		{
-			key := "azure-cloud-node.addons.k8s.io"
+			key := "azure-cloud-controller.addons.k8s.io"
 			id := "k8s-1.31"
 			location := key + "/" + id + ".yaml"
 

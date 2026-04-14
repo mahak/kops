@@ -18,6 +18,12 @@ spec:
       subscriptionId: sub-123
       tenantId: tenant-123
     manageStorageClasses: true
+  cloudControllerManager:
+    azureNodeManagerImage: mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.34.3
+    image: mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v1.34.3
+    leaderElection:
+      leaderElect: true
+    logLevel: 2
   cloudProvider: azure
   clusterDNSDomain: cluster.local
   configBase: memfs://tests/minimal-azure.example.com

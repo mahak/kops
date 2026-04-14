@@ -2471,6 +2471,7 @@ func autoConvert_v1alpha3_CloudControllerManagerConfig_To_kops_CloudControllerMa
 	out.CPURequest = in.CPURequest
 	out.NodeStatusUpdateFrequency = in.NodeStatusUpdateFrequency
 	out.ConcurrentNodeSyncs = in.ConcurrentNodeSyncs
+	out.AzureNodeManagerImage = in.AzureNodeManagerImage
 	return nil
 }
 
@@ -2505,6 +2506,7 @@ func autoConvert_kops_CloudControllerManagerConfig_To_v1alpha3_CloudControllerMa
 	out.CPURequest = in.CPURequest
 	out.NodeStatusUpdateFrequency = in.NodeStatusUpdateFrequency
 	out.ConcurrentNodeSyncs = in.ConcurrentNodeSyncs
+	out.AzureNodeManagerImage = in.AzureNodeManagerImage
 	return nil
 }
 

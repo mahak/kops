@@ -666,6 +666,10 @@ spec:
                     description: Allow the cluster to run without the cluster-id on
                       cloud instances
                     type: boolean
+                  azureNodeManagerImage:
+                    description: AzureNodeManagerImage is the OCI image of the Azure
+                      cloud node manager.
+                    type: string
                   cidrAllocatorType:
                     description: CIDRAllocatorType specifies the type of CIDR allocator
                       to use.
