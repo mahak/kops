@@ -283,7 +283,7 @@ func TestListResourcesAzure(t *testing.T) {
 			rtype:   typeDisk,
 			name:    diskName,
 			blocks:  []string{toKey(typeResourceGroup, rgID)},
-			blocked: []string{toKey(typeVMScaleSetVM, vmID)},
+			blocked: []string{toKey(typeVMScaleSet, vmssID)},
 		},
 		toKey(typeRoleAssignment, raID): {
 			rtype:   typeRoleAssignment,
@@ -304,6 +304,49 @@ func TestListResourcesAzure(t *testing.T) {
 	}
 	if !reflect.DeepEqual(a, e) {
 		t.Errorf("expected %+v, but got %+v", e, a)
+	}
+}
+
+func TestToDiskResource_ManagedBy(t *testing.T) {
+	g := resourceGetter{
+		clusterInfo: resources.ClusterInfo{
+			AzureSubscriptionID:    "sub",
+			AzureResourceGroupName: "rg",
+		},
+	}
+
+	diskID := "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Compute/disks/disk"
+	diskName := "disk"
+	vmssID := "/subscriptions/sub/resourceGroups/rg/providers/Microsoft.Compute/virtualMachineScaleSets/vmss"
+
+	tests := []struct {
+		name        string
+		managedBy   *string
+		wantBlocked []string
+	}{
+		{
+			name:      "nil ManagedBy",
+			managedBy: nil,
+		},
+		{
+			name:        "valid ManagedBy blocks on parent VMSS",
+			managedBy:   to.Ptr(vmssID + "/virtualMachines/0"),
+			wantBlocked: []string{toKey(typeVMScaleSet, vmssID)},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			disk := &compute.Disk{
+				ID:        to.Ptr(diskID),
+				Name:      to.Ptr(diskName),
+				ManagedBy: tc.managedBy,
+			}
+			r := g.toDiskResource(disk)
+			if !reflect.DeepEqual(r.Blocked, tc.wantBlocked) {
+				t.Errorf("got Blocked=%v, want %v", r.Blocked, tc.wantBlocked)
+			}
+		})
 	}
 }
 
