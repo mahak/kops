@@ -1097,7 +1097,7 @@ func (d *clusterDiscoveryGCE) listBackendServices() ([]*resources.Resource, erro
 					op, err := c.Compute().RegionBackendServices().Delete(c.Project(), c.Region(), svc.Name)
 					if err != nil {
 						if gce.IsNotFound(err) {
-							klog.Infof("BackendService not found, assuming deleted: %q", op.SelfLink)
+							klog.Infof("BackendService not found, assuming deleted: %q", r.Name)
 							return nil
 						}
 						return err
@@ -1141,7 +1141,7 @@ func (d *clusterDiscoveryGCE) listHealthchecks() ([]*resources.Resource, error) 
 				op, err := c.Compute().RegionHealthChecks().Delete(c.Project(), c.Region(), gce.LastComponent(hc))
 				if err != nil {
 					if gce.IsNotFound(err) {
-						klog.Infof("Healthcheck not found, assuming deleted: %q", op.SelfLink)
+						klog.Infof("Healthcheck not found, assuming deleted: %q", r.Name)
 						return nil
 					}
 					return err
