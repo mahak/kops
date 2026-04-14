@@ -73,6 +73,10 @@ func (nsg *NetworkSecurityGroup) Find(c *fi.CloudupContext) (*NetworkSecurityGro
 	if found == nil {
 		return nil, nil
 	}
+	if found.Properties != nil && found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found network security group %q in failed provisioning state", *nsg.Name)
+		return nil, nil
+	}
 
 	actual := &NetworkSecurityGroup{
 		Name:      nsg.Name,

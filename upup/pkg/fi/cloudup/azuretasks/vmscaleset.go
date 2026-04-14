@@ -108,6 +108,10 @@ func (s *VMScaleSet) Find(c *fi.CloudupContext) (*VMScaleSet, error) {
 	if found.Properties == nil {
 		return nil, fmt.Errorf("found VMSS without properties")
 	}
+	if fi.ValueOf(found.Properties.ProvisioningState) == "Failed" {
+		klog.Warningf("found VMSS %q in failed provisioning state", *s.Name)
+		return nil, nil
+	}
 	if found.Properties.VirtualMachineProfile == nil {
 		return nil, fmt.Errorf("found VMSS without VM profile")
 	}

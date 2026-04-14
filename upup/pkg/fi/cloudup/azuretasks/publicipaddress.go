@@ -66,6 +66,10 @@ func (p *PublicIPAddress) Find(c *fi.CloudupContext) (*PublicIPAddress, error) {
 	if found == nil {
 		return nil, nil
 	}
+	if found.Properties != nil && found.Properties.ProvisioningState != nil && *found.Properties.ProvisioningState == network.ProvisioningStateFailed {
+		klog.Warningf("found public IP address %q in failed provisioning state", *p.Name)
+		return nil, nil
+	}
 
 	p.ID = found.ID
 
