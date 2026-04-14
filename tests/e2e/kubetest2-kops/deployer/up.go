@@ -58,8 +58,8 @@ func (d *deployer) Up() error {
 		d.KopsBaseURL = baseURL
 	}
 
-	// In PreTestCmd, we need KOPS_BASE_URL to be set for kops calls
-	if os.Getenv("KOPS_BASE_URL") == "" {
+	// PreTestCmd inherits the process environment rather than d.env().
+	if d.KopsBaseURL != "" {
 		os.Setenv("KOPS_BASE_URL", d.KopsBaseURL)
 	}
 
