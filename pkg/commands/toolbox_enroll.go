@@ -52,6 +52,7 @@ import (
 	"k8s.io/kops/pkg/model"
 	"k8s.io/kops/pkg/model/resources"
 	"k8s.io/kops/pkg/nodemodel"
+	"k8s.io/kops/pkg/nodemodel/wellknownassets"
 	"k8s.io/kops/pkg/wellknownservices"
 	"k8s.io/kops/upup/pkg/fi"
 	"k8s.io/kops/upup/pkg/fi/cloudup"
@@ -94,6 +95,12 @@ func RunToolboxEnroll(ctx context.Context, f commandutils.Factory, out io.Writer
 	if options.Host == "" {
 		// Technically we could build the host resource without the PKI, but this isn't the case we are targeting right now.
 		return fmt.Errorf("host is required")
+	}
+
+	// Resolve KOPS_BASE_URL early so that kops.Version is overridden
+	// before the version downgrade check in ApplyClusterCmd.Run.
+	if _, err := wellknownassets.BaseURL(); err != nil {
+		return err
 	}
 
 	clientset, err := f.KopsClient()
