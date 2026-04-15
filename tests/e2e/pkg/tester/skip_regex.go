@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	skipRegexBase = "\\[Slow\\]|\\[Serial\\]|\\[Disruptive\\]|\\[Flaky\\]|\\[Feature:.+\\]|nfs|NFS"
+	skipRegexBase = "\\[Slow\\]|\\[Serial\\]|\\[Disruptive\\]|\\[Flaky\\]|\\[Feature:.+\\]|nfs|NFS|In-tree.Volumes.\\[Driver:.(?:aws|gce|azure|cinder|vsphere)"
 )
 
 func (t *Tester) setSkipRegexFlag() error {
@@ -107,12 +107,6 @@ func (t *Tester) setSkipRegexFlag() error {
 		// latency during rapid attach/detach cycles on VMSS nodes.
 		// See https://github.com/kubernetes/kops/issues/17146
 		skipRegex += "|fsgroupchangepolicy"
-		// The Azure File CSI driver is not yet deployed by kOps, so all in-tree azure-file tests fail
-		// because CSI migration expects file.csi.azure.com to be present.
-		skipRegex += "|In-tree.Volumes.\\[Driver:.azure-file\\]"
-		// The in-tree azure-disk topology tests use the deprecated failure-domain.beta.kubernetes.io/zone label
-		// which is no longer present on nodes.
-		skipRegex += "|In-tree.Volumes.\\[Driver:.azure-disk\\].*topology"
 		// Skipped upstream in azuredisk-csi-driver external E2E:
 		// https://github.com/kubernetes-sigs/azuredisk-csi-driver/blob/master/test/external-e2e/run.sh
 		skipRegex += "|should.resize.volume.when.PVC.is.edited.while.pod.is.using.it"
@@ -124,8 +118,6 @@ func (t *Tester) setSkipRegexFlag() error {
 		// this test assumes the cluster runs COS but kOps uses Ubuntu by default
 		// ref: https://github.com/kubernetes/test-infra/pull/22190
 		skipRegex += "|should.be.mountable.when.non-attachable"
-		// The in-tree driver and its E2E tests use `topology.kubernetes.io/zone` but the CSI driver uses `topology.gke.io/zone`
-		skipRegex += "|In-tree.Volumes.\\[Driver:.gcepd\\].*topology.should.provision.a.volume.and.schedule.a.pod.with.AllowedTopologies"
 	}
 
 	// This test fails on RHEL-based distros because they return fully qualified hostnames yet the k8s node names are not fully qualified.
