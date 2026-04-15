@@ -67,6 +67,13 @@ func BaseURL() (*url.URL, error) {
 			return nil, fmt.Errorf("unable to parse env var KOPS_BASE_URL %q as a url: %v", baseURLString, err)
 		}
 		klog.Warningf("Using base url from env var: KOPS_BASE_URL=%q", baseURLString)
+
+		// The last path component of KOPS_BASE_URL is the artifact version.
+		// Override kops.Version so image tags in manifests match the sideloaded images.
+		if v := path.Base(kopsBaseURL.Path); v != "" && v != "." && v != "/" && v != kops.Version {
+			klog.Infof("Overriding kops version from KOPS_BASE_URL: %q -> %q", kops.Version, v)
+			kops.Version = v
+		}
 	}
 
 	return copyBaseURL(kopsBaseURL)
