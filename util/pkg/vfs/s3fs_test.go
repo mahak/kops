@@ -96,6 +96,7 @@ func Test_LinodePath_Parse(t *testing.T) {
 		},
 	}
 	for _, g := range grid {
+		t.Setenv("S3_ENDPOINT", "https://example.com")
 		s3path, err := Context.buildLinodePath(g.Input)
 		if !g.ExpectError {
 			if err != nil {
@@ -132,6 +133,7 @@ func Test_NonLinodeObjectStoragePaths_HaveCorrectScheme(t *testing.T) {
 
 	for _, tc := range grid {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("S3_ENDPOINT", "https://example.com")
 			s3path, err := tc.build(tc.input)
 			if err != nil {
 				t.Fatalf("unexpected error parsing %s path: %v", tc.name, err)
