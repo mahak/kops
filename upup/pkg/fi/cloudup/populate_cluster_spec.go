@@ -328,6 +328,7 @@ func (c *populateClusterSpec) run(ctx context.Context, clientset simple.Clientse
 			codeModels = append(codeModels, &components.AWSCloudControllerManagerOptionsBuilder{OptionsContext: optionsContext})
 			codeModels = append(codeModels, &components.GCPCloudControllerManagerOptionsBuilder{OptionsContext: optionsContext})
 			codeModels = append(codeModels, &components.GCPPDCSIDriverOptionsBuilder{OptionsContext: optionsContext})
+			codeModels = append(codeModels, &components.AzureCloudControllerManagerOptionsBuilder{OptionsContext: optionsContext})
 			codeModels = append(codeModels, &components.HetznerCloudControllerManagerOptionsBuilder{OptionsContext: optionsContext})
 			codeModels = append(codeModels, &components.LinodeCloudControllerManagerOptionsBuilder{OptionsContext: optionsContext})
 			codeModels = append(codeModels, &components.KarpenterOptionsBuilder{Context: optionsContext})

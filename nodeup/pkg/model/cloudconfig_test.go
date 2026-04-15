@@ -35,7 +35,6 @@ func TestBuildAzure(t *testing.T) {
 		subscriptionID    = "subID"
 		tenantID          = "tenantID"
 		resourceGroupName = "test-resource-group"
-		routeTableName    = "test-route-table"
 		vnetName          = "test-vnet"
 	)
 	cluster := &kops.Cluster{
@@ -48,7 +47,6 @@ func TestBuildAzure(t *testing.T) {
 					SubscriptionID:    subscriptionID,
 					TenantID:          tenantID,
 					ResourceGroupName: resourceGroupName,
-					RouteTableName:    routeTableName,
 				},
 			},
 			Networking: kops.NetworkingSpec{
@@ -101,14 +99,13 @@ func TestBuildAzure(t *testing.T) {
 		t.Fatalf("unexpected error from json.Unmarshal(%q): %v", string(data), err)
 	}
 	expected := azureCloudConfig{
-		CloudConfigType:             "file",
 		SubscriptionID:              subscriptionID,
 		TenantID:                    tenantID,
 		Location:                    "eastus",
-		VMType:                      "vmss",
 		ResourceGroup:               resourceGroupName,
-		RouteTableName:              routeTableName,
 		VnetName:                    vnetName,
+		SubnetName:                  "test-subnet",
+		SecurityGroupName:           vnetName,
 		UseInstanceMetadata:         true,
 		UseManagedIdentityExtension: true,
 		DisableAvailabilitySetNodes: true,

@@ -1,0 +1,23 @@
+# Helm values for cloud-provider-azure (chart version in kustomization.yaml)
+# To regenerate the manifest:
+#   cd upup/models/cloudup/resources/addons/azure-cloud-controller.addons.k8s.io
+#   kustomize build --enable-helm . > k8s-1.31.yaml.template
+
+infra:
+  # Placeholder; replaced with actual cluster name via Go template in k8s-1.31.yaml.template.
+  clusterName: "{{ ClusterName }}"
+
+cloudControllerManager:
+  # Overridden by kustomize patch.
+  imageTag: "v0.0.0"
+  # No CNI on Azure uses node CIDR allocation.
+  allocateNodeCidrs: "false"
+  # No CNI on Azure uses CCM-managed routes.
+  configureCloudRoutes: "false"
+  clusterCIDR: "{{ .Networking.PodCIDR }}"
+  leaderElect: "{{ .ExternalCloudControllerManager.LeaderElection.LeaderElect }}"
+  logVerbosity: "{{ .ExternalCloudControllerManager.LogLevel }}"
+
+cloudNodeManager:
+  # Overridden by kustomize patch.
+  imageTag: "v0.0.0"

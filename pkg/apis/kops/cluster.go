@@ -922,6 +922,15 @@ func (c *Cluster) AzureRouteTableName() string {
 	return c.Name
 }
 
+// AzureNetworkSecurityGroupName returns the name of the network security group for the cluster.
+// The NSG shares its name with the virtual network.
+func (c *Cluster) AzureNetworkSecurityGroupName() string {
+	if c.Spec.Networking.NetworkID != "" {
+		return c.Spec.Networking.NetworkID
+	}
+	return c.Name
+}
+
 func (c *Cluster) PublishesDNSRecords() bool {
 	if c.UsesNoneDNS() || dns.IsGossipClusterName(c.Name) {
 		return false

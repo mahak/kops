@@ -779,6 +779,8 @@ type CloudControllerManagerConfig struct {
 	NodeStatusUpdateFrequency *metav1.Duration `json:"nodeStatusUpdateFrequency,omitempty" flag:"node-status-update-frequency"`
 	// ConcurrentNodeSyncs is the number of workers concurrently synchronizing nodes. (default: 1)
 	ConcurrentNodeSyncs *int32 `json:"concurrentNodeSyncs,omitempty" flag:"concurrent-node-syncs"`
+	// AzureNodeManagerImage is the OCI image of the Azure cloud node manager.
+	AzureNodeManagerImage string `json:"azureNodeManagerImage,omitempty"`
 }
 
 // KubeSchedulerConfig is the configuration for the kube-scheduler

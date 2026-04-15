@@ -48,7 +48,7 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 	c.AddTask(networkTask)
 
 	nsgTask := &azuretasks.NetworkSecurityGroup{
-		Name:          fi.PtrTo(b.NameForVirtualNetwork()),
+		Name:          fi.PtrTo(b.Cluster.AzureNetworkSecurityGroupName()),
 		Lifecycle:     b.Lifecycle,
 		ResourceGroup: b.LinkToResourceGroup(),
 		ApplicationSecurityGroups: []*azuretasks.ApplicationSecurityGroup{

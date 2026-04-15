@@ -131,6 +131,10 @@ type Config struct {
 	AzureResourceGroup string `json:",omitempty"`
 	// AzureRouteTableName is the name of the route table attached to the subnet that the cluster is deployed in.
 	AzureRouteTableName string `json:",omitempty"`
+	// AzureSecurityGroupName is the name of the network security group attached to the subnet.
+	AzureSecurityGroupName string `json:",omitempty"`
+	// AzureSubnetName is the name of the subnet that the cluster is deployed in.
+	AzureSubnetName string `json:",omitempty"`
 
 	// GCE-specific
 	Multizone          *bool   `json:"multizone,omitempty"`
@@ -298,6 +302,8 @@ func NewConfig(cluster *kops.Cluster, instanceGroup *kops.InstanceGroup) (*Confi
 		config.AzureTenantID = cluster.Spec.CloudProvider.Azure.TenantID
 		config.AzureResourceGroup = cluster.AzureResourceGroupName()
 		config.AzureRouteTableName = cluster.AzureRouteTableName()
+		config.AzureSecurityGroupName = cluster.AzureNetworkSecurityGroupName()
+		config.AzureSubnetName = cluster.Spec.Networking.Subnets[0].Name
 		config.Networking.NetworkID = cluster.Spec.Networking.NetworkID
 		config.AzureAdminUser = cluster.Spec.CloudProvider.Azure.AdminUser
 	}

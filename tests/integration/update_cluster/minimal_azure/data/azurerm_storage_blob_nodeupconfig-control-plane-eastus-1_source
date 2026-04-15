@@ -76,6 +76,8 @@ AzureAdminUser: admin-user
 AzureLocation: eastus
 AzureResourceGroup: minimal-azure.example.com
 AzureRouteTableName: minimal-azure.example.com
+AzureSecurityGroupName: minimal-azure.example.com
+AzureSubnetName: eastus
 AzureSubscriptionID: sub-123
 AzureTenantID: tenant-123
 CAs:

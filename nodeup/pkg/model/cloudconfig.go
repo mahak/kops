@@ -37,33 +37,22 @@ const (
 )
 
 // azureCloudConfig is the configuration passed to Cloud Provider Azure.
-// The specification is described in https://kubernetes-sigs.github.io/cloud-provider-azure/install/configs/.
+// The specification is described in https://cloud-provider-azure.sigs.k8s.io/install/configs/.
+// Field order follows the upstream documentation: auth configs first, then cluster config.
 type azureCloudConfig struct {
-	// SubscriptionID is the ID of the Azure Subscription that the cluster is deployed in.
-	SubscriptionID string `json:"subscriptionId,omitempty"`
-	// TenantID is the ID of the tenant that the cluster is deployed in.
-	TenantID string `json:"tenantId"`
-	// CloudConfigType is the cloud configure type for Azure cloud provider. Supported values are file, secret and merge.
-	CloudConfigType string `json:"cloudConfigType,omitempty"`
-	// VMType is the type of azure nodes.
-	VMType string `json:"vmType,omitempty" yaml:"vmType,omitempty"`
-	// ResourceGroup is the name of the resource group that the cluster is deployed in.
-	ResourceGroup string `json:"resourceGroup,omitempty"`
-	// Location is the location of the resource group that the cluster is deployed in.
-	Location string `json:"location,omitempty"`
-	// RouteTableName is the name of the route table attached to the subnet that the cluster is deployed in.
-	RouteTableName string `json:"routeTableName,omitempty"`
-	// VnetName is the name of the virtual network that the cluster is deployed in.
-	VnetName string `json:"vnetName"`
+	// Auth configs
+	TenantID                    string `json:"tenantId,omitempty"`
+	SubscriptionID              string `json:"subscriptionId,omitempty"`
+	UseManagedIdentityExtension bool   `json:"useManagedIdentityExtension,omitempty"`
 
-	// UseInstanceMetadata specifies where instance metadata service is used where possible.
-	UseInstanceMetadata bool `json:"useInstanceMetadata,omitempty"`
-	// UseManagedIdentityExtension specifies where managed service
-	// identity is used for the virtual machine to access Azure
-	// ARM APIs.
-	UseManagedIdentityExtension bool `json:"useManagedIdentityExtension,omitempty"`
-	// DisableAvailabilitySetNodes disables VMAS nodes support.
-	DisableAvailabilitySetNodes bool `json:"disableAvailabilitySetNodes,omitempty"`
+	// Cluster config
+	ResourceGroup               string `json:"resourceGroup,omitempty"`
+	Location                    string `json:"location,omitempty"`
+	VnetName                    string `json:"vnetName,omitempty"`
+	SubnetName                  string `json:"subnetName,omitempty"`
+	SecurityGroupName           string `json:"securityGroupName,omitempty"`
+	UseInstanceMetadata         bool   `json:"useInstanceMetadata,omitempty"`
+	DisableAvailabilitySetNodes bool   `json:"disableAvailabilitySetNodes,omitempty"`
 }
 
 // CloudConfigBuilder creates the cloud configuration file
@@ -130,17 +119,17 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 		}
 
 		c := &azureCloudConfig{
-			CloudConfigType:             "file",
-			SubscriptionID:              b.NodeupConfig.AzureSubscriptionID,
+			// Auth
 			TenantID:                    b.NodeupConfig.AzureTenantID,
-			Location:                    b.NodeupConfig.AzureLocation,
-			VMType:                      "vmss",
-			ResourceGroup:               b.NodeupConfig.AzureResourceGroup,
-			RouteTableName:              b.NodeupConfig.AzureRouteTableName,
-			VnetName:                    vnetName,
-			UseInstanceMetadata:         true,
+			SubscriptionID:              b.NodeupConfig.AzureSubscriptionID,
 			UseManagedIdentityExtension: true,
-			// Disable availability set nodes as we currently use VMSS.
+			// Cluster
+			ResourceGroup:               b.NodeupConfig.AzureResourceGroup,
+			Location:                    b.NodeupConfig.AzureLocation,
+			VnetName:                    vnetName,
+			SubnetName:                  b.NodeupConfig.AzureSubnetName,
+			SecurityGroupName:           b.NodeupConfig.AzureSecurityGroupName,
+			UseInstanceMetadata:         true,
 			DisableAvailabilitySetNodes: true,
 		}
 		data, err := json.Marshal(c)
