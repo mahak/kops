@@ -414,7 +414,7 @@ spec:
             - "--user-agent-suffix=kops"
             - "--allow-empty-cloud-config=true"
             - "--support-zone=true"
-            - "--get-node-info-from-labels=true"
+            - "--get-node-info-from-labels=false"
             - "--get-nodeid-from-imds=false"
             - "--enable-otel-tracing=false"
             - "--metrics-address=0.0.0.0:29605"

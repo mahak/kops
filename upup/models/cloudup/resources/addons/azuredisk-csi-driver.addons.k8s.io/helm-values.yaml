@@ -6,8 +6,8 @@
 #     --version 1.34.0 --namespace kube-system -f helm-values.yaml > k8s-1.31.yaml.template
 #
 # Note: No kops-specific patches are needed. The driver finds the cloud config
-# at /etc/kubernetes/azure.json (its default path) on control-plane nodes.
-# Node pods use --get-node-info-from-labels and --allow-empty-cloud-config=true.
+# at /etc/kubernetes/azure.json (its default path) on all nodes.
+# Node pods query IMDS for zone info via the cloud config (UseInstanceMetadata: true).
 #
 # Note: StorageClass is managed separately via storage-azure.addons.k8s.io
 
@@ -22,7 +22,6 @@ controller:
 linux:
   enabled: true
   hostNetwork: true
-  getNodeInfoFromLabels: true
 
 node:
   cloudConfigSecretName: ""

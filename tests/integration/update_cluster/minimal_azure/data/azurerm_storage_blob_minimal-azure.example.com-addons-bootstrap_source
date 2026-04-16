@@ -85,7 +85,7 @@ spec:
     version: 9.99.0
   - id: k8s-1.31
     manifest: azuredisk-csi-driver.addons.k8s.io/k8s-1.31.yaml
-    manifestHash: da0ccb52e5db231adbe24c372b9e2e87ea02f9559e80e09b6dbcbc094371220f
+    manifestHash: 83b05a6f607c03094725ec171a8c7b2f073eaafa6830dfcf0b29ad90b728b17b
     name: azuredisk-csi-driver.addons.k8s.io
     prune:
       kinds:
