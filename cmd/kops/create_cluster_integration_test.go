@@ -48,6 +48,8 @@ var MagicTimestamp = metav1.Time{Time: time.Date(2017, 1, 1, 0, 0, 0, 0, time.UT
 func TestCreateClusterMinimal(t *testing.T) {
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-1.31", "v1alpha2")
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-1.32", "v1alpha2")
+	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-1.35", "v1alpha2")
+	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-1.36", "v1alpha2")
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-arm64", "v1alpha2")
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/minimal-irsa", "v1alpha2")
 }
