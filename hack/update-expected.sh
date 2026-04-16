@@ -25,6 +25,12 @@ cd "${KOPS_ROOT}"
 # Accept an optional argument overriding the package to update
 PKG="${1:-./...}"
 
+# Accept an optional second argument to filter tests by name (-run)
+RUN_FILTER=()
+if [[ -n "${2:-}" ]]; then
+  RUN_FILTER=(-run "$2")
+fi
+
 # Don't override variables that are commonly used in dev, but shouldn't be in our tests
 unset KOPS_BASE_URL DNSCONTROLLER_IMAGE KOPSCONTROLLER_IMAGE KUBE_APISERVER_HEALTHCHECK_IMAGE KOPS_FEATURE_FLAGS KOPS_ARCH
 unset AWS_ACCESS_KEY_ID AWS_REGION AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN CNI_VERSION_URL DNS_IGNORE_NS_CHECK DO_ACCESS_TOKEN GOOGLE_APPLICATION_CREDENTIALS HCLOUD_TOKEN
@@ -35,4 +41,4 @@ unset AZURE_CLIENT_ID AZURE_CLIENT_SECRET AZURE_STORAGE_ACCOUNT AZURE_SUBSCRIPTI
 unset DIGITALOCEAN_ACCESS_TOKEN
 
 # Run the tests in "autofix mode"
-HACK_UPDATE_EXPECTED_IN_PLACE=1 go test "${PKG}" -count=1
+HACK_UPDATE_EXPECTED_IN_PLACE=1 go test "${PKG}" "${RUN_FILTER[@]}" -count=1

@@ -14,7 +14,6 @@
     },
     {
       "Action": [
-        "autoscaling:DescribeAutoScalingInstances",
         "ec2:AssignIpv6Addresses",
         "ec2:DescribeInstanceTypes",
         "ec2:DescribeInstances",

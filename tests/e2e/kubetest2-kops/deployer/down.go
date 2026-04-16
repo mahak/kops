@@ -54,16 +54,10 @@ func (d *deployer) Down() error {
 		"--name", d.ClusterName,
 		"--yes",
 	}
-	version, err := kops.GetVersion(d.KopsBinaryPath)
-	if err != nil {
-		return err
-	}
-	if version > "1.29" {
-		args = append(args,
-			"--interval=60s",
-			"--wait=60m",
-		)
-	}
+	args = append(args,
+		"--interval=60s",
+		"--wait=60m",
+	)
 	klog.Info(strings.Join(args, " "))
 	cmd := exec.Command(args[0], args[1:]...)
 	cmd.SetEnv(d.env()...)

@@ -5,7 +5,7 @@ Zones:
 - us-test-1c
 CloudProvider: aws
 Networking: calico
-KubernetesVersion: v1.23.0
+KubernetesVersion: v1.35.0
 InstanceManager: karpenter
 DiscoveryStore: memfs://kops-state-store
 Sets:

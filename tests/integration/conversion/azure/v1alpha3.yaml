@@ -52,7 +52,7 @@ spec:
     name: events
   iam: {}
   kubeAPIServer: {}
-  kubernetesVersion: v1.21.0
+  kubernetesVersion: v1.35.0
   networking:
     kubeRouter: {}
     networkCIDR: 172.20.0.0/16

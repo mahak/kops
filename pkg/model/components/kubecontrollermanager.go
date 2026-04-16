@@ -152,16 +152,5 @@ func (b *KubeControllerManagerOptionsBuilder) BuildOptions(o *kops.Cluster) erro
 		}
 	}
 
-	if clusterSpec.CloudProvider.AWS != nil {
-
-		if kcm.FeatureGates == nil {
-			kcm.FeatureGates = make(map[string]string)
-		}
-
-		if _, found := kcm.FeatureGates["InTreePluginAWSUnregister"]; !found && b.ControlPlaneKubernetesVersion().IsLT("1.31") {
-			kcm.FeatureGates["InTreePluginAWSUnregister"] = "true"
-		}
-	}
-
 	return nil
 }

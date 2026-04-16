@@ -75,7 +75,7 @@ func TestAWSValidateEBSCSIDriver(t *testing.T) {
 		},
 	}
 	for _, g := range grid {
-		g.Input.KubernetesVersion = "1.21.0"
+		g.Input.KubernetesVersion = "1.35.0"
 		cluster := &kops.Cluster{
 			Spec: g.Input,
 		}

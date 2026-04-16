@@ -75,10 +75,6 @@ func (b *AWSCloudControllerManagerOptionsBuilder) BuildOptions(cluster *kops.Clu
 	if eccm.Image == "" {
 		// See https://us.gcr.io/k8s-artifacts-prod/provider-aws/cloud-controller-manager
 		switch b.ControlPlaneKubernetesVersion().Minor() {
-		case 29:
-			eccm.Image = "registry.k8s.io/provider-aws/cloud-controller-manager:v1.29.8"
-		case 30:
-			eccm.Image = "registry.k8s.io/provider-aws/cloud-controller-manager:v1.30.9"
 		case 31:
 			eccm.Image = "registry.k8s.io/provider-aws/cloud-controller-manager:v1.31.8"
 		case 32:
