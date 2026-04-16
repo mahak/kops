@@ -63,7 +63,9 @@ type CloudConfigBuilder struct {
 var _ fi.NodeupModelBuilder = &CloudConfigBuilder{}
 
 func (b *CloudConfigBuilder) Build(c *fi.NodeupModelBuilderContext) error {
-	if !b.HasAPIServer && b.NodeupConfig.KubeletConfig.CloudProvider == "external" {
+	// Azure worker nodes need azure.json for the azuredisk-csi-driver to query
+	// zone information from IMDS, so we always write it regardless of role.
+	if !b.HasAPIServer && b.NodeupConfig.KubeletConfig.CloudProvider == "external" && b.CloudProvider() != kops.CloudProviderAzure {
 		return nil
 	}
 
