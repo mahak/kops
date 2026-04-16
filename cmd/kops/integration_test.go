@@ -258,28 +258,6 @@ func TestMinimalAWS(t *testing.T) {
 }
 
 // TestMinimal runs the test on a minimum configuration
-func TestMinimal_v1_29(t *testing.T) {
-	newIntegrationTest("minimal.example.com", "minimal-1.29").
-		withAddons(
-			awsEBSCSIAddon,
-			dnsControllerAddon,
-			awsCCMAddon,
-		).
-		runTestTerraformAWS(t)
-}
-
-// TestMinimal runs the test on a minimum configuration
-func TestMinimal_v1_30(t *testing.T) {
-	newIntegrationTest("minimal.example.com", "minimal-1.30").
-		withAddons(
-			awsEBSCSIAddon,
-			dnsControllerAddon,
-			awsCCMAddon,
-		).
-		runTestTerraformAWS(t)
-}
-
-// TestMinimal runs the test on a minimum configuration
 func TestMinimal_v1_31(t *testing.T) {
 	newIntegrationTest("minimal.example.com", "minimal-1.31").
 		withAddons(

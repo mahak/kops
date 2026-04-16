@@ -100,34 +100,7 @@ func (b *KubeAPIServerOptionsBuilder) BuildOptions(cluster *kops.Cluster) error 
 	c.Image = image
 
 	if b.controlPlaneKubernetesVersion.IsLT("1.33") {
-		if b.controlPlaneKubernetesVersion.IsLT("1.31") {
-			switch cluster.GetCloudProvider() {
-			case kops.CloudProviderAWS:
-				c.CloudProvider = "aws"
-			case kops.CloudProviderGCE:
-				c.CloudProvider = "gce"
-			case kops.CloudProviderDO:
-				c.CloudProvider = "external"
-			case kops.CloudProviderHetzner:
-				c.CloudProvider = "external"
-			case kops.CloudProviderOpenstack:
-				c.CloudProvider = "openstack"
-			case kops.CloudProviderAzure:
-				c.CloudProvider = "azure"
-			case kops.CloudProviderScaleway:
-				c.CloudProvider = "external"
-			case kops.CloudProviderMetal:
-				c.CloudProvider = "external"
-			default:
-				return fmt.Errorf("unknown cloudprovider %q", cluster.GetCloudProvider())
-			}
-
-			if clusterSpec.ExternalCloudControllerManager != nil {
-				c.CloudProvider = "external"
-			}
-		} else {
-			c.CloudProvider = "external"
-		}
+		c.CloudProvider = "external"
 	}
 
 	c.LogLevel = 2
@@ -195,17 +168,6 @@ func (b *KubeAPIServerOptionsBuilder) BuildOptions(cluster *kops.Cluster) error 
 	if metricsServer != nil && fi.ValueOf(metricsServer.Enabled) {
 		if c.EnableAggregatorRouting == nil {
 			c.EnableAggregatorRouting = fi.PtrTo(true)
-		}
-	}
-
-	if c.FeatureGates == nil {
-		c.FeatureGates = make(map[string]string)
-	}
-
-	if clusterSpec.CloudProvider.AWS != nil {
-
-		if _, found := c.FeatureGates["InTreePluginAWSUnregister"]; !found && b.ControlPlaneKubernetesVersion().IsLT("1.31") {
-			c.FeatureGates["InTreePluginAWSUnregister"] = "true"
 		}
 	}
 

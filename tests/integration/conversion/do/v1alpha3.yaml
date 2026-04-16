@@ -32,7 +32,7 @@ spec:
     memoryRequest: 100Mi
     name: events
   iam: {}
-  kubernetesVersion: v1.21.0
+  kubernetesVersion: v1.35.0
   networking:
     kubenet: {}
     networkCIDR: 172.20.0.0/16

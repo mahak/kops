@@ -23,7 +23,6 @@
     },
     {
       "Action": [
-        "autoscaling:DescribeAutoScalingInstances",
         "ec2:AssignPrivateIpAddresses",
         "ec2:AttachNetworkInterface",
         "ec2:CreateNetworkInterface",

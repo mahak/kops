@@ -37,7 +37,7 @@ spec:
     clusterName: complex.example.com
     concurrentNodeSyncs: 5
     configureCloudRoutes: false
-    image: registry.k8s.io/provider-aws/cloud-controller-manager:v1.30.9
+    image: registry.k8s.io/provider-aws/cloud-controller-manager:v1.31.8
     leaderElection:
       leaderElect: true
   cloudLabels:
@@ -106,9 +106,7 @@ spec:
     - https://127.0.0.1:4001
     etcdServersOverrides:
     - /events#https://127.0.0.1:4002
-    featureGates:
-      InTreePluginAWSUnregister: "true"
-    image: registry.k8s.io/kube-apiserver:v1.30.0
+    image: registry.k8s.io/kube-apiserver:v1.31.0
     kubeletPreferredAddressTypes:
     - InternalIP
     - Hostname
@@ -141,9 +139,7 @@ spec:
     configureCloudRoutes: false
     cpuLimit: 500m
     cpuRequest: 200m
-    featureGates:
-      InTreePluginAWSUnregister: "true"
-    image: registry.k8s.io/kube-controller-manager:v1.30.0
+    image: registry.k8s.io/kube-controller-manager:v1.31.0
     leaderElection:
       leaderElect: true
     logLevel: 2
@@ -167,14 +163,12 @@ spec:
   kubeProxy:
     clusterCIDR: 100.96.0.0/11
     cpuRequest: 100m
-    image: registry.k8s.io/kube-proxy:v1.30.0
+    image: registry.k8s.io/kube-proxy:v1.31.0
     logLevel: 2
   kubeScheduler:
     cpuLimit: 500m
     cpuRequest: 200m
-    featureGates:
-      InTreePluginAWSUnregister: "true"
-    image: registry.k8s.io/kube-scheduler:v1.30.0
+    image: registry.k8s.io/kube-scheduler:v1.31.0
     leaderElection:
       leaderElect: true
     logLevel: 2
@@ -189,8 +183,6 @@ spec:
     clusterDomain: cluster.local
     enableDebuggingHandlers: true
     evictionHard: memory.available<100Mi,nodefs.available<10%,nodefs.inodesFree<5%,imagefs.available<10%,imagefs.inodesFree<5%
-    featureGates:
-      InTreePluginAWSUnregister: "true"
     kubeconfigPath: /var/lib/kubelet/kubeconfig
     logLevel: 2
     podManifestPath: /etc/kubernetes/manifests
@@ -201,7 +193,7 @@ spec:
   kubernetesApiAccess:
   - 1.1.1.0/24
   - pl-44444444
-  kubernetesVersion: 1.30.0
+  kubernetesVersion: 1.31.0
   masterKubelet:
     anonymousAuth: false
     cgroupDriver: systemd
@@ -211,8 +203,6 @@ spec:
     clusterDomain: cluster.local
     enableDebuggingHandlers: true
     evictionHard: memory.available<100Mi,nodefs.available<10%,nodefs.inodesFree<5%,imagefs.available<10%,imagefs.inodesFree<5%
-    featureGates:
-      InTreePluginAWSUnregister: "true"
     kubeconfigPath: /var/lib/kubelet/kubeconfig
     logLevel: 2
     podManifestPath: /etc/kubernetes/manifests

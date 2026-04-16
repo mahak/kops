@@ -878,24 +878,6 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 		}
 	}
 
-	// The metadata-proxy daemonset conceals node metadata endpoints in GCE.
-	// It will land on nodes labeled cloud.google.com/metadata-proxy-ready=true
-	if b.Cluster.GetCloudProvider() == kops.CloudProviderGCE && b.Cluster.IsKubernetesLT("1.29") {
-		key := "metadata-proxy.addons.k8s.io"
-
-		{
-			id := "v0.1.12"
-			location := key + "/" + id + ".yaml"
-
-			addons.Add(&channelsapi.AddonSpec{
-				Name:     fi.PtrTo(key),
-				Selector: map[string]string{"k8s-addon": key},
-				Manifest: fi.PtrTo(location),
-				Id:       id,
-			})
-		}
-	}
-
 	if b.Cluster.GetCloudProvider() == kops.CloudProviderGCE {
 		{
 			key := "gcp-cloud-controller.addons.k8s.io"

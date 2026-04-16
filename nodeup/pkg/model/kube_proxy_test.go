@@ -66,11 +66,11 @@ func TestKubeProxyBuilder_buildPod(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"Setup KubeProxy for kubernetes version 1.20",
+			"Setup KubeProxy for kubernetes version 1.35",
 			fields{
 				&NodeupModelContext{
 					NodeupConfig:      nodeupConfig,
-					kubernetesVersion: kopsmodel.MustParseKubernetesVersion("1.20"),
+					kubernetesVersion: kopsmodel.MustParseKubernetesVersion("1.35"),
 				},
 			},
 			&v1.Pod{

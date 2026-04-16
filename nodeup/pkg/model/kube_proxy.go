@@ -112,12 +112,8 @@ func (b *KubeProxyBuilder) buildPod() (*v1.Pod, error) {
 	// In particular when we forced nftables on rhel10, we should also pass the --proxy-mode=nftables flag.
 	if b.Distribution.ForceNftables() {
 		if c.ProxyMode == "" || c.ProxyMode == "iptables" {
-			if b.IsKubernetesLT("1.29") {
-				klog.Warningf("Distribution %v requires nftables proxy mode, but Kubernetes %s does not support it (requires 1.29+)", b.Distribution, b.NodeupConfig.KubernetesVersion)
-			} else {
-				klog.Infof("Distribution %v requires nftables; overriding kube-proxy mode from %q to nftables", b.Distribution, c.ProxyMode)
-				c.ProxyMode = "nftables"
-			}
+			klog.Infof("Distribution %v requires nftables; overriding kube-proxy mode from %q to nftables", b.Distribution, c.ProxyMode)
+			c.ProxyMode = "nftables"
 		}
 	}
 

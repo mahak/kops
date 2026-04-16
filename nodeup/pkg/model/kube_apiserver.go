@@ -714,22 +714,6 @@ func (b *KubeAPIServerBuilder) buildPod(ctx context.Context, kubeAPIServer *kops
 		}
 	}
 
-	if b.IsKubernetesLT("1.31") {
-		// Compatibility: Use the old healthz probe for older clusters
-		for _, probe := range allProbes {
-			probe.HTTPGet.Path = "/healthz"
-		}
-
-		// Compatibility: Don't use startup probe / readiness probe
-		startupProbe = nil
-		readinessProbe = nil
-
-		// Compatibility: use old livenessProbe values
-		livenessProbe.FailureThreshold = 0
-		livenessProbe.PeriodSeconds = 0
-		livenessProbe.InitialDelaySeconds = 45
-	}
-
 	resourceRequests := v1.ResourceList{}
 	resourceLimits := v1.ResourceList{}
 

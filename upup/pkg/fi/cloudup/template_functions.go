@@ -936,12 +936,8 @@ func (tf *TemplateFunctions) OpenStackCCMTag() string {
 	if err != nil {
 		tag = "latest"
 	} else {
-		if parsed.Minor == 27 {
-			tag = "v1.27.1"
-		} else {
-			// otherwise we use always .0 ccm image, if needed that can be overrided using clusterspec
-			tag = fmt.Sprintf("v%d.%d.0", parsed.Major, parsed.Minor)
-		}
+		// we use always .0 ccm image, if needed that can be overrided using clusterspec
+		tag = fmt.Sprintf("v%d.%d.0", parsed.Major, parsed.Minor)
 	}
 	return tag
 }
@@ -954,12 +950,8 @@ func (tf *TemplateFunctions) OpenStackCSITag() string {
 	if err != nil {
 		tag = "latest"
 	} else {
-		if parsed.Minor == 27 {
-			tag = "v1.27.1"
-		} else {
-			// otherwise we use always .0 csi image, if needed that can be overrided using cloud config spec
-			tag = fmt.Sprintf("v%d.%d.0", parsed.Major, parsed.Minor)
-		}
+		// we use always .0 csi image, if needed that can be overrided using cloud config spec
+		tag = fmt.Sprintf("v%d.%d.0", parsed.Major, parsed.Minor)
 	}
 	return tag
 }

@@ -261,7 +261,7 @@ func TestValidateKubeAPIServer(t *testing.T) {
 					Authorization: &kops.AuthorizationSpec{
 						RBAC: &kops.RBACAuthorizationSpec{},
 					},
-					KubernetesVersion: "1.25.0",
+					KubernetesVersion: "1.35.0",
 					CloudProvider: kops.CloudProviderSpec{
 						AWS: &kops.AWSSpec{},
 					},
@@ -280,7 +280,7 @@ func TestValidateKubeAPIServer(t *testing.T) {
 					Authorization: &kops.AuthorizationSpec{
 						RBAC: &kops.RBACAuthorizationSpec{},
 					},
-					KubernetesVersion: "1.25.0",
+					KubernetesVersion: "1.35.0",
 					CloudProvider: kops.CloudProviderSpec{
 						AWS: &kops.AWSSpec{},
 					},
@@ -296,7 +296,7 @@ func TestValidateKubeAPIServer(t *testing.T) {
 					Authorization: &kops.AuthorizationSpec{
 						RBAC: &kops.RBACAuthorizationSpec{},
 					},
-					KubernetesVersion: "1.25.0",
+					KubernetesVersion: "1.35.0",
 					CloudProvider: kops.CloudProviderSpec{
 						AWS: &kops.AWSSpec{},
 					},
@@ -332,7 +332,7 @@ func TestValidateKubeAPIServer(t *testing.T) {
 		if g.Cluster == nil {
 			g.Cluster = &kops.Cluster{
 				Spec: kops.ClusterSpec{
-					KubernetesVersion: "1.20.0",
+					KubernetesVersion: "1.35.0",
 				},
 			}
 		}
@@ -379,7 +379,7 @@ func TestValidateKubeControllermanager(t *testing.T) {
 		if g.Cluster == nil {
 			g.Cluster = &kops.Cluster{
 				Spec: kops.ClusterSpec{
-					KubernetesVersion: "1.29.0",
+					KubernetesVersion: "1.35.0",
 				},
 			}
 		}
@@ -436,7 +436,7 @@ func Test_Validate_Networking_Flannel(t *testing.T) {
 	for _, g := range grid {
 		cluster := &kops.Cluster{
 			Spec: kops.ClusterSpec{
-				KubernetesVersion: "1.29.0",
+				KubernetesVersion: "1.35.0",
 				Networking: kops.NetworkingSpec{
 					NetworkCIDR:           "10.0.0.0/8",
 					NonMasqueradeCIDR:     "100.64.0.0/10",
@@ -502,7 +502,7 @@ func Test_Validate_Networking_Kindnet(t *testing.T) {
 	for _, g := range grid {
 		cluster := &kops.Cluster{
 			Spec: kops.ClusterSpec{
-				KubernetesVersion: "1.29.0",
+				KubernetesVersion: "1.35.0",
 				Networking: kops.NetworkingSpec{
 					NetworkCIDR:           "10.0.0.0/8",
 					NonMasqueradeCIDR:     "100.64.0.0/10",
@@ -596,7 +596,7 @@ func Test_Validate_Networking_OverlappingCIDR(t *testing.T) {
 		t.Run(g.Name, func(t *testing.T) {
 			cluster := &kops.Cluster{
 				Spec: kops.ClusterSpec{
-					KubernetesVersion: "1.29.0",
+					KubernetesVersion: "1.35.0",
 				},
 			}
 			cluster.Spec.Networking = g.Networking
@@ -674,7 +674,7 @@ func Test_Validate_AdditionalPolicies(t *testing.T) {
 	}
 	for _, g := range grid {
 		clusterSpec := &kops.ClusterSpec{
-			KubernetesVersion:  "1.17.0",
+			KubernetesVersion:  "1.35.0",
 			AdditionalPolicies: g.Input,
 			CloudProvider: kops.CloudProviderSpec{
 				AWS: &kops.AWSSpec{},
@@ -1183,7 +1183,7 @@ func Test_Validate_Cilium(t *testing.T) {
 				Version: "v1.0.0",
 			},
 			Spec: kops.ClusterSpec{
-				KubernetesVersion: "1.18.0",
+				KubernetesVersion: "1.35.0",
 			},
 			ExpectedErrors: []string{"Invalid value::cilium.version"},
 		},

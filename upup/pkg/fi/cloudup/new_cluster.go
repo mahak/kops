@@ -1178,9 +1178,6 @@ func setupNodes(opt *NewClusterOptions, cluster *api.Cluster, zoneToSubnetsMap m
 			if g.Spec.NodeLabels == nil {
 				g.Spec.NodeLabels = make(map[string]string)
 			}
-			if cluster.IsKubernetesLT("1.29") {
-				g.Spec.NodeLabels["cloud.google.com/metadata-proxy-ready"] = "true"
-			}
 		}
 
 		for i, size := range opt.NodeSizes {
@@ -1670,18 +1667,7 @@ func defaultImage(cluster *api.Cluster, channel *api.Channel, architecture archi
 		}
 	}
 
-	if kubernetesVersion.LT(semver.MustParse("1.27.0")) {
-		switch cluster.GetCloudProvider() {
-		case api.CloudProviderDO:
-			return defaultDOImageFocal, nil
-		case api.CloudProviderHetzner:
-			return defaultHetznerImageFocal, nil
-		case api.CloudProviderScaleway:
-			return defaultScalewayImageFocal, nil
-		case api.CloudProviderLinode:
-			return defaultLinodeImageFocal, nil
-		}
-	} else if kubernetesVersion.LT(semver.MustParse("1.32.0")) {
+	if kubernetesVersion.LT(semver.MustParse("1.32.0")) {
 		switch cluster.GetCloudProvider() {
 		case api.CloudProviderDO:
 			return defaultDOImageJammy, nil

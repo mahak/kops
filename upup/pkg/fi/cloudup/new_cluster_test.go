@@ -354,7 +354,7 @@ func TestSetupTopology(t *testing.T) {
 					Name: "test",
 				},
 				Spec: api.ClusterSpec{
-					KubernetesVersion: "v1.29.0",
+					KubernetesVersion: "v1.31.0",
 					Networking: api.NetworkingSpec{
 						Topology: &api.TopologySpec{
 							DNS: api.DNSTypeNone,
@@ -367,7 +367,7 @@ func TestSetupTopology(t *testing.T) {
 					Name: "test",
 				},
 				Spec: api.ClusterSpec{
-					KubernetesVersion: "v1.29.0",
+					KubernetesVersion: "v1.31.0",
 					Networking: api.NetworkingSpec{
 						Topology: &api.TopologySpec{
 							DNS: api.DNSTypeNone,
@@ -387,7 +387,7 @@ func TestSetupTopology(t *testing.T) {
 					Name: "test",
 				},
 				Spec: api.ClusterSpec{
-					KubernetesVersion: "v1.29.0",
+					KubernetesVersion: "v1.31.0",
 					Networking: api.NetworkingSpec{
 						Topology: &api.TopologySpec{
 							DNS: api.DNSTypePublic,
@@ -400,7 +400,7 @@ func TestSetupTopology(t *testing.T) {
 					Name: "test",
 				},
 				Spec: api.ClusterSpec{
-					KubernetesVersion: "v1.29.0",
+					KubernetesVersion: "v1.31.0",
 					Networking: api.NetworkingSpec{
 						Topology: &api.TopologySpec{
 							DNS: api.DNSTypePublic,
