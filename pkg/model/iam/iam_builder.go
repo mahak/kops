@@ -903,6 +903,7 @@ func AddCCMPermissions(p *Policy, cloudRoutes bool) {
 		"elasticloadbalancing:ModifyLoadBalancerAttributes",
 		"elasticloadbalancing:RegisterInstancesWithLoadBalancer",
 		"elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
+		"elasticloadbalancing:SetSecurityGroups",
 		"elasticloadbalancing:AddTags",
 		"elasticloadbalancing:DeleteListener",
 		"elasticloadbalancing:DeleteTargetGroup",

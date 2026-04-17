@@ -113,6 +113,8 @@ type Config struct {
 	// Manager to assign to each ELB provisioned for a Service, instead of creating
 	// one per ELB.
 	ElbSecurityGroup *string `json:"elbSecurityGroup,omitempty"`
+	// NLBSecurityGroupMode determines if the controller manages security groups for Network Load Balancers.
+	NLBSecurityGroupMode *string `json:"nlbSecurityGroupMode,omitempty"`
 	// NodeIPFamilies controls the IP families reported for each node.
 	NodeIPFamilies []string `json:"nodeIPFamilies,omitempty"`
 	// WarmPoolImages are the container images to pre-pull during instance pre-initialization
@@ -292,6 +294,7 @@ func NewConfig(cluster *kops.Cluster, instanceGroup *kops.InstanceGroup) (*Confi
 		if instanceGroup.HasAPIServer() {
 			config.DisableSecurityGroupIngress = aws.DisableSecurityGroupIngress
 			config.ElbSecurityGroup = aws.ElbSecurityGroup
+			config.NLBSecurityGroupMode = aws.NLBSecurityGroupMode
 			config.NodeIPFamilies = aws.NodeIPFamilies
 		}
 	}

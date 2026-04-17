@@ -31,6 +31,7 @@ spec:
       elbSecurityGroup: sg-elb
       loadBalancerController:
         enableWAF: true
+      nlbSecurityGroupMode: Managed
       nodeIPFamilies:
       - ipv6
       nodeTerminationHandler:

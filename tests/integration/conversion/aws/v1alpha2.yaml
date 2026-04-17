@@ -29,6 +29,7 @@ spec:
       volumeAttachLimit: 65
     disableSecurityGroupIngress: true
     elbSecurityGroup: sg-elb
+    nlbSecurityGroupMode: Managed
     nodeIPFamilies:
     - ipv6
     spotinstOrientation: spot-orientation

@@ -503,6 +503,11 @@ spec:
                   multizone:
                     description: GCE cloud-config options
                     type: boolean
+                  nlbSecurityGroupMode:
+                    description: |-
+                      NLBSecurityGroupMode determines if the controller manages security groups for Network Load Balancers (AWS only).
+                      Valid value: "Managed"
+                    type: string
                   nodeIPFamilies:
                     description: NodeIPFamilies controls the IP families reported
                       for each node (AWS only).
