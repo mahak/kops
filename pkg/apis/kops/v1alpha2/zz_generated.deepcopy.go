@@ -802,6 +802,11 @@ func (in *CloudConfiguration) DeepCopyInto(out *CloudConfiguration) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.NLBSecurityGroupMode != nil {
+		in, out := &in.NLBSecurityGroupMode, &out.NLBSecurityGroupMode
+		*out = new(string)
+		**out = **in
+	}
 	if in.VSphereUsername != nil {
 		in, out := &in.VSphereUsername, &out.VSphereUsername
 		*out = new(string)

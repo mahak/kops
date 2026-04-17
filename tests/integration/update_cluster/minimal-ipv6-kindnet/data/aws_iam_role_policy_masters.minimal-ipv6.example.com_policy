@@ -245,7 +245,8 @@
         "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
         "elasticloadbalancing:RegisterTargets",
         "elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
-        "elasticloadbalancing:SetLoadBalancerPoliciesOfListener"
+        "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+        "elasticloadbalancing:SetSecurityGroups"
       ],
       "Condition": {
         "StringEquals": {
