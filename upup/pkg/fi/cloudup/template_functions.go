@@ -989,6 +989,12 @@ func (tf *TemplateFunctions) GetClusterAutoscalerNodeGroups() map[string]Cluster
 				cloud := tf.cloud.(gce.GCECloud)
 				format := "https://www.googleapis.com/compute/v1/projects/%s/zones/%s/instanceGroups/%s"
 				group.Other = fmt.Sprintf(format, cloud.Project(), ig.Spec.Zones[0], gce.NameForInstanceGroupManager(cluster.ObjectMeta.Name, ig.ObjectMeta.Name, ig.Spec.Zones[0]))
+			} else if cluster.GetCloudProvider() == kops.CloudProviderHetzner {
+				// Hetzner autoscaler expects --nodes=min:max:instanceType:region:name.
+				// The subnet name for Hetzner is the location (e.g. "hel1"), which is
+				// also used as the region argument by the Hetzner cloud provider.
+				region := ig.Spec.Subnets[0]
+				group.Other = fmt.Sprintf("%s:%s:%s", ig.Spec.MachineType, region, ig.Name)
 			} else {
 				group.Other = ig.Name + "." + cluster.Name
 			}
