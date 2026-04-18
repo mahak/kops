@@ -541,7 +541,7 @@ func TestCrossValidateAPIServerRole(t *testing.T) {
 			ExpectedErrors: 0,
 		},
 		{
-			Description: "APIServer role allowed on GCE with dns=None",
+			Description: "APIServer role forbidden on GCE with dns=None",
 			Cluster: &kops.Cluster{
 				Spec: kops.ClusterSpec{
 					CloudProvider: kops.CloudProviderSpec{
@@ -550,7 +550,7 @@ func TestCrossValidateAPIServerRole(t *testing.T) {
 					Networking: kops.NetworkingSpec{Topology: noneDNSTopology},
 				},
 			},
-			ExpectedErrors: 0,
+			ExpectedErrors: 1,
 		},
 		{
 			Description: "APIServer role forbidden on AWS with dns=None",
