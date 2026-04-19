@@ -1069,28 +1069,29 @@ func AddAWSEBSCSIDriverPermissions(b *PolicyBuilder, p *Policy, appendSnapshotPe
 	addKMSIAMPolicies(p)
 
 	if appendSnapshotPermissions {
-		addSnapshotPersmissions(b, p)
+		addSnapshotPermissions(b, p)
 	}
 
 	p.unconditionalAction.Insert(
-		"ec2:DescribeAccountAttributes",    // aws.go
+		"ec2:DescribeAvailabilityZones",    // aws.go
 		"ec2:DescribeInstances",            // aws.go
+		"ec2:DescribeInstanceTypes",        // aws.go
+		"ec2:DescribeTags",                 // aws.go
 		"ec2:DescribeVolumes",              // aws.go
 		"ec2:DescribeVolumesModifications", // aws.go
-		"ec2:DescribeTags",                 // aws.go
+		"ec2:DescribeVolumeStatus",         // aws.go
 	)
 	p.clusterTaggedAction.Insert(
-		"ec2:ModifyVolume",            // aws.go
-		"ec2:ModifyInstanceAttribute", // aws.go
-		"ec2:AttachVolume",            // aws.go
-		"ec2:DeleteVolume",            // aws.go
-		"ec2:DetachVolume",            // aws.go
+		"ec2:AttachVolume", // aws.go
+		"ec2:DeleteVolume", // aws.go
+		"ec2:DetachVolume", // aws.go
+		"ec2:ModifyVolume", // aws.go
 	)
 
 	p.AddEC2CreateAction(
 		[]string{
+			"CopyVolumes",
 			"CreateVolume",
-			"CreateSnapshot",
 		},
 		[]string{
 			"volume",
@@ -1099,7 +1100,7 @@ func AddAWSEBSCSIDriverPermissions(b *PolicyBuilder, p *Policy, appendSnapshotPe
 	)
 }
 
-func addSnapshotPersmissions(b *PolicyBuilder, p *Policy) {
+func addSnapshotPermissions(b *PolicyBuilder, p *Policy) {
 	p.unconditionalAction.Insert(
 		"ec2:CreateSnapshot",
 		"ec2:DescribeAvailabilityZones",
@@ -1107,6 +1108,17 @@ func addSnapshotPersmissions(b *PolicyBuilder, p *Policy) {
 	)
 	p.clusterTaggedAction.Insert(
 		"ec2:DeleteSnapshot",
+		"ec2:EnableFastSnapshotRestores",
+	)
+
+	p.AddEC2CreateAction(
+		[]string{
+			"CreateSnapshot",
+		},
+		[]string{
+			"volume",
+			"snapshot",
+		},
 	)
 	p.Statement = append(p.Statement,
 		&Statement{

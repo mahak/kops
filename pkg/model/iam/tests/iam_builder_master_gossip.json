@@ -38,8 +38,8 @@
         "StringEquals": {
           "aws:RequestTag/KubernetesCluster": "iam-builder-test.k8s.local",
           "ec2:CreateAction": [
-            "CreateVolume",
-            "CreateSnapshot"
+            "CopyVolumes",
+            "CreateVolume"
           ]
         }
       },
@@ -108,7 +108,6 @@
         "autoscaling:DescribeLaunchConfigurations",
         "autoscaling:DescribeScalingActivities",
         "autoscaling:DescribeTags",
-        "ec2:DescribeAccountAttributes",
         "ec2:DescribeAvailabilityZones",
         "ec2:DescribeImages",
         "ec2:DescribeInstanceTopology",
@@ -120,6 +119,7 @@
         "ec2:DescribeSecurityGroups",
         "ec2:DescribeSubnets",
         "ec2:DescribeTags",
+        "ec2:DescribeVolumeStatus",
         "ec2:DescribeVolumes",
         "ec2:DescribeVolumesModifications",
         "ec2:DescribeVpcs",
@@ -191,8 +191,8 @@
     },
     {
       "Action": [
+        "ec2:CopyVolumes",
         "ec2:CreateSecurityGroup",
-        "ec2:CreateSnapshot",
         "ec2:CreateVolume",
         "elasticloadbalancing:CreateListener",
         "elasticloadbalancing:CreateLoadBalancer",
