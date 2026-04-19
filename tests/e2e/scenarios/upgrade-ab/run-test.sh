@@ -95,6 +95,11 @@ ${KUBETEST2} \
     --template-path="${KOPS_TEMPLATE:-}" \
     --create-args="--networking calico ${KOPS_EXTRA_FLAGS:-}"
 
+# Source the env file to get exported variables, in particular CLUSTER_NAME and KOPS_STATE_STORE
+# shellcheck disable=SC1091
+. "${WORKSPACE}/env"
+export CLUSTER_NAME KOPS_STATE_STORE
+
 # Export kubeconfig-a
 KUBECONFIG_A=$(mktemp -t kops.XXXXXXXXX)
 "${KOPS_A}" export kubecfg --name "${CLUSTER_NAME}" --admin --kubeconfig "${KUBECONFIG_A}"
