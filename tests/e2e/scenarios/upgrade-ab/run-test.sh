@@ -114,10 +114,10 @@ KOPS="${KOPS_B}"
 "${KOPS_B}" edit cluster "${CLUSTER_NAME}" "--set=cluster.spec.kubernetesVersion=${K8S_VERSION_B}"
 
 # Preview changes
-"${KOPS_B}" reconcile cluster
+"${KOPS_B}" reconcile cluster --allow-kops-downgrade
 
 # Apply changes
-"${KOPS_B}" reconcile cluster --yes
+"${KOPS_B}" reconcile cluster --allow-kops-downgrade --yes
 
 # Verify no additional changes
 "${KOPS_B}" update cluster
