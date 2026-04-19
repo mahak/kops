@@ -95,6 +95,11 @@ ${KUBETEST2} \
     --template-path="${KOPS_TEMPLATE:-}" \
     --create-args="--networking calico ${KOPS_EXTRA_FLAGS:-}"
 
+# Source the env file to get exported variables, in particular CLUSTER_NAME and KOPS_STATE_STORE
+# shellcheck disable=SC1091
+. "${WORKSPACE}/env"
+export CLUSTER_NAME KOPS_STATE_STORE
+
 # Export kubeconfig-a
 KUBECONFIG_A=$(mktemp -t kops.XXXXXXXXX)
 "${KOPS_A}" export kubecfg --name "${CLUSTER_NAME}" --admin --kubeconfig "${KUBECONFIG_A}"
@@ -109,10 +114,10 @@ KOPS="${KOPS_B}"
 "${KOPS_B}" edit cluster "${CLUSTER_NAME}" "--set=cluster.spec.kubernetesVersion=${K8S_VERSION_B}"
 
 # Preview changes
-"${KOPS_B}" reconcile cluster
+"${KOPS_B}" reconcile cluster --allow-kops-downgrade
 
 # Apply changes
-"${KOPS_B}" reconcile cluster --yes
+"${KOPS_B}" reconcile cluster --allow-kops-downgrade --yes
 
 # Verify no additional changes
 "${KOPS_B}" update cluster
