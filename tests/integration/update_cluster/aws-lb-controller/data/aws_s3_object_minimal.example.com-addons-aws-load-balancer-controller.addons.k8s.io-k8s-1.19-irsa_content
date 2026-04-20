@@ -3,6 +3,10 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: albtargetcontrolconfigs.elbv2.k8s.aws
 spec:
   group: elbv2.k8s.aws
@@ -184,12 +188,18 @@ spec:
     served: true
     storage: true
     subresources: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: globalaccelerators.aga.k8s.aws
 spec:
   group: aga.k8s.aws
@@ -587,12 +597,18 @@ spec:
     storage: true
     subresources:
       status: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: ingressclassparams.elbv2.k8s.aws
 spec:
   group: elbv2.k8s.aws
@@ -886,12 +902,18 @@ spec:
     served: true
     storage: true
     subresources: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: listenerruleconfigurations.gateway.k8s.aws
 spec:
   group: gateway.k8s.aws
@@ -1341,12 +1363,18 @@ spec:
     storage: true
     subresources:
       status: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: loadbalancerconfigurations.gateway.k8s.aws
 spec:
   group: gateway.k8s.aws
@@ -1704,12 +1732,18 @@ spec:
     storage: true
     subresources:
       status: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: targetgroupbindings.elbv2.k8s.aws
 spec:
   group: elbv2.k8s.aws
@@ -2224,12 +2258,18 @@ spec:
     storage: true
     subresources:
       status: {}
+
 ---
+
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
+  labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
+    app.kubernetes.io/managed-by: kops
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: targetgroupconfigurations.gateway.k8s.aws
 spec:
   group: gateway.k8s.aws
@@ -2710,29 +2750,37 @@ spec:
     storage: true
     subresources:
       status: {}
+
 ---
+
 apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller
   namespace: kube-system
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller-leader-election-role
   namespace: kube-system
 rules:
@@ -2768,16 +2816,20 @@ rules:
   - get
   - update
   - patch
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller-role
 rules:
 - apiGroups:
@@ -3007,16 +3059,20 @@ rules:
   verbs:
   - patch
   - update
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller-leader-election-rolebinding
   namespace: kube-system
 roleRef:
@@ -3027,16 +3083,20 @@ subjects:
 - kind: ServiceAccount
   name: aws-load-balancer-controller
   namespace: kube-system
+
 ---
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -3046,17 +3106,21 @@ subjects:
 - kind: ServiceAccount
   name: aws-load-balancer-controller
   namespace: kube-system
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
     prometheus.io/service-monitor: "false"
   name: aws-load-balancer-webhook-service
   namespace: kube-system
@@ -3068,16 +3132,20 @@ spec:
   selector:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/name: aws-load-balancer-controller
+
 ---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-controller
   namespace: kube-system
 spec:
@@ -3087,10 +3155,6 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: aws-load-balancer-controller
       app.kubernetes.io/name: aws-load-balancer-controller
-  strategy:
-    rollingUpdate:
-      maxSurge: 0
-    type: RollingUpdate
   template:
     metadata:
       annotations:
@@ -3099,37 +3163,41 @@ spec:
       labels:
         app.kubernetes.io/instance: aws-load-balancer-controller
         app.kubernetes.io/name: aws-load-balancer-controller
+        kops.k8s.io/managed-by: kops
     spec:
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: Exists
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - aws-load-balancer-controller
+              topologyKey: kubernetes.io/hostname
+            weight: 100
       containers:
       - args:
-        - --cluster-name={{ ClusterName }}
+        - --cluster-name=minimal.example.com
         - --ingress-class=alb
-        - --aws-region={{ Region }}
+        - --aws-region=us-test-1
         - --metrics-bind-addr=:9442
-        - --enable-waf={{ .CloudProvider.AWS.LoadBalancerController.EnableWAF }}
-        - --enable-wafv2={{ .CloudProvider.AWS.LoadBalancerController.EnableWAFv2
-          }}
-        - --enable-shield={{ .CloudProvider.AWS.LoadBalancerController.EnableShield
-          }}
-        - --default-tags={{ CloudLabels }}
+        - --enable-waf=false
+        - --enable-wafv2=false
+        - --enable-shield=false
+        - --default-tags=KubernetesCluster=minimal.example.com
         env:
         - name: NODENAME
           valueFrom:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        image: public.ecr.aws/eks/aws-load-balancer-controller:{{ or .CloudProvider.AWS.LoadBalancerController.Version
-          `v3.2.2` }}
+        - name: AWS_ROLE_ARN
+          value: arn:aws-test:iam::123456789012:role/aws-load-balancer-controller.kube-system.sa.minimal.example.com
+        - name: AWS_WEB_IDENTITY_TOKEN_FILE
+          value: /var/run/secrets/amazonaws.com/token
+        image: public.ecr.aws/eks/aws-load-balancer-controller:v3.2.2
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 2
@@ -3158,15 +3226,11 @@ spec:
           timeoutSeconds: 10
         resources:
           limits:
-            cpu: '{{ or .CloudProvider.AWS.LoadBalancerController.CPULimit "200m"
-              }}'
-            memory: '{{ or .CloudProvider.AWS.LoadBalancerController.MemoryLimit "500Mi"
-              }}'
+            cpu: 200m
+            memory: 500Mi
           requests:
-            cpu: '{{ or .CloudProvider.AWS.LoadBalancerController.CPURequest "100m"
-              }}'
-            memory: '{{ or .CloudProvider.AWS.LoadBalancerController.MemoryRequest
-              "200Mi" }}'
+            cpu: 100m
+            memory: 200Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -3175,32 +3239,41 @@ spec:
         - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: cert
           readOnly: true
-      hostNetwork: true
+        - mountPath: /var/run/secrets/amazonaws.com/
+          name: token-amazonaws-com
+          readOnly: true
       priorityClassName: system-cluster-critical
       securityContext:
         fsGroup: 65534
       serviceAccountName: aws-load-balancer-controller
       terminationGracePeriodSeconds: 10
-      tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-      - key: node-role.kubernetes.io/master
-        operator: Exists
       volumes:
       - name: cert
         secret:
           defaultMode: 420
           secretName: aws-load-balancer-webhook-tls
+      - name: token-amazonaws-com
+        projected:
+          defaultMode: 420
+          sources:
+          - serviceAccountToken:
+              audience: amazonaws.com
+              expirationSeconds: 86400
+              path: token
+
 ---
+
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-serving-cert
   namespace: kube-system
 spec:
@@ -3213,56 +3286,72 @@ spec:
     name: aws-load-balancer-selfsigned-issuer
   renewBefore: 720h0m0s
   secretName: aws-load-balancer-webhook-tls
+
 ---
+
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-selfsigned-issuer
   namespace: kube-system
 spec:
   selfSigned: {}
+
 ---
+
 apiVersion: elbv2.k8s.aws/v1beta1
 kind: IngressClassParams
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: alb
+
 ---
+
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: alb
 spec:
   controller: ingress.k8s.aws/alb
+
 ---
+
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: kube-system/aws-load-balancer-serving-cert
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-webhook
 webhooks:
 - admissionReviewVersions:
@@ -3446,18 +3535,22 @@ webhooks:
     resources:
     - targetgroupbindings
   sideEffects: None
+
 ---
+
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: kube-system/aws-load-balancer-serving-cert
   labels:
+    addon.kops.k8s.io/name: aws-load-balancer-controller.addons.k8s.io
     app.kubernetes.io/instance: aws-load-balancer-controller
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: kops
     app.kubernetes.io/name: aws-load-balancer-controller
     app.kubernetes.io/version: v3.2.1
     helm.sh/chart: aws-load-balancer-controller-3.2.1
+    k8s-addon: aws-load-balancer-controller.addons.k8s.io
   name: aws-load-balancer-webhook
 webhooks:
 - admissionReviewVersions:

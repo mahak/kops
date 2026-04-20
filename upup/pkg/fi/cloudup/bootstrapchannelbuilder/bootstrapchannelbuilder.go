@@ -642,8 +642,16 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 
 			key := "aws-load-balancer-controller.addons.k8s.io"
 
-			location := key + "/k8s-1.19.yaml"
+			// The IRSA variant drops hostNetwork / control-plane tolerations /
+			// control-plane nodeAffinity / RollingUpdate maxSurge=0 so the pod
+			// can schedule on any node using its projected SA token for AWS
+			// credentials. Without IRSA the pod must land on a control-plane
+			// node with hostNetwork to reach the node IAM role.
 			id := "k8s-1.19"
+			if b.UseServiceAccountExternalPermissions() {
+				id = "k8s-1.19-irsa"
+			}
+			location := key + "/" + id + ".yaml"
 
 			addons.Add(&channelsapi.AddonSpec{
 				Name:     fi.PtrTo(key),
