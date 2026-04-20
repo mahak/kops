@@ -3087,10 +3087,6 @@ spec:
     matchLabels:
       app.kubernetes.io/instance: aws-load-balancer-controller
       app.kubernetes.io/name: aws-load-balancer-controller
-  strategy:
-    rollingUpdate:
-      maxSurge: 0
-    type: RollingUpdate
   template:
     metadata:
       annotations:
@@ -3101,15 +3097,17 @@ spec:
         app.kubernetes.io/name: aws-load-balancer-controller
     spec:
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/master
-                operator: Exists
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - aws-load-balancer-controller
+              topologyKey: kubernetes.io/hostname
+            weight: 100
       containers:
       - args:
         - --cluster-name={{ ClusterName }}
@@ -3175,17 +3173,11 @@ spec:
         - mountPath: /tmp/k8s-webhook-server/serving-certs
           name: cert
           readOnly: true
-      hostNetwork: true
       priorityClassName: system-cluster-critical
       securityContext:
         fsGroup: 65534
       serviceAccountName: aws-load-balancer-controller
       terminationGracePeriodSeconds: 10
-      tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        operator: Exists
-      - key: node-role.kubernetes.io/master
-        operator: Exists
       volumes:
       - name: cert
         secret:

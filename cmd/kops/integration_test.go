@@ -851,7 +851,7 @@ func TestAWSLBController(t *testing.T) {
 		withServiceAccountRole("aws-cloud-controller-manager.kube-system", true).
 		withServiceAccountRole("aws-node-termination-handler.kube-system", true).
 		withServiceAccountRole("ebs-csi-controller-sa.kube-system", true).
-		withAddons("aws-load-balancer-controller.addons.k8s.io-k8s-1.19",
+		withAddons("aws-load-balancer-controller.addons.k8s.io-k8s-1.19-irsa",
 			"certmanager.io-k8s-1.16",
 			awsEBSCSIAddon,
 			dnsControllerAddon,
@@ -888,7 +888,7 @@ func TestManyAddonsCCMIRSA(t *testing.T) {
 		withServiceAccountRole("ebs-csi-controller-sa.kube-system", true).
 		withAddons(
 			"aws-ebs-csi-driver.addons.k8s.io-k8s-1.17",
-			"aws-load-balancer-controller.addons.k8s.io-k8s-1.19",
+			"aws-load-balancer-controller.addons.k8s.io-k8s-1.19-irsa",
 			"certmanager.io-k8s-1.16",
 			"cluster-autoscaler.addons.k8s.io-k8s-1.15",
 			"networking.amazon-vpc-routed-eni-k8s-1.16",
