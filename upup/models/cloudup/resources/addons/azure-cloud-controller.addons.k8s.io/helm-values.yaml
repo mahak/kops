@@ -1,7 +1,7 @@
 # Helm values for cloud-provider-azure (chart version in kustomization.yaml)
 # To regenerate the manifest:
 #   cd upup/models/cloudup/resources/addons/azure-cloud-controller.addons.k8s.io
-#   kustomize build --enable-helm . > k8s-1.31.yaml.template
+#   ./regenerate.sh
 
 infra:
   # Placeholder; replaced with actual cluster name via Go template in k8s-1.31.yaml.template.
