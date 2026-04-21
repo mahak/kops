@@ -38,7 +38,7 @@ import (
 // Default Machine types for various types of instance group machine
 const (
 	defaultNodeMachineTypeGCE      = "e2-medium"
-	defaultNodeMachineTypeDO       = "s-2vcpu-4gb"
+	defaultNodeMachineTypeDO       = "s-2vcpu-4gb-amd"
 	defaultNodeMachineTypeAzure    = "Standard_B2s"
 	defaultNodeMachineTypeHetzner  = "cx23"
 	defaultNodeMachineTypeScaleway = "DEV1-M"
@@ -50,7 +50,7 @@ const (
 	defaultBastionMachineTypeLinode  = "g6-standard-1"
 
 	defaultMasterMachineTypeGCE      = "e2-medium"
-	defaultMasterMachineTypeDO       = "s-2vcpu-4gb"
+	defaultMasterMachineTypeDO       = "s-2vcpu-4gb-amd"
 	defaultMasterMachineTypeAzure    = "Standard_B2s"
 	defaultMasterMachineTypeHetzner  = "cx23"
 	defaultMasterMachineTypeScaleway = "DEV1-M"
