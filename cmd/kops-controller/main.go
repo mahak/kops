@@ -250,7 +250,7 @@ func main() {
 		}
 	}
 
-	if err := addNodeController(ctx, mgr, vfsContext, &opt); err != nil {
+	if err := addNodeController(ctx, mgr, &opt); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "NodeController")
 		os.Exit(1)
 	}
@@ -304,13 +304,12 @@ func buildScheme(opt *config.Options) (*runtime.Scheme, error) {
 	return scheme, nil
 }
 
-func addNodeController(ctx context.Context, mgr manager.Manager, vfsContext *vfs.VFSContext, opt *config.Options) error {
+func addNodeController(ctx context.Context, mgr manager.Manager, opt *config.Options) error {
 	var capiManager *nodeidentityclusterapi.Manager
 	if opt.CAPI.IsEnabled() {
 		capiManager = nodeidentityclusterapi.NewManager(mgr.GetClient())
 	}
 
-	var legacyIdentifier nodeidentity.LegacyIdentifier
 	var identifier nodeidentity.Identifier
 	var err error
 	switch opt.Cloud {
@@ -333,7 +332,7 @@ func addNodeController(ctx context.Context, mgr manager.Manager, vfsContext *vfs
 		}
 
 	case "digitalocean":
-		legacyIdentifier, err = nodeidentitydo.New()
+		identifier, err = nodeidentitydo.New(opt.CacheNodeidentityInfo)
 		if err != nil {
 			return fmt.Errorf("error building node identifier: %w", err)
 		}
@@ -375,29 +374,12 @@ func addNodeController(ctx context.Context, mgr manager.Manager, vfsContext *vfs
 		return fmt.Errorf("identifier for cloud %q not implemented", opt.Cloud)
 	}
 
-	if identifier != nil {
-		nodeController, err := controllers.NewNodeReconciler(mgr, identifier)
-		if err != nil {
-			return err
-		}
-		if err := nodeController.SetupWithManager(mgr); err != nil {
-			return err
-		}
-	} else {
-		if opt.ConfigBase == "" {
-			return fmt.Errorf("must specify configBase")
-		}
-		if opt.SecretStore == "" {
-			return fmt.Errorf("must specify secretStore")
-		}
-
-		nodeController, err := controllers.NewLegacyNodeReconciler(mgr, vfsContext, opt.ConfigBase, legacyIdentifier)
-		if err != nil {
-			return err
-		}
-		if err := nodeController.SetupWithManager(mgr); err != nil {
-			return err
-		}
+	nodeController, err := controllers.NewNodeReconciler(mgr, identifier)
+	if err != nil {
+		return err
+	}
+	if err := nodeController.SetupWithManager(mgr); err != nil {
+		return err
 	}
 
 	return nil

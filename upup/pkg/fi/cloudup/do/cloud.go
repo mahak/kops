@@ -45,6 +45,7 @@ const (
 	TagKubernetesClusterNamePrefix   = "KubernetesCluster"
 	TagKubernetesClusterMasterPrefix = "KubernetesCluster-Master"
 	TagKubernetesInstanceGroup       = "kops-instancegroup"
+	TagKubernetesInstanceRole        = "kops-instance-role"
 )
 
 type DOInstanceGroup struct {
