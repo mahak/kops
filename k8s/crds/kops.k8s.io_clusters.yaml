@@ -505,8 +505,8 @@ spec:
                     type: boolean
                   nlbSecurityGroupMode:
                     description: |-
-                      NLBSecurityGroupMode determines if the controller manages security groups for Network Load Balancers (AWS only).
-                      Valid value: "Managed"
+                      NLBSecurityGroupMode determines if the Cloud Controller Manager supports and manages
+                      security groups for Network Load Balancers (AWS only). Valid value: "Managed"
                     type: string
                   nodeIPFamilies:
                     description: NodeIPFamilies controls the IP families reported
