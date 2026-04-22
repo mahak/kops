@@ -999,8 +999,8 @@ type CloudConfiguration struct {
 	// one per ELB (AWS only).
 	// +k8s:conversion-gen=false
 	ElbSecurityGroup *string `json:"elbSecurityGroup,omitempty"`
-	// NLBSecurityGroupMode determines if the controller manages security groups for Network Load Balancers (AWS only).
-	// Valid value: "Managed"
+	// NLBSecurityGroupMode determines if the Cloud Controller Manager supports and manages
+	// security groups for Network Load Balancers (AWS only). Valid value: "Managed"
 	// +k8s:conversion-gen=false
 	NLBSecurityGroupMode *string `json:"nlbSecurityGroupMode,omitempty"`
 	// VSphereUsername is unused.

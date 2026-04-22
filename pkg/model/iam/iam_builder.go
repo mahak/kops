@@ -412,7 +412,11 @@ func (r *NodeRoleMaster) BuildAWSPolicy(b *PolicyBuilder) (*Policy, error) {
 			fi.ValueOf(b.Cluster.Spec.SnapshotController.Enabled)
 		AddAWSEBSCSIDriverPermissions(b, p, esc)
 
-		AddCCMPermissions(p, b.Cluster.Spec.Networking.Kubenet != nil)
+		// Only inject NLBSecurityMode=Managed specific IAM permissions if enabled
+		nlbSecurityGroupMode := b.Cluster.Spec.CloudProvider.AWS.NLBSecurityGroupMode
+		nlbSecurityGroupModeManaged := nlbSecurityGroupMode != nil && *nlbSecurityGroupMode == "Managed"
+
+		AddCCMPermissions(p, b.Cluster.Spec.Networking.Kubenet != nil, nlbSecurityGroupModeManaged)
 
 		if c := b.Cluster.Spec.CloudProvider.AWS.LoadBalancerController; c != nil && fi.ValueOf(b.Cluster.Spec.CloudProvider.AWS.LoadBalancerController.Enabled) {
 			AddAWSLoadbalancerControllerPermissions(p, c.EnableWAF, c.EnableWAFv2, c.EnableShield)
@@ -863,7 +867,7 @@ func addEtcdManagerPermissions(p *Policy) {
 	)
 }
 
-func AddCCMPermissions(p *Policy, cloudRoutes bool) {
+func AddCCMPermissions(p *Policy, cloudRoutes bool, nlbSecurityGroupMode bool) {
 	p.unconditionalAction.Insert(
 		"autoscaling:DescribeAutoScalingGroups",
 		"autoscaling:DescribeTags",
@@ -903,7 +907,6 @@ func AddCCMPermissions(p *Policy, cloudRoutes bool) {
 		"elasticloadbalancing:ModifyLoadBalancerAttributes",
 		"elasticloadbalancing:RegisterInstancesWithLoadBalancer",
 		"elasticloadbalancing:SetLoadBalancerPoliciesForBackendServer",
-		"elasticloadbalancing:SetSecurityGroups",
 		"elasticloadbalancing:AddTags",
 		"elasticloadbalancing:DeleteListener",
 		"elasticloadbalancing:DeleteTargetGroup",
@@ -914,6 +917,12 @@ func AddCCMPermissions(p *Policy, cloudRoutes bool) {
 		"elasticloadbalancing:DeregisterTargets",
 		"elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
 	)
+
+	if nlbSecurityGroupMode {
+		p.clusterTaggedAction.Insert(
+			"elasticloadbalancing:SetSecurityGroups",
+		)
+	}
 
 	p.clusterTaggedCreateAction.Insert(
 		"elasticloadbalancing:CreateLoadBalancer",

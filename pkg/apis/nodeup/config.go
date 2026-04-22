@@ -113,7 +113,8 @@ type Config struct {
 	// Manager to assign to each ELB provisioned for a Service, instead of creating
 	// one per ELB.
 	ElbSecurityGroup *string `json:"elbSecurityGroup,omitempty"`
-	// NLBSecurityGroupMode determines if the controller manages security groups for Network Load Balancers.
+	// NLBSecurityGroupMode determines if the Cloud Controller Manager supports and manages
+	// security groups for Network Load Balancers (AWS only). Valid value: "Managed"
 	NLBSecurityGroupMode *string `json:"nlbSecurityGroupMode,omitempty"`
 	// NodeIPFamilies controls the IP families reported for each node.
 	NodeIPFamilies []string `json:"nodeIPFamilies,omitempty"`
