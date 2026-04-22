@@ -100,6 +100,7 @@ func TestPolicyGeneration(t *testing.T) {
 		Gossip                 bool
 		Role                   Subject
 		AllowContainerRegistry bool
+		NLBSecurityGroupMode   *string
 		Policy                 string
 	}{
 		{
@@ -123,6 +124,12 @@ func TestPolicyGeneration(t *testing.T) {
 			Role:                   &NodeRoleMaster{},
 			AllowContainerRegistry: true,
 			Policy:                 "tests/iam_builder_master_gossip_ecr.json",
+		},
+		{
+			Role:                   &NodeRoleMaster{},
+			AllowContainerRegistry: false,
+			NLBSecurityGroupMode:   fi.PtrTo("Managed"),
+			Policy:                 "tests/iam_builder_master_nlb_sg_managed.json",
 		},
 		{
 			Role:                   &NodeRoleNode{},
@@ -207,6 +214,7 @@ func TestPolicyGeneration(t *testing.T) {
 							EBSCSIDriver: &kops.EBSCSIDriverSpec{
 								Enabled: fi.PtrTo(true),
 							},
+							NLBSecurityGroupMode: x.NLBSecurityGroupMode,
 						},
 					},
 					ExternalCloudControllerManager: &kops.CloudControllerManagerConfig{},
