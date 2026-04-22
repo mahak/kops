@@ -867,7 +867,7 @@ func addEtcdManagerPermissions(p *Policy) {
 	)
 }
 
-func AddCCMPermissions(p *Policy, cloudRoutes bool, nlbSecurityGroupMode bool) {
+func AddCCMPermissions(p *Policy, cloudRoutes bool, nlbSecurityGroupModeManaged bool) {
 	p.unconditionalAction.Insert(
 		"autoscaling:DescribeAutoScalingGroups",
 		"autoscaling:DescribeTags",
@@ -918,7 +918,7 @@ func AddCCMPermissions(p *Policy, cloudRoutes bool, nlbSecurityGroupMode bool) {
 		"elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
 	)
 
-	if nlbSecurityGroupMode {
+	if nlbSecurityGroupModeManaged {
 		p.clusterTaggedAction.Insert(
 			"elasticloadbalancing:SetSecurityGroups",
 		)
