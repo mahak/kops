@@ -160,6 +160,11 @@ func New(opts types.Options) (types.Deployer, *pflag.FlagSet) {
 	// register flags for klog
 	klogFlags := flag.NewFlagSet("klog", flag.ExitOnError)
 	klog.InitFlags(klogFlags)
+	// Opt into the new klog behavior so that -stderrthreshold is honored even
+	// when -logtostderr=true (the default).
+	// Ref: kubernetes/klog#212, kubernetes/klog#432
+	_ = klogFlags.Set("legacy_stderr_threshold_behavior", "false")
+	_ = klogFlags.Set("stderrthreshold", "INFO")
 	fs.AddGoFlagSet(klogFlags)
 
 	return d, fs
