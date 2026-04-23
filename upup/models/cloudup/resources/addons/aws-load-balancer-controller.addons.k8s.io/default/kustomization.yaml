@@ -88,3 +88,16 @@ patches:
       - op: replace
         path: /spec/template/spec/volumes/0/secret/secretName
         value: aws-load-balancer-webhook-tls
+
+  # The E2E suite runs a test that requires the ALBTargetControlAgent=true feature gate
+  # the test is skipped based on the presence of this CRD and the upstream helm chart
+  # doesn't offer a way to not render it, so we delete it here instead.
+  - target:
+      kind: CustomResourceDefinition
+      name: albtargetcontrolconfigs.elbv2.k8s.aws
+    patch: |
+      $patch: delete
+      apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
+      metadata:
+        name: albtargetcontrolconfigs.elbv2.k8s.aws
