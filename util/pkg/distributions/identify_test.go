@@ -119,11 +119,6 @@ func TestFindDistribution(t *testing.T) {
 			expected: Distribution{},
 		},
 		{
-			rootfs:   "ubuntu2004",
-			err:      nil,
-			expected: DistributionUbuntu2004,
-		},
-		{
 			rootfs:   "ubuntu2204",
 			err:      nil,
 			expected: DistributionUbuntu2204,

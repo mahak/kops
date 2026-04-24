@@ -66,8 +66,6 @@ func FindDistribution(rootfs string) (Distribution, error) {
 		return DistributionFedora43, nil
 	case "fedora-44":
 		return DistributionFedora44, nil
-	case "ubuntu-20.04":
-		return DistributionUbuntu2004, nil
 	case "ubuntu-22.04":
 		return DistributionUbuntu2204, nil
 	case "ubuntu-24.04":
