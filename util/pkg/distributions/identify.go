@@ -50,8 +50,6 @@ func FindDistribution(rootfs string) (Distribution, error) {
 	switch distro {
 	case "amzn-2023":
 		return DistributionAmazonLinux2023, nil
-	case "debian-10":
-		return DistributionDebian10, nil
 	case "debian-11":
 		return DistributionDebian11, nil
 	case "debian-12":
