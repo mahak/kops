@@ -65,11 +65,6 @@ func TestFindDistribution(t *testing.T) {
 			expected: Distribution{},
 		},
 		{
-			rootfs:   "debian10",
-			err:      nil,
-			expected: DistributionDebian10,
-		},
-		{
 			rootfs:   "debian11",
 			err:      nil,
 			expected: DistributionDebian11,
@@ -117,11 +112,6 @@ func TestFindDistribution(t *testing.T) {
 			rootfs:   "ubuntu1604",
 			err:      fmt.Errorf("unsupported distro %q", "ubuntu-16.04"),
 			expected: Distribution{},
-		},
-		{
-			rootfs:   "ubuntu2004",
-			err:      nil,
-			expected: DistributionUbuntu2004,
 		},
 		{
 			rootfs:   "ubuntu2204",

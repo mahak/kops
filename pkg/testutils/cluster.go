@@ -69,7 +69,7 @@ func BuildMinimalNodeInstanceGroup(name string, subnets ...string) kops.Instance
 	g := kops.InstanceGroup{}
 	g.ObjectMeta.Name = name
 	g.Spec.Role = kops.InstanceGroupRoleNode
-	g.Spec.Image = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220404"
+	g.Spec.Image = "ubuntu/images/hvm-ssd-gp3/ubuntu-resolute-26.04-amd64-server-20220404"
 	g.Spec.Subnets = subnets
 
 	return g
@@ -79,7 +79,7 @@ func BuildMinimalBastionInstanceGroup(name string, subnets ...string) kops.Insta
 	g := kops.InstanceGroup{}
 	g.ObjectMeta.Name = name
 	g.Spec.Role = kops.InstanceGroupRoleNode
-	g.Spec.Image = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220404"
+	g.Spec.Image = "ubuntu/images/hvm-ssd-gp3/ubuntu-resolute-26.04-amd64-server-20220404"
 	g.Spec.Subnets = subnets
 
 	return g

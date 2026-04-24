@@ -133,7 +133,7 @@ func makeGroupOS(t *testing.T, groups map[string]*cloudinstances.CloudInstanceGr
 	}
 
 	newIg.Spec.MachineType = "n1-standard-2"
-	newIg.Spec.Image = "Ubuntu-20.04"
+	newIg.Spec.Image = "Ubuntu-26.04"
 
 	igList.Items = append(igList.Items, newIg)
 

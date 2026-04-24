@@ -33,7 +33,7 @@ import (
 )
 
 func TestContainerdBuilder_Simple(t *testing.T) {
-	runContainerdBuilderTest(t, "simple", distributions.DistributionUbuntu2004)
+	runContainerdBuilderTest(t, "simple", distributions.DistributionUbuntu2604)
 }
 
 func TestContainerdBuilder_Flatcar(t *testing.T) {
@@ -41,11 +41,11 @@ func TestContainerdBuilder_Flatcar(t *testing.T) {
 }
 
 func TestContainerdBuilder_SkipInstall(t *testing.T) {
-	runContainerdBuilderTest(t, "skipinstall", distributions.DistributionUbuntu2004)
+	runContainerdBuilderTest(t, "skipinstall", distributions.DistributionUbuntu2604)
 }
 
 func TestContainerdBuilder_Complex(t *testing.T) {
-	runContainerdBuilderTest(t, "complex", distributions.DistributionUbuntu2004)
+	runContainerdBuilderTest(t, "complex", distributions.DistributionUbuntu2604)
 }
 
 func TestContainerdBuilder_BuildFlags(t *testing.T) {

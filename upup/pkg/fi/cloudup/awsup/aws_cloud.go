@@ -1909,8 +1909,6 @@ func resolveImage(ctx context.Context, ssmClient awsinterfaces.SSMAPI, ec2Client
 			switch owner {
 			case "amazon", "amazon.com":
 				owner = WellKnownAccountAmazonLinux2023
-			case "debian10":
-				owner = WellKnownAccountDebian
 			case "debian11":
 				owner = WellKnownAccountDebian
 			case "debian":

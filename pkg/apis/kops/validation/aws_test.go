@@ -241,7 +241,7 @@ func TestValidateInstanceGroupSpec(t *testing.T) {
 	mockEC2.Images = append(mockEC2.Images, &ec2types.Image{
 		CreationDate:   aws.String("2016-10-21T20:07:19.000Z"),
 		ImageId:        aws.String("ami-073c8c0760395aab8"),
-		Name:           aws.String("focal"),
+		Name:           aws.String("resolute"),
 		OwnerId:        aws.String(awsup.WellKnownAccountUbuntu),
 		RootDeviceName: aws.String("/dev/xvda"),
 		Architecture:   ec2types.ArchitectureValuesX8664,
@@ -342,7 +342,7 @@ func TestMixedInstancePolicies(t *testing.T) {
 	mockEC2.Images = append(mockEC2.Images, &ec2types.Image{
 		CreationDate:   aws.String("2016-10-21T20:07:19.000Z"),
 		ImageId:        aws.String("ami-073c8c0760395aab8"),
-		Name:           aws.String("focal"),
+		Name:           aws.String("resolute"),
 		OwnerId:        aws.String(awsup.WellKnownAccountUbuntu),
 		RootDeviceName: aws.String("/dev/xvda"),
 		Architecture:   ec2types.ArchitectureValuesX8664,
@@ -370,7 +370,7 @@ func TestInstanceMetadataOptions(t *testing.T) {
 	mockEC2.Images = append(mockEC2.Images, &ec2types.Image{
 		CreationDate:   aws.String("2016-10-21T20:07:19.000Z"),
 		ImageId:        aws.String("ami-073c8c0760395aab8"),
-		Name:           aws.String("focal"),
+		Name:           aws.String("resolute"),
 		OwnerId:        aws.String(awsup.WellKnownAccountUbuntu),
 		RootDeviceName: aws.String("/dev/xvda"),
 		Architecture:   ec2types.ArchitectureValuesX8664,

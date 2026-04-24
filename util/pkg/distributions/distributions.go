@@ -41,11 +41,9 @@ type Distribution struct {
 
 var (
 	// Debian-family distros
-	DistributionDebian10   = Distribution{packageFormat: "deb", project: "debian", id: "buster", version: 10}
 	DistributionDebian11   = Distribution{packageFormat: "deb", project: "debian", id: "bullseye", version: 11}
 	DistributionDebian12   = Distribution{packageFormat: "deb", project: "debian", id: "bookworm", version: 12}
 	DistributionDebian13   = Distribution{packageFormat: "deb", project: "debian", id: "trixie", version: 13}
-	DistributionUbuntu2004 = Distribution{packageFormat: "deb", project: "ubuntu", id: "focal", version: 20.04}
 	DistributionUbuntu2204 = Distribution{packageFormat: "deb", project: "ubuntu", id: "jammy", version: 22.04}
 	DistributionUbuntu2404 = Distribution{packageFormat: "deb", project: "ubuntu", id: "noble", version: 24.04}
 	DistributionUbuntu2510 = Distribution{packageFormat: "deb", project: "ubuntu", id: "questing", version: 25.10}

@@ -187,7 +187,7 @@ func (h *IntegrationTestHarness) SetupMockAWS() *awsup.MockAWSCloud {
 	mockEC2.Images = append(mockEC2.Images, &ec2types.Image{
 		CreationDate:   aws.String("2022-04-04T00:00:00.000Z"),
 		ImageId:        aws.String("ami-12345678"),
-		Name:           aws.String("images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220404"),
+		Name:           aws.String("images/hvm-ssd-gp3/ubuntu-resolute-26.04-amd64-server-20220404"),
 		OwnerId:        aws.String(awsup.WellKnownAccountUbuntu),
 		RootDeviceName: aws.String("/dev/xvda"),
 		Architecture:   ec2types.ArchitectureValuesX8664,
@@ -345,7 +345,7 @@ func SetupMockOpenstack() *openstack.MockCloud {
 	c.SetExternalSubnet(fi.PtrTo(extSubnetName))
 	c.SetLBFloatingSubnet(fi.PtrTo(extSubnetName))
 	images.Create(context.TODO(), c.MockImageClient.ServiceClient(), images.CreateOpts{
-		Name:    "Ubuntu-20.04",
+		Name:    "Ubuntu-26.04",
 		MinDisk: 12,
 	})
 	flavors.Create(context.TODO(), c.MockNovaClient.ServiceClient(), flavors.CreateOpts{
