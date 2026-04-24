@@ -104,6 +104,9 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 		if b.NodeupConfig.ElbSecurityGroup != nil {
 			lines = append(lines, "ElbSecurityGroup = "+*b.NodeupConfig.ElbSecurityGroup)
 		}
+		if b.NodeupConfig.NLBSecurityGroupMode != nil {
+			lines = append(lines, "NLBSecurityGroupMode = "+*b.NodeupConfig.NLBSecurityGroupMode)
+		}
 		if !inTree {
 			for _, family := range b.NodeupConfig.NodeIPFamilies {
 				lines = append(lines, "NodeIPFamilies = "+family)

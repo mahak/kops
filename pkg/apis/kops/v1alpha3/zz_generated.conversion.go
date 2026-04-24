@@ -1586,6 +1586,7 @@ func autoConvert_v1alpha3_AWSSpec_To_kops_AWSSpec(in *AWSSpec, out *kops.AWSSpec
 	out.NodeIPFamilies = in.NodeIPFamilies
 	out.DisableSecurityGroupIngress = in.DisableSecurityGroupIngress
 	out.ElbSecurityGroup = in.ElbSecurityGroup
+	out.NLBSecurityGroupMode = in.NLBSecurityGroupMode
 	out.SpotinstProduct = in.SpotinstProduct
 	out.SpotinstOrientation = in.SpotinstOrientation
 	out.BinariesLocation = in.BinariesLocation
@@ -1646,6 +1647,7 @@ func autoConvert_kops_AWSSpec_To_v1alpha3_AWSSpec(in *kops.AWSSpec, out *AWSSpec
 	out.NodeIPFamilies = in.NodeIPFamilies
 	out.DisableSecurityGroupIngress = in.DisableSecurityGroupIngress
 	out.ElbSecurityGroup = in.ElbSecurityGroup
+	out.NLBSecurityGroupMode = in.NLBSecurityGroupMode
 	out.SpotinstProduct = in.SpotinstProduct
 	out.SpotinstOrientation = in.SpotinstOrientation
 	out.BinariesLocation = in.BinariesLocation

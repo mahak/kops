@@ -222,6 +222,13 @@ func Convert_v1alpha2_ClusterSpec_To_kops_ClusterSpec(in *ClusterSpec, out *kops
 			val := *in.CloudConfig.ElbSecurityGroup
 			out.CloudProvider.AWS.ElbSecurityGroup = &val
 		}
+		if in.CloudConfig.NLBSecurityGroupMode != nil {
+			if out.CloudProvider.AWS == nil {
+				return field.Forbidden(field.NewPath("spec").Child("cloudConfig", "nlbSecurityGroupMode"), "nlbSecurityGroupMode supports only AWS")
+			}
+			val := *in.CloudConfig.NLBSecurityGroupMode
+			out.CloudProvider.AWS.NLBSecurityGroupMode = &val
+		}
 		if in.CloudConfig.GCPPDCSIDriver != nil {
 			if out.CloudProvider.GCE == nil {
 				return field.Forbidden(field.NewPath("spec").Child("cloudConfig", "gcpPDCSIDriver"), "PD CSI driver supports only GCE")
@@ -471,6 +478,13 @@ func Convert_kops_ClusterSpec_To_v1alpha2_ClusterSpec(in *kops.ClusterSpec, out 
 			}
 			val := *aws.ElbSecurityGroup
 			out.CloudConfig.ElbSecurityGroup = &val
+		}
+		if aws.NLBSecurityGroupMode != nil {
+			if out.CloudConfig == nil {
+				out.CloudConfig = &CloudConfiguration{}
+			}
+			val := *aws.NLBSecurityGroupMode
+			out.CloudConfig.NLBSecurityGroupMode = &val
 		}
 		if aws.NodeTerminationHandler != nil {
 			out.NodeTerminationHandler = &NodeTerminationHandlerSpec{}

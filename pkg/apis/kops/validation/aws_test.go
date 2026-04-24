@@ -886,3 +886,62 @@ func TestAWSAdditionalRoutes(t *testing.T) {
 		})
 	}
 }
+
+func TestAWSValidateNLBSecurityGroupMode(t *testing.T) {
+	grid := []struct {
+		Input          kops.ClusterSpec
+		ExpectedErrors []string
+	}{
+		{
+			Input: kops.ClusterSpec{
+				CloudProvider: kops.CloudProviderSpec{
+					AWS: &kops.AWSSpec{
+						NLBSecurityGroupMode: fi.PtrTo("Managed"),
+					},
+				},
+			},
+		},
+		{
+			Input: kops.ClusterSpec{
+				CloudProvider: kops.CloudProviderSpec{
+					AWS: &kops.AWSSpec{
+						NLBSecurityGroupMode: fi.PtrTo(""),
+					},
+				},
+			},
+			ExpectedErrors: []string{"Unsupported value::spec.cloudProvider.aws.nlbSecurityGroupMode"},
+		},
+		{
+			Input: kops.ClusterSpec{
+				CloudProvider: kops.CloudProviderSpec{
+					AWS: &kops.AWSSpec{},
+				},
+			},
+		},
+		{
+			Input: kops.ClusterSpec{
+				CloudProvider: kops.CloudProviderSpec{
+					AWS: &kops.AWSSpec{
+						NLBSecurityGroupMode: fi.PtrTo("Invalid"),
+					},
+				},
+			},
+			ExpectedErrors: []string{"Unsupported value::spec.cloudProvider.aws.nlbSecurityGroupMode"},
+		},
+		{
+			Input: kops.ClusterSpec{
+				CloudProvider: kops.CloudProviderSpec{
+					AWS: &kops.AWSSpec{
+						NLBSecurityGroupMode: fi.PtrTo("managed"),
+					},
+				},
+			},
+			ExpectedErrors: []string{"Unsupported value::spec.cloudProvider.aws.nlbSecurityGroupMode"},
+		},
+	}
+	for _, g := range grid {
+		cluster := &kops.Cluster{Spec: g.Input}
+		errs := awsValidateNLBSecurityGroupMode(cluster)
+		testErrors(t, g.Input, errs, g.ExpectedErrors)
+	}
+}

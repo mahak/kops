@@ -193,6 +193,11 @@ func (in *AWSSpec) DeepCopyInto(out *AWSSpec) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.NLBSecurityGroupMode != nil {
+		in, out := &in.NLBSecurityGroupMode, &out.NLBSecurityGroupMode
+		*out = new(string)
+		**out = **in
+	}
 	if in.SpotinstProduct != nil {
 		in, out := &in.SpotinstProduct, &out.SpotinstProduct
 		*out = new(string)

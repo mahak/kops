@@ -32,7 +32,12 @@ var _ iam.Subject = &ServiceAccount{}
 func (r *ServiceAccount) BuildAWSPolicy(b *iam.PolicyBuilder) (*iam.Policy, error) {
 	clusterName := b.Cluster.ObjectMeta.Name
 	p := iam.NewPolicy(clusterName, b.Partition)
-	iam.AddCCMPermissions(p, b.Cluster.Spec.Networking.Kubenet != nil)
+
+	// Only inject NLBSecurityMode=Managed specific IAM permissions if enabled
+	nlbSecurityGroupMode := b.Cluster.Spec.CloudProvider.AWS.NLBSecurityGroupMode
+	nlbSecurityGroupModeManaged := nlbSecurityGroupMode != nil && *nlbSecurityGroupMode == "Managed"
+
+	iam.AddCCMPermissions(p, b.Cluster.Spec.Networking.Kubenet != nil, nlbSecurityGroupModeManaged)
 	return p, nil
 }
 
