@@ -42,7 +42,7 @@ The following table provides the support status for various distros with regards
 | CoreOS                                  |          1.6 |    1.9 |       1.17 |    1.18 |
 | Debian 8                                |            - |    1.5 |       1.17 |    1.18 |
 | Debian 9                                |          1.8 |   1.10 |       1.21 |    1.23 |
-| [Debian 10](#debian-10-buster)          |         1.13 |   1.17 |          - |       - |
+| [Debian 10](#debian-10-buster)          |         1.13 |   1.17 |       1.35 |    1.36 |
 | [Debian 11](#debian-11-bullseye)        |       1.21.1 |      - |          - |       - |
 | [Debian 12](#debian-12-bookworm)        |       1.26.3 |      - |          - |       - |
 | [Debian 13](#debian-13-trixie)          |         1.34 |      - |          - |       - |
@@ -57,7 +57,7 @@ The following table provides the support status for various distros with regards
 | [Rocky 10](#rocky-10)                   |         1.35 |      - |          - |       - |
 | Ubuntu 16.04                            |          1.5 |   1.10 |       1.17 |    1.20 |
 | Ubuntu 18.04                            |         1.10 |   1.16 |       1.26 |    1.28 |
-| [Ubuntu 20.04](#ubuntu-2004-focal)      |       1.16.2 |   1.18 |          - |       - |
+| [Ubuntu 20.04](#ubuntu-2004-focal)      |       1.16.2 |   1.18 |       1.35 |    1.36 |
 | [Ubuntu 22.04](#ubuntu-2204-jammy)      |         1.23 |   1.24 |          - |       - |
 | [Ubuntu 24.04](#ubuntu-2404-noble)      |         1.29 |   1.31 |          - |       - |
 | [Ubuntu 26.04](#ubuntu-2604-resolute)   |         1.36 |      - |          - |       - |
