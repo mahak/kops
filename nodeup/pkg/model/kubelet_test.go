@@ -383,7 +383,7 @@ func RunGoldenTest(t *testing.T, basedir string, key string, builder func(*Nodeu
 
 	nodeupModelContext.KeyStore = keystore
 
-	nodeupModelContext.Distribution = distributions.DistributionUbuntu2004
+	nodeupModelContext.Distribution = distributions.DistributionUbuntu2604
 
 	if err := nodeupModelContext.Init(); err != nil {
 		t.Fatalf("error from nodeupModelContext.Init(): %v", err)

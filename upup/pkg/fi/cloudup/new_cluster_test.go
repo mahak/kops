@@ -450,7 +450,7 @@ func TestDefaultImage(t *testing.T) {
 				},
 			},
 			architecture: architectures.ArchitectureAmd64,
-			expected:     "099720109477/ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20221018",
+			expected:     "099720109477/ubuntu/images/hvm-ssd-gp3/ubuntu-resolute-26.04-amd64-server-20221018",
 		},
 		{
 			cluster: &api.Cluster{
@@ -462,7 +462,7 @@ func TestDefaultImage(t *testing.T) {
 				},
 			},
 			architecture: architectures.ArchitectureArm64,
-			expected:     "099720109477/ubuntu/images/hvm-ssd/ubuntu-focal-20.04-arm64-server-20221018",
+			expected:     "099720109477/ubuntu/images/hvm-ssd-gp3/ubuntu-resolute-26.04-arm64-server-20221018",
 		},
 		{
 			cluster: &api.Cluster{
@@ -474,7 +474,7 @@ func TestDefaultImage(t *testing.T) {
 				},
 			},
 			architecture: architectures.ArchitectureAmd64,
-			expected:     "Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:20.04.202210180",
+			expected:     "Canonical:ubuntu-26_04-lts:server:26.04.202210180",
 		},
 		{
 			cluster: &api.Cluster{
@@ -486,7 +486,7 @@ func TestDefaultImage(t *testing.T) {
 				},
 			},
 			architecture: architectures.ArchitectureAmd64,
-			expected:     "ubuntu-os-cloud/ubuntu-2004-focal-v20221018",
+			expected:     "ubuntu-os-cloud/ubuntu-2604-resolute-amd64-v20221018",
 		},
 		{
 			cluster: &api.Cluster{

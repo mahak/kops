@@ -233,7 +233,7 @@ resource "hcloud_network_subnet" "minimal-example-com-10-0-0-0--16" {
 
 resource "hcloud_server" "master-fsn1" {
   count = 1
-  image = "ubuntu-20.04"
+  image = "ubuntu-26.04"
   labels = {
     "kops.k8s.io/cluster"                                                            = "minimal.example.com"
     "kops.k8s.io/instance-group"                                                     = "master-fsn1"
@@ -258,7 +258,7 @@ resource "hcloud_server" "master-fsn1" {
 
 resource "hcloud_server" "nodes-fsn1" {
   count = 1
-  image = "ubuntu-20.04"
+  image = "ubuntu-26.04"
   labels = {
     "kops.k8s.io/cluster"                                 = "minimal.example.com"
     "kops.k8s.io/instance-group"                          = "nodes-fsn1"

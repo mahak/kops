@@ -185,7 +185,7 @@ resource "scaleway_instance_ip" "nodes-fr-par-1-0" {
 
 resource "scaleway_instance_server" "control-plane-fr-par-1-0" {
   enable_dynamic_ip = true
-  image             = "ubuntu_focal"
+  image             = "ubuntu_resolute"
   ip_id             = scaleway_instance_ip.control-plane-fr-par-1-0.id
   lifecycle {
     ignore_changes = [additional_volume_ids]
@@ -201,7 +201,7 @@ resource "scaleway_instance_server" "control-plane-fr-par-1-0" {
 
 resource "scaleway_instance_server" "nodes-fr-par-1-0" {
   enable_dynamic_ip      = true
-  image                  = "ubuntu_focal"
+  image                  = "ubuntu_resolute"
   ip_id                  = scaleway_instance_ip.nodes-fr-par-1-0.id
   name                   = "nodes-fr-par-1-0"
   replace_on_type_change = false

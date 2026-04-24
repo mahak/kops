@@ -470,7 +470,7 @@ resource "google_compute_instance_template" "master-us-test1-a-minimal-example-c
     provisioned_iops       = 0
     provisioned_throughput = 0
     source                 = ""
-    source_image           = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20221018"
+    source_image           = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2604-resolute-amd64-v20221018"
     type                   = "PERSISTENT"
   }
   labels = {
@@ -524,7 +524,7 @@ resource "google_compute_instance_template" "nodes-minimal-example-com" {
     provisioned_iops       = 0
     provisioned_throughput = 0
     source                 = ""
-    source_image           = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20221018"
+    source_image           = "https://www.googleapis.com/compute/v1/projects/ubuntu-os-cloud/global/images/ubuntu-2604-resolute-amd64-v20221018"
     type                   = "PERSISTENT"
   }
   labels = {
