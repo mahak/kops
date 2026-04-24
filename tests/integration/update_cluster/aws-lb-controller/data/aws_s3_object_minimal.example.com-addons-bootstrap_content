@@ -145,7 +145,7 @@ spec:
     version: 9.99.0
   - id: k8s-1.19-irsa
     manifest: aws-load-balancer-controller.addons.k8s.io/k8s-1.19-irsa.yaml
-    manifestHash: 985bbe03988009bb6b25d153bf8ab44b3a71f100c9628c98d4114d94bcdb424b
+    manifestHash: 6a6f83caedc552e1de568079326a6b0ddecff1f0e79ea3c79774db29d2809508
     name: aws-load-balancer-controller.addons.k8s.io
     needsPKI: true
     prune:
