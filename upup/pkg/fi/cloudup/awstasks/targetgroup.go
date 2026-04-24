@@ -68,6 +68,7 @@ type TargetGroup struct {
 	HealthyThreshold    *int32
 	UnhealthyThreshold  *int32
 	HealthCheckProtocol elbv2types.ProtocolEnum
+	HealthCheckPath     *string
 
 	info     *awsup.TargetGroupInfo
 	revision string
@@ -246,6 +247,7 @@ func (e *TargetGroup) Find(c *fi.CloudupContext) (*TargetGroup, error) {
 		HealthyThreshold:    tg.HealthyThresholdCount,
 		UnhealthyThreshold:  tg.UnhealthyThresholdCount,
 		HealthCheckProtocol: tg.HealthCheckProtocol,
+		HealthCheckPath:     tg.HealthCheckPath,
 		VPC:                 &VPC{ID: tg.VpcId},
 	}
 	actual.info = targetGroupInfo
@@ -364,6 +366,7 @@ func (_ *TargetGroup) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *TargetGrou
 			HealthyThresholdCount:      e.HealthyThreshold,
 			UnhealthyThresholdCount:    e.UnhealthyThreshold,
 			HealthCheckProtocol:        e.HealthCheckProtocol,
+			HealthCheckPath:            e.HealthCheckPath,
 			Tags:                       awsup.ELBv2Tags(tags),
 		}
 
@@ -437,6 +440,7 @@ type terraformTargetGroupHealthCheck struct {
 	HealthyThreshold   int32                   `cty:"healthy_threshold"`
 	UnhealthyThreshold int32                   `cty:"unhealthy_threshold"`
 	Protocol           elbv2types.ProtocolEnum `cty:"protocol"`
+	Path               *string                 `cty:"path"`
 }
 
 func (_ *TargetGroup) RenderTerraform(t *terraform.TerraformTarget, a, e, changes *TargetGroup) error {
@@ -460,6 +464,7 @@ func (_ *TargetGroup) RenderTerraform(t *terraform.TerraformTarget, a, e, change
 			HealthyThreshold:   *e.HealthyThreshold,
 			UnhealthyThreshold: *e.UnhealthyThreshold,
 			Protocol:           e.HealthCheckProtocol,
+			Path:               e.HealthCheckPath,
 		},
 	}
 

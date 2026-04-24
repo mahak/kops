@@ -361,6 +361,7 @@ func (b *APILoadBalancerBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 						HealthyThreshold:    fi.PtrTo(int32(2)),
 						UnhealthyThreshold:  fi.PtrTo(int32(2)),
 						HealthCheckProtocol: elbv2types.ProtocolEnumHttps,
+						HealthCheckPath:     fi.PtrTo("/healthz"),
 						Shared:              fi.PtrTo(false),
 					}
 					tg.CreateNewRevisionsWith(nlb)
