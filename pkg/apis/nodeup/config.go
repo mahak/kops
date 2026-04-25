@@ -185,6 +185,8 @@ type BootConfig struct {
 type ConfigServerOptions struct {
 	// Servers are the addresses of the configuration servers to use (kops-controller)
 	Servers []string `json:"servers,omitempty"`
+	// TLSServerName is the server name to use for TLS verification when connecting to Servers.
+	TLSServerName string `json:"tlsServerName,omitempty"`
 	// CACertificates are the certificates to trust for fi.CertificateIDCA.
 	CACertificates string
 }
