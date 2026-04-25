@@ -738,7 +738,7 @@ func getNodeConfigFromServers(ctx context.Context, bootConfig *nodeup.BootConfig
 	}
 
 	// Note: The url is overridden in every iteration of the loop below.
-	client := kopscontrollerclient.New(authenticator, []byte(bootConfig.ConfigServer.CACertificates), url.URL{})
+	client := kopscontrollerclient.NewWithTLSServerName(authenticator, []byte(bootConfig.ConfigServer.CACertificates), url.URL{}, bootConfig.ConfigServer.TLSServerName)
 	defer client.Close()
 
 	var merr error

@@ -393,23 +393,7 @@ func (n *nodeUpConfigBuilder) BuildConfig(ig *kops.InstanceGroup, wellKnownAddre
 
 	useConfigServer := kopsmodel.UseKopsControllerForNodeConfig(cluster) && !ig.HasAPIServer()
 	if useConfigServer {
-		hosts := []string{"kops-controller.internal." + cluster.ObjectMeta.Name}
-		if len(bootConfig.APIServerIPs) > 0 {
-			hosts = bootConfig.APIServerIPs
-		}
-
-		configServer := &nodeup.ConfigServerOptions{
-			CACertificates: config.CAs[fi.CertificateIDCA],
-		}
-		for _, host := range hosts {
-			baseURL := url.URL{
-				Scheme: "https",
-				Host:   net.JoinHostPort(host, strconv.Itoa(wellknownports.KopsControllerPort)),
-				Path:   "/",
-			}
-			configServer.Servers = append(configServer.Servers, baseURL.String())
-		}
-		bootConfig.ConfigServer = configServer
+		bootConfig.ConfigServer = buildConfigServerOptions(cluster.ObjectMeta.Name, config.CAs[fi.CertificateIDCA], bootConfig.APIServerIPs)
 		delete(config.CAs, fi.CertificateIDCA)
 	} else {
 		bootConfig.ConfigBase = fi.PtrTo(n.configBase.Path())
@@ -463,6 +447,30 @@ func (n *nodeUpConfigBuilder) BuildConfig(ig *kops.InstanceGroup, wellKnownAddre
 	config.Packages = append(config.Packages, ig.Spec.Packages...)
 
 	return config, bootConfig, nil
+}
+
+func buildConfigServerOptions(clusterName string, caCertificates string, apiserverIPs []string) *nodeup.ConfigServerOptions {
+	kopsControllerName := "kops-controller.internal." + clusterName
+	hosts := []string{kopsControllerName}
+
+	configServer := &nodeup.ConfigServerOptions{
+		CACertificates: caCertificates,
+	}
+	if len(apiserverIPs) > 0 {
+		hosts = apiserverIPs
+		configServer.TLSServerName = kopsControllerName
+	}
+
+	for _, host := range hosts {
+		baseURL := url.URL{
+			Scheme: "https",
+			Host:   net.JoinHostPort(host, strconv.Itoa(wellknownports.KopsControllerPort)),
+			Path:   "/",
+		}
+		configServer.Servers = append(configServer.Servers, baseURL.String())
+	}
+
+	return configServer
 }
 
 func loadCertificates(keysets map[string]*fi.Keyset, name string, config *nodeup.Config, includeKeypairID bool) error {

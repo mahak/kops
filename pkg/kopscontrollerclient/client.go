@@ -52,6 +52,10 @@ type Client struct {
 }
 
 func New(authenticator bootstrap.Authenticator, cas []byte, baseURL url.URL) *Client {
+	return NewWithTLSServerName(authenticator, cas, baseURL, "")
+}
+
+func NewWithTLSServerName(authenticator bootstrap.Authenticator, cas []byte, baseURL url.URL, tlsServerName string) *Client {
 	client := &Client{
 		Authenticator: authenticator,
 		CAs:           cas,
@@ -60,11 +64,15 @@ func New(authenticator bootstrap.Authenticator, cas []byte, baseURL url.URL) *Cl
 
 	certPool := x509.NewCertPool()
 	certPool.AppendCertsFromPEM(cas)
+	tlsConfig := &tls.Config{
+		RootCAs:    certPool,
+		MinVersion: tls.VersionTLS12,
+	}
+	if tlsServerName != "" {
+		tlsConfig.ServerName = tlsServerName
+	}
 	transport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			RootCAs:    certPool,
-			MinVersion: tls.VersionTLS12,
-		},
+		TLSClientConfig: tlsConfig,
 	}
 	client.httpClient = &http.Client{
 		Timeout:   time.Duration(15) * time.Second,
