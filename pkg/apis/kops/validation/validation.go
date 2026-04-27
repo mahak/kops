@@ -539,7 +539,66 @@ func validateTopology(c *kops.Cluster, topology *kops.TopologySpec, fieldPath *f
 		allErrs = append(allErrs, IsValidValue(fieldPath.Child("dns", "type"), &topology.DNS, kops.SupportedDnsTypes)...)
 	}
 
+	allErrs = append(allErrs, validateCloudDNSTopology(c, fieldPath.Child("dns", "type"))...)
+
 	return allErrs
+}
+
+func validateCloudDNSTopology(c *kops.Cluster, fieldPath *field.Path) field.ErrorList {
+	type dnsTopologies struct {
+		gossip  bool // protokube has a seed mechanism
+		none    bool // api server and kops-controller have a stable address
+		public  bool // dns-controller/external-dns provider exists
+		private bool // private-zone exists
+	}
+
+	var cloudDNSTopologies = map[kops.CloudProviderID]dnsTopologies{
+		kops.CloudProviderAWS:       {none: true, gossip: true, public: true, private: true},
+		kops.CloudProviderAzure:     {none: true, gossip: true},
+		kops.CloudProviderDO:        {none: true, gossip: true, public: true},
+		kops.CloudProviderGCE:       {none: true, gossip: true, public: true, private: true},
+		kops.CloudProviderHetzner:   {none: true, gossip: true},
+		kops.CloudProviderLinode:    {none: true},
+		kops.CloudProviderMetal:     {none: true},
+		kops.CloudProviderOpenstack: {none: true, gossip: true, public: true, private: true},
+		kops.CloudProviderScaleway:  {none: true, gossip: true, public: true},
+	}
+
+	cloud := c.GetCloudProvider()
+	topologies, ok := cloudDNSTopologies[cloud]
+	if !ok {
+		return field.ErrorList{field.Forbidden(fieldPath,
+			fmt.Sprintf("cloud provider %q has no declared DNS topology support", cloud))}
+	}
+
+	switch {
+	case c.UsesLegacyGossip():
+		if !topologies.gossip {
+			return field.ErrorList{field.Forbidden(fieldPath,
+				fmt.Sprintf("cloud provider %q does not support gossip dns topology", cloud))}
+		}
+		return nil
+	case c.UsesNoneDNS():
+		if !topologies.none {
+			return field.ErrorList{field.Forbidden(fieldPath,
+				fmt.Sprintf("cloud provider %q does not support none dns topology", cloud))}
+		}
+		return nil
+	case c.UsesPrivateDNS():
+		if !topologies.private {
+			return field.ErrorList{field.Forbidden(fieldPath,
+				fmt.Sprintf("cloud provider %q does not support private dns topology", cloud))}
+		}
+		return nil
+	case c.UsesPublicDNS():
+		if !topologies.public {
+			return field.ErrorList{field.Forbidden(fieldPath,
+				fmt.Sprintf("cloud provider %q does not support public dns topology", cloud))}
+		}
+		return nil
+	default:
+		return field.ErrorList{field.Forbidden(fieldPath, "unsupported dns topology")}
+	}
 }
 
 func validateSubnets(cluster *kops.Cluster, subnets []kops.ClusterSubnetSpec, fieldPath *field.Path, strict bool, providerConstraints *cloudProviderConstraints, networkCIDRs []*net.IPNet, podCIDR, serviceClusterIPRange *net.IPNet) field.ErrorList {
