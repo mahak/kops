@@ -134,8 +134,8 @@ func (h *IntegrationTestHarness) Close() {
 	}
 }
 
-func (h *IntegrationTestHarness) SetupMockAzure() *azuretasks.MockAzureCloud {
-	return azuretasks.InstallMockAzureCloud("eastus", "sub-123", "minimal-azure.example.com")
+func (h *IntegrationTestHarness) SetupMockAzure(resourceGroupName string) *azuretasks.MockAzureCloud {
+	return azuretasks.InstallMockAzureCloud("eastus", "sub-123", resourceGroupName)
 }
 
 func (h *IntegrationTestHarness) SetupMockAWS() *awsup.MockAWSCloud {

@@ -1,0 +1,54 @@
+kind: Addons
+metadata:
+  name: bootstrap
+spec:
+  addons:
+  - id: k8s-1.16
+    manifest: kops-controller.addons.k8s.io/k8s-1.16.yaml
+    manifestHash: b02f6ad18c5d1f1898a883b54a35efdfac23e74728fdf135f3b4f80b3b7b592d
+    name: kops-controller.addons.k8s.io
+    needsRollingUpdate: control-plane
+    selector:
+      k8s-addon: kops-controller.addons.k8s.io
+    version: 9.99.0
+  - id: k8s-1.12
+    manifest: coredns.addons.k8s.io/k8s-1.12.yaml
+    manifestHash: 9e9922bb0afbbe30ff4cdea62e54f87dbf04da6245bdb03792df4e422d7493c0
+    name: coredns.addons.k8s.io
+    selector:
+      k8s-addon: coredns.addons.k8s.io
+    version: 9.99.0
+  - id: k8s-1.9
+    manifest: kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
+    manifestHash: da91eb5cf9a29f1b03510007d6d54603aef2fc23a305abc9ba496c510dfd3bc7
+    name: kubelet-api.rbac.addons.k8s.io
+    selector:
+      k8s-addon: kubelet-api.rbac.addons.k8s.io
+    version: 9.99.0
+  - manifest: limit-range.addons.k8s.io/v1.5.0.yaml
+    manifestHash: 686cc69e559a1c6f5e8b94e38de54a575a25c432ed5ceec565244b965fb5f07f
+    name: limit-range.addons.k8s.io
+    selector:
+      k8s-addon: limit-range.addons.k8s.io
+    version: 9.99.0
+  - id: k8s-1.12
+    manifest: dns-controller.addons.k8s.io/k8s-1.12.yaml
+    manifestHash: e621148266a24e1170e36618a790983cdf256bfec6e0f502db768d7b01dd768d
+    name: dns-controller.addons.k8s.io
+    selector:
+      k8s-addon: dns-controller.addons.k8s.io
+    version: 9.99.0
+  - id: k8s-1.22
+    manifest: hcloud-cloud-controller.addons.k8s.io/k8s-1.22.yaml
+    manifestHash: f041aa2c24c2d70086b168573271a9f119333347de170182ee00f1a03bd7414f
+    name: hcloud-cloud-controller.addons.k8s.io
+    selector:
+      k8s-addon: hcloud-cloud-controller.addons.k8s.io
+    version: 9.99.0
+  - id: k8s-1.22
+    manifest: hcloud-csi-driver.addons.k8s.io/k8s-1.22.yaml
+    manifestHash: 12bdce4cb2f853bf50ead1e2d13a7340da229533f42d85802c1bc5f202a03165
+    name: hcloud-csi-driver.addons.k8s.io
+    selector:
+      k8s-addon: hcloud-csi-driver.addons.k8s.io
+    version: 9.99.0

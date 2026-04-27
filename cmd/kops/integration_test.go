@@ -246,6 +246,42 @@ const (
 	nodeProblemDetectorAddon = "node-problem-detector.addons.k8s.io-k8s-1.17"
 )
 
+// TestMinimalGossipAWS runs the test on a minimum gossip configuration on AWS
+func TestMinimalGossipAWS(t *testing.T) {
+	newIntegrationTest("gossip.k8s.local", "gossip-aws").
+		withAddons(
+			awsEBSCSIAddon,
+			dnsControllerAddon,
+			awsCCMAddon,
+		).
+		runTestTerraformAWS(t)
+}
+
+// TestMinimalGossipAzure runs the test on a minimum gossip configuration on Azure
+func TestMinimalGossipAzure(t *testing.T) {
+	newIntegrationTest("gossip.k8s.local", "gossip-azure").
+		runTestTerraformAzure(t)
+}
+
+// TestMinimalGossipGCE runs the test on a minimum gossip configuration on GCE
+func TestMinimalGossipGCE(t *testing.T) {
+	newIntegrationTest("gossip.k8s.local", "gossip-gce").
+		withAddons(
+			dnsControllerAddon,
+			gcpCCMAddon,
+			gcpPDCSIAddon,
+		).
+		runTestTerraformGCE(t)
+}
+
+// TestMinimalGossipHetzner runs the test on a minimum gossip configuration on Hetzner
+func TestMinimalGossipHetzner(t *testing.T) {
+	t.Setenv("HCLOUD_TOKEN", "REDACTED")
+	newIntegrationTest("gossip.k8s.local", "gossip-hetzner").
+		withAddons(dnsControllerAddon).
+		runTestTerraformHetzner(t)
+}
+
 // TestMinimalAWS runs the test on a minimum configuration, similar to kops create cluster minimal.example.com --zones us-west-1a
 func TestMinimalAWS(t *testing.T) {
 	newIntegrationTest("minimal-aws.example.com", "minimal-aws").
@@ -1767,7 +1803,7 @@ func (i *integrationTest) runTestTerraformAzure(t *testing.T) {
 	defer h.Close()
 
 	h.MockKopsVersion("1.34.0-beta.1")
-	h.SetupMockAzure()
+	h.SetupMockAzure(i.clusterName)
 
 	var stdout bytes.Buffer
 
