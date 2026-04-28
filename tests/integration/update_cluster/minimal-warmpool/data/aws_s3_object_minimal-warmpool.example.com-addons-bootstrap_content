@@ -10,34 +10,29 @@ spec:
     needsRollingUpdate: control-plane
     selector:
       k8s-addon: kops-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: coredns.addons.k8s.io/k8s-1.12.yaml
     manifestHash: 7e1bcff96851f27da385fa8be54159cfaf6a8e0b9a871eb09893390ec61d9494
     name: coredns.addons.k8s.io
     selector:
       k8s-addon: coredns.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.9
     manifest: kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
     manifestHash: da91eb5cf9a29f1b03510007d6d54603aef2fc23a305abc9ba496c510dfd3bc7
     name: kubelet-api.rbac.addons.k8s.io
     selector:
       k8s-addon: kubelet-api.rbac.addons.k8s.io
-    version: 9.99.0
   - manifest: limit-range.addons.k8s.io/v1.5.0.yaml
     manifestHash: 686cc69e559a1c6f5e8b94e38de54a575a25c432ed5ceec565244b965fb5f07f
     name: limit-range.addons.k8s.io
     selector:
       k8s-addon: limit-range.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: dns-controller.addons.k8s.io/k8s-1.12.yaml
     manifestHash: 79f67a86a7e0be29c653e10b4a3d94554719c53d0bee4d01694aef6f2c7ec801
     name: dns-controller.addons.k8s.io
     selector:
       k8s-addon: dns-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.11
     manifest: node-termination-handler.aws/k8s-1.11.yaml
     manifestHash: 4bd8bd860cb2c2bd3e1d20ed3800fc1bd637029ec2b39053e75e87090b736098
@@ -88,14 +83,12 @@ spec:
         labelSelector: addon.kops.k8s.io/name=node-termination-handler.aws,app.kubernetes.io/managed-by=kops
     selector:
       k8s-addon: node-termination-handler.aws
-    version: 9.99.0
   - id: v1.15.0
     manifest: storage-aws.addons.k8s.io/v1.15.0.yaml
     manifestHash: 4065da166f272f6fdd34db6bb66ae6da239d01d91d5c7b391a88be1f5f2bc02e
     name: storage-aws.addons.k8s.io
     selector:
       k8s-addon: storage-aws.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.16
     manifest: networking.cilium.io/k8s-1.16-v1.15.yaml
     manifestHash: 0765c584a3c6f62995c90a5de8000e83473c28c3f74a007579d33b0c9f20f3c0
@@ -103,18 +96,15 @@ spec:
     needsRollingUpdate: all
     selector:
       role.kubernetes.io/networking: "1"
-    version: 9.99.0
   - id: k8s-1.18
     manifest: aws-cloud-controller.addons.k8s.io/k8s-1.18.yaml
     manifestHash: 562db21350941326866ef88d92602ed09386674e08ed1b60b97de55313aaa5f8
     name: aws-cloud-controller.addons.k8s.io
     selector:
       k8s-addon: aws-cloud-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.17
     manifest: aws-ebs-csi-driver.addons.k8s.io/k8s-1.17.yaml
     manifestHash: 6ab4deffd05cc85a3c5f08206696f0d585b774861bfa4ef387e53dd27868527e
     name: aws-ebs-csi-driver.addons.k8s.io
     selector:
       k8s-addon: aws-ebs-csi-driver.addons.k8s.io
-    version: 9.99.0

@@ -10,48 +10,41 @@ spec:
     needsRollingUpdate: control-plane
     selector:
       k8s-addon: kops-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: coredns.addons.k8s.io/k8s-1.12.yaml
     manifestHash: c6ebdb7a6f37311e443a0dc608f1e85d46e1aa7932c423b7a8782ed4e1da6df2
     name: coredns.addons.k8s.io
     selector:
       k8s-addon: coredns.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.9
     manifest: kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
     manifestHash: da91eb5cf9a29f1b03510007d6d54603aef2fc23a305abc9ba496c510dfd3bc7
     name: kubelet-api.rbac.addons.k8s.io
     selector:
       k8s-addon: kubelet-api.rbac.addons.k8s.io
-    version: 9.99.0
   - manifest: limit-range.addons.k8s.io/v1.5.0.yaml
     manifestHash: 686cc69e559a1c6f5e8b94e38de54a575a25c432ed5ceec565244b965fb5f07f
     name: limit-range.addons.k8s.io
     selector:
       k8s-addon: limit-range.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: dns-controller.addons.k8s.io/k8s-1.12.yaml
     manifestHash: 5c4088f2427f70a8ad8b6d574479b57f7764bd560a62aa18a1b1efad240e30a7
     name: dns-controller.addons.k8s.io
     selector:
       k8s-addon: dns-controller.addons.k8s.io
-    version: 9.99.0
   - id: v1.7.0
     manifest: storage-gce.addons.k8s.io/v1.7.0.yaml
     manifestHash: 4f73c7d683f04e61d60e90053a6db1fd82272dc0c13790390740f5e207181c77
     name: storage-gce.addons.k8s.io
     selector:
       k8s-addon: storage-gce.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.23
     manifest: gcp-pd-csi-driver.addons.k8s.io/k8s-1.23.yaml
     manifestHash: 234c31cbc7c906d1a2df8067ccbe85172ec4659da1d1a9ee2833eb2723cbced0
     name: gcp-pd-csi-driver.addons.k8s.io
     selector:
       k8s-addon: gcp-pd-csi-driver.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.23
     manifest: gcp-cloud-controller.addons.k8s.io/k8s-1.23.yaml
     manifestHash: e7c12ef7cfc853a278f62f2c6d4d961ce9a782941c50a5366ab8a3f8d7324253
@@ -104,4 +97,3 @@ spec:
         - kube-system
     selector:
       k8s-addon: gcp-cloud-controller.addons.k8s.io
-    version: 9.99.0
