@@ -10,41 +10,35 @@ spec:
     needsRollingUpdate: control-plane
     selector:
       k8s-addon: kops-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: coredns.addons.k8s.io/k8s-1.12.yaml
     manifestHash: c6ebdb7a6f37311e443a0dc608f1e85d46e1aa7932c423b7a8782ed4e1da6df2
     name: coredns.addons.k8s.io
     selector:
       k8s-addon: coredns.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.9
     manifest: kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
     manifestHash: da91eb5cf9a29f1b03510007d6d54603aef2fc23a305abc9ba496c510dfd3bc7
     name: kubelet-api.rbac.addons.k8s.io
     selector:
       k8s-addon: kubelet-api.rbac.addons.k8s.io
-    version: 9.99.0
   - manifest: limit-range.addons.k8s.io/v1.5.0.yaml
     manifestHash: 686cc69e559a1c6f5e8b94e38de54a575a25c432ed5ceec565244b965fb5f07f
     name: limit-range.addons.k8s.io
     selector:
       k8s-addon: limit-range.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: dns-controller.addons.k8s.io/k8s-1.12.yaml
     manifestHash: ac39ba3681a868018a591156cbd7d9887f02a69fc08ad56042533b0009a7af4e
     name: dns-controller.addons.k8s.io
     selector:
       k8s-addon: dns-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.15
     manifest: cluster-autoscaler.addons.k8s.io/k8s-1.15.yaml
     manifestHash: 7c69196378a0f177ca55028f04e81dc8278f1619571c3ce6cabe843fdcd26ce0
     name: cluster-autoscaler.addons.k8s.io
     selector:
       k8s-addon: cluster-autoscaler.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.11
     manifest: metrics-server.addons.k8s.io/k8s-1.11.yaml
     manifestHash: a4f11c5219d8ab4d77e2c21d6eef5e937eee2640f7888bd1b435931271119063
@@ -52,7 +46,6 @@ spec:
     needsPKI: true
     selector:
       k8s-app: metrics-server
-    version: 9.99.0
   - id: k8s-1.16
     manifest: certmanager.io/k8s-1.16.yaml
     manifestHash: 89c8798d6650ec7ff12281d6c6d98b4dbaca8901ec1ec714ef3fce416222cdad
@@ -106,7 +99,6 @@ spec:
         namespaces:
         - kube-system
     selector: null
-    version: 9.99.0
   - id: k8s-1.11
     manifest: node-termination-handler.aws/k8s-1.11.yaml
     manifestHash: 7c870dec7680a2e7098c630aaf4ef3e2649d25f9506caf6528f848b5effeff70
@@ -157,7 +149,6 @@ spec:
         labelSelector: addon.kops.k8s.io/name=node-termination-handler.aws,app.kubernetes.io/managed-by=kops
     selector:
       k8s-addon: node-termination-handler.aws
-    version: 9.99.0
   - id: k8s-1.19
     manifest: aws-load-balancer-controller.addons.k8s.io/k8s-1.19.yaml
     manifestHash: 551d6e7dfe33336fdefd92688160ef6eced5deca0cb14dfc63b379b379006ecb
@@ -213,14 +204,12 @@ spec:
         - kube-system
     selector:
       k8s-addon: aws-load-balancer-controller.addons.k8s.io
-    version: 9.99.0
   - id: v1.15.0
     manifest: storage-aws.addons.k8s.io/v1.15.0.yaml
     manifestHash: 4065da166f272f6fdd34db6bb66ae6da239d01d91d5c7b391a88be1f5f2bc02e
     name: storage-aws.addons.k8s.io
     selector:
       k8s-addon: storage-aws.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.16
     manifest: networking.amazon-vpc-routed-eni/k8s-1.16.yaml
     manifestHash: 86e96bdffd45b9d119123ea29f371972fecb12eef2b28580f73f969d04621acb
@@ -228,21 +217,18 @@ spec:
     needsRollingUpdate: all
     selector:
       role.kubernetes.io/networking: "1"
-    version: 9.99.0
   - id: k8s-1.18
     manifest: aws-cloud-controller.addons.k8s.io/k8s-1.18.yaml
     manifestHash: 889646791538b4b4d75f55844a453289d7a8bff082df71d96644b4b1b98799b6
     name: aws-cloud-controller.addons.k8s.io
     selector:
       k8s-addon: aws-cloud-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.17
     manifest: aws-ebs-csi-driver.addons.k8s.io/k8s-1.17.yaml
     manifestHash: 0e21c884db9347220a6ce1cc1aec569164424a678c3c17e5c4d6c6b0c5a18e2d
     name: aws-ebs-csi-driver.addons.k8s.io
     selector:
       k8s-addon: aws-ebs-csi-driver.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.20
     manifest: snapshot-controller.addons.k8s.io/k8s-1.20.yaml
     manifestHash: ce0d9c8166aa2f41fe4b916332ee0e57ccd4922a19c58ce68a8fd59e74597506
@@ -250,4 +236,3 @@ spec:
     needsPKI: true
     selector:
       k8s-addon: snapshot-controller.addons.k8s.io
-    version: 9.99.0

@@ -10,34 +10,29 @@ spec:
     needsRollingUpdate: control-plane
     selector:
       k8s-addon: kops-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: coredns.addons.k8s.io/k8s-1.12.yaml
     manifestHash: 9e9922bb0afbbe30ff4cdea62e54f87dbf04da6245bdb03792df4e422d7493c0
     name: coredns.addons.k8s.io
     selector:
       k8s-addon: coredns.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.9
     manifest: kubelet-api.rbac.addons.k8s.io/k8s-1.9.yaml
     manifestHash: da91eb5cf9a29f1b03510007d6d54603aef2fc23a305abc9ba496c510dfd3bc7
     name: kubelet-api.rbac.addons.k8s.io
     selector:
       k8s-addon: kubelet-api.rbac.addons.k8s.io
-    version: 9.99.0
   - manifest: limit-range.addons.k8s.io/v1.5.0.yaml
     manifestHash: 686cc69e559a1c6f5e8b94e38de54a575a25c432ed5ceec565244b965fb5f07f
     name: limit-range.addons.k8s.io
     selector:
       k8s-addon: limit-range.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.12
     manifest: dns-controller.addons.k8s.io/k8s-1.12.yaml
     manifestHash: e621148266a24e1170e36618a790983cdf256bfec6e0f502db768d7b01dd768d
     name: dns-controller.addons.k8s.io
     selector:
       k8s-addon: dns-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.31
     manifest: storage-azure.addons.k8s.io/k8s-1.31.yaml
     manifestHash: 4d21016eb0e4e957280c1ece90eacdc127c40a11c9e8686d7075df47949e4ada
@@ -82,14 +77,12 @@ spec:
         labelSelector: addon.kops.k8s.io/name=storage-azure.addons.k8s.io,app.kubernetes.io/managed-by=kops
     selector:
       k8s-addon: storage-azure.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.31
     manifest: azure-cloud-controller.addons.k8s.io/k8s-1.31.yaml
     manifestHash: 8315b2eaff1a40b104ebd339f20f51104022a23e3fe97396700371e446e26f14
     name: azure-cloud-controller.addons.k8s.io
     selector:
       k8s-addon: azure-cloud-controller.addons.k8s.io
-    version: 9.99.0
   - id: k8s-1.31
     manifest: azuredisk-csi-driver.addons.k8s.io/k8s-1.31.yaml
     manifestHash: c8ce61445026fcc09d8a38f14916975baa1e577a2d1ad0cf1a4325f6e1636d06
@@ -140,4 +133,3 @@ spec:
         labelSelector: addon.kops.k8s.io/name=azuredisk-csi-driver.addons.k8s.io,app.kubernetes.io/managed-by=kops
     selector:
       k8s-addon: azuredisk-csi-driver.addons.k8s.io
-    version: 9.99.0

@@ -107,11 +107,6 @@ func (b *BootstrapChannelBuilder) Build(c *fi.CloudupModelBuilderContext) error 
 	}
 
 	for _, a := range addons.Items {
-		// Older versions of channels that may be running on the upgrading cluster requires Version to be set
-		// We hardcode version to a high version to ensure an update is triggered on first run, and from then on
-		// only a hash change will trigger an addon update.
-		a.Spec.Version = "9.99.0"
-
 		key := *a.Spec.Name
 		if a.Spec.Id != "" {
 			key = key + "-" + a.Spec.Id
