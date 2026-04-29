@@ -199,6 +199,9 @@ func (d *deployer) createCluster(zones []string, adminAccess string, yes bool) e
 		// Ensure https://github.com/Azure/rg-cleanup deletes removes resources
 		tags = append(tags, "creationTimestamp="+time.Now().Format(time.RFC3339))
 	}
+	if label, ok := prowJobLabel(d.CloudProvider, os.Getenv("JOB_NAME")); ok {
+		tags = append(tags, label)
+	}
 	args = appendIfUnset(args, "--cloud-labels", strings.Join(tags, ","))
 
 	isArm := false
@@ -432,6 +435,45 @@ func (d *deployer) getZones() ([]string, error) {
 		return do.RandomZones(1)
 	}
 	return nil, fmt.Errorf("unsupported CloudProvider: %v", d.CloudProvider)
+}
+
+// prowJobLabel returns a "key=value" cloud-label fragment recording the prow
+// JOB_NAME, sanitized for the target cloud provider. Returns ok=false when
+// jobName is empty or the cloud provider does not surface kops cloudLabels.
+func prowJobLabel(cloudProvider, jobName string) (string, bool) {
+	if jobName == "" {
+		return "", false
+	}
+	switch cloudProvider {
+	case "aws":
+		// AWS tags allow '/' and '.' in keys, values up to 256 chars.
+		return "prow.k8s.io/job=" + jobName, true
+	case "azure":
+		// Azure tag names cannot contain '<>%&\?/'.
+		return "prow.k8s.io_job=" + jobName, true
+	case "gce":
+		// GCE labels: keys/values must be lowercase, <=63 chars,
+		// match [a-z0-9_-], and keys must start with a letter.
+		return "prow_k8s_io_job=" + sanitizeGCELabelValue(jobName), true
+	default:
+		// digitalocean: kops does not pass cloudLabels to DO resources, and DO
+		// tags are flat single words rather than key=value pairs.
+		return "", false
+	}
+}
+
+func sanitizeGCELabelValue(v string) string {
+	v = strings.Map(func(r rune) rune {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9', r == '-', r == '_':
+			return r
+		}
+		return '-'
+	}, strings.ToLower(v))
+	if len(v) > 63 {
+		v = v[:63]
+	}
+	return v
 }
 
 // appendIfUnset will append an argument and its value to args if the arg is not already present
