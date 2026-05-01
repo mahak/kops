@@ -1931,3 +1931,158 @@ func TestValidateNetworkingLinode(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateAzureBlobAccountUniformity(t *testing.T) {
+	tests := []struct {
+		name     string
+		spec     kops.ClusterSpec
+		expected []*field.Error
+	}{
+		{
+			name: "all matching azureblob URLs",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base:     "azureblob://kopsstate/state/cluster.example.com",
+					Keypairs: "azureblob://kopsstate/state/cluster.example.com/pki",
+					Secrets:  "azureblob://kopsstate/state/cluster.example.com/secrets",
+				},
+				EtcdClusters: []kops.EtcdClusterSpec{{
+					Backups: &kops.EtcdBackupSpec{
+						BackupStore: "azureblob://kopsstate/state/cluster.example.com/backups/etcd/main",
+					},
+				}},
+			},
+		},
+		{
+			name: "non-azure cluster is unaffected",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base:     "s3://my-bucket/cluster.example.com",
+					Keypairs: "s3://my-bucket/cluster.example.com/pki",
+				},
+				EtcdClusters: []kops.EtcdClusterSpec{{
+					Backups: &kops.EtcdBackupSpec{
+						BackupStore: "s3://my-bucket/cluster.example.com/backups/etcd/main",
+					},
+				}},
+			},
+		},
+		{
+			name: "keypairs uses different storage account",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base:     "azureblob://kopsstate/state/cluster.example.com",
+					Keypairs: "azureblob://otheracct/state/cluster.example.com/pki",
+				},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.configStore.keypairs",
+				},
+			},
+		},
+		{
+			name: "secrets uses different storage account",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base:    "azureblob://kopsstate/state/cluster.example.com",
+					Secrets: "azureblob://otheracct/state/cluster.example.com/secrets",
+				},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.configStore.secrets",
+				},
+			},
+		},
+		{
+			name: "etcd backupStore uses different storage account",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base: "azureblob://kopsstate/state/cluster.example.com",
+				},
+				EtcdClusters: []kops.EtcdClusterSpec{{
+					Backups: &kops.EtcdBackupSpec{
+						BackupStore: "azureblob://otheracct/backups/etcd/main",
+					},
+				}},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.etcdClusters[0].backups.backupStore",
+				},
+			},
+		},
+		{
+			name: "azureblob backupStore with non-azure configStore.base is rejected",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base: "s3://my-bucket/cluster.example.com",
+				},
+				EtcdClusters: []kops.EtcdClusterSpec{{
+					Backups: &kops.EtcdBackupSpec{
+						BackupStore: "azureblob://kopsstate/backups/etcd/main",
+					},
+				}},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.etcdClusters[0].backups.backupStore",
+				},
+			},
+		},
+		{
+			name: "malformed azureblob configStore.base is rejected",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base: "azureblob://kopsstate",
+				},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.configStore.base",
+				},
+			},
+		},
+		{
+			name: "malformed azureblob keypairs is rejected",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base:     "azureblob://kopsstate/state/cluster.example.com",
+					Keypairs: "azureblob://kopsstate",
+				},
+			},
+			expected: []*field.Error{
+				{
+					Type:  field.ErrorTypeInvalid,
+					Field: "spec.configStore.keypairs",
+				},
+			},
+		},
+		{
+			name: "non-azure backup store with azure config base is allowed",
+			spec: kops.ClusterSpec{
+				ConfigStore: kops.ConfigStoreSpec{
+					Base: "azureblob://kopsstate/state/cluster.example.com",
+				},
+				EtcdClusters: []kops.EtcdClusterSpec{{
+					Backups: &kops.EtcdBackupSpec{
+						BackupStore: "memfs://tests/cluster.example.com/backups/etcd/main",
+					},
+				}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			errList := validateAzureBlobAccountUniformity(&tt.spec, field.NewPath("spec"))
+			testFieldErrors(t, errList, tt.expected)
+		})
+	}
+}
