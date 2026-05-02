@@ -19,6 +19,7 @@ spec:
     manageStorageClasses: true
   cloudControllerManager:
     azureNodeManagerImage: mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.34.3
+    configureCloudRoutes: false
     image: mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v1.34.3
     leaderElection:
       leaderElect: true

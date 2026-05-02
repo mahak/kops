@@ -10,10 +10,10 @@ infra:
 cloudControllerManager:
   # Overridden by kustomize patch.
   imageTag: "v0.0.0"
-  # No CNI on Azure uses node CIDR allocation.
+  # KCM allocates pod CIDRs; CCM only writes UDRs into the route table.
   allocateNodeCidrs: "false"
-  # No CNI on Azure uses CCM-managed routes.
-  configureCloudRoutes: "false"
+  # Enabled for kubenet/kindnet, which require UDRs to forward pod-CIDR traffic across nodes.
+  configureCloudRoutes: "{{ WithDefaultBool .ExternalCloudControllerManager.ConfigureCloudRoutes false }}"
   clusterCIDR: "{{ .Networking.PodCIDR }}"
   leaderElect: "{{ .ExternalCloudControllerManager.LeaderElection.LeaderElect }}"
   logVerbosity: "{{ .ExternalCloudControllerManager.LogLevel }}"

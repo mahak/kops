@@ -180,6 +180,22 @@ func (b *NetworkModelBuilder) Build(c *fi.CloudupModelBuilderContext) error {
 		DestinationApplicationSecurityGroupNames: []*string{fi.PtrTo(b.NameForApplicationSecurityGroupNodes())},
 		DestinationPortRange:                     fi.PtrTo("*"),
 	})
+	// Kindnet preserves pod-CIDR source IPs to host services; Azure NSG ASG
+	// matching needs an explicit allow since pod IPs aren't NIC-assigned.
+	// Scoped to nodes to keep DenyAllToControlPlane and the etcd denies effective.
+	if b.Cluster.Spec.Networking.Kindnet != nil && b.Cluster.Spec.Networking.PodCIDR != "" {
+		nsgTask.SecurityRules = append(nsgTask.SecurityRules, &azuretasks.NetworkSecurityRule{
+			Name:                                     fi.PtrTo("AllowPodCIDRToNodes"),
+			Priority:                                 fi.PtrTo[int32](1006),
+			Access:                                   network.SecurityRuleAccessAllow,
+			Direction:                                network.SecurityRuleDirectionInbound,
+			Protocol:                                 network.SecurityRuleProtocolAsterisk,
+			SourceAddressPrefix:                      fi.PtrTo(b.Cluster.Spec.Networking.PodCIDR),
+			SourcePortRange:                          fi.PtrTo("*"),
+			DestinationApplicationSecurityGroupNames: []*string{fi.PtrTo(b.NameForApplicationSecurityGroupNodes())},
+			DestinationPortRange:                     fi.PtrTo("*"),
+		})
+	}
 	etcdPeerMax := wellknownports.EtcdEventsPeerPort
 	for _, c := range b.Cluster.Spec.EtcdClusters {
 		if c.Name == "leases" {

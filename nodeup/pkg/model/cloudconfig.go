@@ -50,6 +50,7 @@ type azureCloudConfig struct {
 	Location                    string `json:"location,omitempty"`
 	VnetName                    string `json:"vnetName,omitempty"`
 	SubnetName                  string `json:"subnetName,omitempty"`
+	RouteTableName              string `json:"routeTableName,omitempty"`
 	SecurityGroupName           string `json:"securityGroupName,omitempty"`
 	UseInstanceMetadata         bool   `json:"useInstanceMetadata,omitempty"`
 	DisableAvailabilitySetNodes bool   `json:"disableAvailabilitySetNodes,omitempty"`
@@ -133,6 +134,7 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 			Location:                    b.NodeupConfig.AzureLocation,
 			VnetName:                    vnetName,
 			SubnetName:                  b.NodeupConfig.AzureSubnetName,
+			RouteTableName:              b.NodeupConfig.AzureRouteTableName,
 			SecurityGroupName:           b.NodeupConfig.AzureSecurityGroupName,
 			UseInstanceMetadata:         true,
 			DisableAvailabilitySetNodes: true,

@@ -55,5 +55,16 @@ func (b *AzureCloudControllerManagerOptionsBuilder) BuildOptions(cluster *kops.C
 		eccm.LogLevel = 2
 	}
 
+	// Kubenet and kindnet rely on cloud routes to deliver pod-to-pod traffic across nodes:
+	// the Azure VNet is L3 and drops packets whose destination IP is not a known VNet IP
+	// (pod CIDRs are not), so the Azure CCM must populate UDRs in the route table that
+	// kOps associates with the node subnet. EnableIPForwarding is already set on every NIC.
+	networking := cluster.Spec.Networking
+	if networking.Kubenet != nil || networking.Kindnet != nil {
+		eccm.ConfigureCloudRoutes = fi.PtrTo(true)
+	} else {
+		eccm.ConfigureCloudRoutes = fi.PtrTo(false)
+	}
+
 	return nil
 }
