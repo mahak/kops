@@ -81,23 +81,18 @@ DISCOVERY_SERVER_TAG=$(IMAGE_TAG)
 
 CGO_ENABLED=0
 export CGO_ENABLED
-BUILDFLAGS="-trimpath"
+BUILDFLAGS=-trimpath -buildvcs=false
 
 
 # Go exports:
 LDFLAGS := -ldflags=all=
-
-ifdef STATIC_BUILD
-  CGO_ENABLED=0
-  export CGO_ENABLED
-  EXTRA_BUILDFLAGS=-installsuffix cgo
-  EXTRA_LDFLAGS=-s -w
-endif
+EXTRA_LDFLAGS?=-s -w
 
 
 # Set compiler flags to allow binary debugging
 ifdef DEBUGGABLE
   GCFLAGS=-gcflags "all=-N -l"
+  EXTRA_LDFLAGS=
 endif
 
 .PHONY: kops-install # Install kops to local $GOPATH/bin
@@ -300,7 +295,7 @@ push-aws-run-amd64 push-aws-run-arm64: push-aws-run-%: push-%
 
 .PHONY: ${NODEUP}
 ${NODEUP}:
-	go build ${GCFLAGS} ${EXTRA_BUILDFLAGS} ${LDFLAGS}"${EXTRA_LDFLAGS} -X k8s.io/kops.Version=${VERSION} -X k8s.io/kops.GitVersion=${GITSHA}" -o $@ k8s.io/kops/cmd/nodeup
+	go build ${GCFLAGS} ${BUILDFLAGS} ${EXTRA_BUILDFLAGS} ${LDFLAGS}"${EXTRA_LDFLAGS} -X k8s.io/kops.Version=${VERSION} -X k8s.io/kops.GitVersion=${GITSHA}" -o $@ k8s.io/kops/cmd/nodeup
 
 .PHONY: dns-controller-push
 dns-controller-push: ko-dns-controller-push
