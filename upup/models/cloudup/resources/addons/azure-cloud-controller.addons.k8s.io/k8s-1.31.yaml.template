@@ -213,7 +213,7 @@ spec:
         - --cloud-provider=azure
         - --cluster-cidr={{ .Networking.PodCIDR }}
         - --cluster-name={{ ClusterName }}
-        - --configure-cloud-routes=false
+        - --configure-cloud-routes={{ WithDefaultBool .ExternalCloudControllerManager.ConfigureCloudRoutes false }}
         - --controllers=*,-cloud-node
         - --leader-elect={{ .ExternalCloudControllerManager.LeaderElection.LeaderElect
           }}

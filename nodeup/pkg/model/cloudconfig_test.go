@@ -105,6 +105,7 @@ func TestBuildAzure(t *testing.T) {
 		ResourceGroup:               resourceGroupName,
 		VnetName:                    vnetName,
 		SubnetName:                  "test-subnet",
+		RouteTableName:              cluster.Name,
 		SecurityGroupName:           vnetName,
 		UseInstanceMetadata:         true,
 		UseManagedIdentityExtension: true,
