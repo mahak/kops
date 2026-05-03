@@ -154,6 +154,9 @@ func (t *Tester) setSkipRegexFlag() error {
 			// https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#implementations-supplementalgroupspolicy
 			// https://github.com/kubernetes/test-infra/blob/0fa3c1f53ee2b715469380f9e50200d6b7612dff/config/jobs/kubernetes/kops/helpers.py#L107-L109
 			skipMap["SupplementalGroupsPolicy"] = nil
+			// ImageVolume requires containerd v2.1
+			// ref: https://github.com/containerd/containerd/releases/tag/v2.1.0
+			skipMap["ImageVolume"] = nil
 		}
 		if matchesAnySubstrings(ig.Spec.Image, []string{
 			"rocky-9", "rocky-10", "rhel-9", "rhel-10", // aws
