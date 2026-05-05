@@ -89,7 +89,6 @@ require (
 	k8s.io/cli-runtime v0.36.0
 	k8s.io/client-go v0.36.0
 	k8s.io/cloud-provider-aws v1.34.1
-	k8s.io/cloud-provider-gcp/providers v0.28.2
 	k8s.io/component-base v0.36.0
 	k8s.io/gengo v0.0.0-20250922181213-ec3ebc5fd46b
 	k8s.io/klog/v2 v2.140.0
@@ -109,7 +108,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.2 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c // indirect
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.6.0 // indirect
-	github.com/GoogleCloudPlatform/k8s-cloud-provider v1.25.0 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect

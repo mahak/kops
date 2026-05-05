@@ -44,8 +44,6 @@ github.com/AzureAD/microsoft-authentication-extensions-for-go/cache v0.1.1/go.mo
 github.com/AzureAD/microsoft-authentication-library-for-go v1.6.0 h1:XRzhVemXdgvJqCH0sFfrBUTnUJSBrBf7++ypk+twtRs=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.6.0/go.mod h1:HKpQxkWaGLJ+D/5H8QRpyQXA1eKjxkFlOMwck5+33Jk=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
-github.com/GoogleCloudPlatform/k8s-cloud-provider v1.25.0 h1:lwL1vLWmdBJ5h+StMEN6+GMz1J/Y0yUU3RDv+QBy+Q4=
-github.com/GoogleCloudPlatform/k8s-cloud-provider v1.25.0/go.mod h1:UTfhBnADaj2rybPT049NScSh7Eall3u2ib43wmz3deg=
 github.com/MakeNowJust/heredoc v1.0.0 h1:cXCdzVdstXyiTqTvfqk9SDHpKNjxuom+DOlyEeQ4pzQ=
 github.com/MakeNowJust/heredoc v1.0.0/go.mod h1:mG5amYoWBHf8vpLOuehzbGGw0EHxpZZ6lCpQ4fNJ8LE=
 github.com/MakeNowJust/heredoc/v2 v2.0.1 h1:rlCHh70XXXv7toz95ajQWOWQnN4WNLt0TdpZYIR/J6A=
@@ -810,8 +808,6 @@ k8s.io/cloud-provider v0.36.0 h1:PtiHsId1lBJixCbl5T+gUzbgOYAPschYj8tEAxxe0Ts=
 k8s.io/cloud-provider v0.36.0/go.mod h1:y/3sksoC0taJZR0PcAAYUqVyD6Jzu2X0lD4yCEPXPuI=
 k8s.io/cloud-provider-aws v1.34.1 h1:IbVH3Yg5QUrB6Uz0x/pZIP6GcmUB58FbZXPFUzfki6c=
 k8s.io/cloud-provider-aws v1.34.1/go.mod h1:a8p1e6RHviJmZ/ZJK9S26CpZ07uv/jCZa93opvKSDA8=
-k8s.io/cloud-provider-gcp/providers v0.28.2 h1:I65pFTLNMQSj7YuW3Mg3pZIXmw0naCmF6TGAuz4/sZE=
-k8s.io/cloud-provider-gcp/providers v0.28.2/go.mod h1:P8dxRvvLtX7xUwVUzA/QOqv8taCzBaVsVMnjnpjmYXE=
 k8s.io/component-base v0.36.0 h1:hFjEktssxiJhrK1zfybkH4kJOi8iZuF+mIDCqS5+jRo=
 k8s.io/component-base v0.36.0/go.mod h1:JZvIfcNHk+uck+8LhJzhSBtydWXaZNQwX2OdL+Mnwsk=
 k8s.io/gengo v0.0.0-20250922181213-ec3ebc5fd46b h1:8FRqbouORE7lQPnZxOONIk5xLM8CcoeD7o9cApVEsu0=
