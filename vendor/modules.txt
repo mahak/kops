@@ -119,12 +119,6 @@ github.com/AzureAD/microsoft-authentication-library-for-go/apps/internal/shared
 github.com/AzureAD/microsoft-authentication-library-for-go/apps/internal/version
 github.com/AzureAD/microsoft-authentication-library-for-go/apps/managedidentity
 github.com/AzureAD/microsoft-authentication-library-for-go/apps/public
-# github.com/GoogleCloudPlatform/k8s-cloud-provider v1.25.0
-## explicit; go 1.20
-github.com/GoogleCloudPlatform/k8s-cloud-provider/pkg/cloud
-github.com/GoogleCloudPlatform/k8s-cloud-provider/pkg/cloud/filter
-github.com/GoogleCloudPlatform/k8s-cloud-provider/pkg/cloud/meta
-github.com/GoogleCloudPlatform/k8s-cloud-provider/pkg/cloud/mock
 # github.com/MakeNowJust/heredoc v1.0.0
 ## explicit; go 1.12
 github.com/MakeNowJust/heredoc
@@ -1209,10 +1203,7 @@ gomodules.xyz/jsonpatch/v2
 # google.golang.org/api v0.257.0
 ## explicit; go 1.24.0
 google.golang.org/api/cloudresourcemanager/v1
-google.golang.org/api/compute/v0.alpha
-google.golang.org/api/compute/v0.beta
 google.golang.org/api/compute/v1
-google.golang.org/api/container/v1
 google.golang.org/api/dns/v1
 google.golang.org/api/googleapi
 google.golang.org/api/googleapi/transport
@@ -1222,13 +1213,10 @@ google.golang.org/api/internal/cert
 google.golang.org/api/internal/gensupport
 google.golang.org/api/internal/impersonate
 google.golang.org/api/internal/third_party/uritemplates
-google.golang.org/api/networkservices/v1
-google.golang.org/api/networkservices/v1beta1
 google.golang.org/api/oauth2/v2
 google.golang.org/api/option
 google.golang.org/api/option/internaloption
 google.golang.org/api/storage/v1
-google.golang.org/api/tpu/v1
 google.golang.org/api/transport/http
 # google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57
 ## explicit; go 1.24.0
@@ -1855,9 +1843,6 @@ k8s.io/client-go/util/workqueue
 ## explicit; go 1.26.0
 k8s.io/cloud-provider
 k8s.io/cloud-provider/service/helpers
-k8s.io/cloud-provider/volume
-k8s.io/cloud-provider/volume/errors
-k8s.io/cloud-provider/volume/helpers
 # k8s.io/cloud-provider-aws v1.34.1
 ## explicit; go 1.24.4
 k8s.io/cloud-provider-aws/pkg/providers/v1
@@ -1867,9 +1852,6 @@ k8s.io/cloud-provider-aws/pkg/providers/v1/iface
 k8s.io/cloud-provider-aws/pkg/providers/v1/variant
 k8s.io/cloud-provider-aws/pkg/providers/v1/variant/fargate
 k8s.io/cloud-provider-aws/pkg/services
-# k8s.io/cloud-provider-gcp/providers v0.28.2
-## explicit; go 1.20
-k8s.io/cloud-provider-gcp/providers/gce
 # k8s.io/component-base v0.36.0
 ## explicit; go 1.26.0
 k8s.io/component-base/cli/flag
