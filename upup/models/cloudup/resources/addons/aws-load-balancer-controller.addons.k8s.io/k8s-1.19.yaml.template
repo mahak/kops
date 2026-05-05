@@ -2532,8 +2532,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller
   namespace: kube-system
 ---
@@ -2544,8 +2544,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller-leader-election-role
   namespace: kube-system
 rules:
@@ -2589,10 +2589,94 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller-role
 rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - namespaces
+  - nodes
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - pods/status
+  - services/status
+  verbs:
+  - patch
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - aga.k8s.aws
+  resources:
+  - globalaccelerators
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - aga.k8s.aws
+  resources:
+  - globalaccelerators/finalizers
+  - globalaccelerators/status
+  verbs:
+  - patch
+  - update
+- apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - elbv2.k8s.aws
+  resources:
+  - albtargetcontrolconfigs
+  verbs:
+  - get
+- apiGroups:
+  - elbv2.k8s.aws
+  resources:
+  - ingressclassparams
+  verbs:
+  - get
+  - list
+  - watch
 - apiGroups:
   - elbv2.k8s.aws
   resources:
@@ -2608,46 +2692,14 @@ rules:
 - apiGroups:
   - elbv2.k8s.aws
   resources:
-  - ingressclassparams
+  - targetgroupbindings/status
   verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - elbv2.k8s.aws
-  resources:
-  - albtargetcontrolconfigs
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - events
-  verbs:
-  - create
   - patch
+  - update
 - apiGroups:
-  - ""
-  resources:
-  - pods
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - networking.k8s.io
-  resources:
-  - ingressclasses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
   - extensions
   - networking.k8s.io
   resources:
-  - services
   - ingresses
   verbs:
   - get
@@ -2656,92 +2708,53 @@ rules:
   - update
   - watch
 - apiGroups:
-  - ""
-  resources:
-  - nodes
-  - namespaces
-  - endpoints
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  verbs:
-  - get
-  - delete
-  - create
-  - update
-- apiGroups:
-  - elbv2.k8s.aws
-  - ""
   - extensions
   - networking.k8s.io
   resources:
-  - targetgroupbindings/status
-  - pods/status
-  - services/status
   - ingresses/status
   verbs:
-  - update
   - patch
-- apiGroups:
-  - discovery.k8s.io
-  resources:
-  - endpointslices
-  verbs:
-  - get
-  - list
-  - watch
+  - update
 - apiGroups:
   - gateway.k8s.aws
   resources:
+  - listenerruleconfigurations
   - loadbalancerconfigurations
   - targetgroupconfigurations
-  - listenerruleconfigurations
   verbs:
   - get
   - list
-  - watch
   - patch
+  - watch
 - apiGroups:
   - gateway.k8s.aws
   resources:
+  - listenerruleconfigurations/finalizers
   - loadbalancerconfigurations/finalizers
   - targetgroupconfigurations/finalizers
-  - listenerruleconfigurations/finalizers
   verbs:
-  - update
   - patch
+  - update
 - apiGroups:
   - gateway.k8s.aws
   resources:
+  - listenerruleconfigurations/status
   - loadbalancerconfigurations/status
   - targetgroupconfigurations/status
-  - listenerruleconfigurations/status
   verbs:
   - get
   - patch
-  - watch
+  - update
 - apiGroups:
   - gateway.networking.k8s.io
   resources:
   - gatewayclasses
   - gateways
-  verbs:
-  - get
-  - list
-  - watch
-  - patch
-- apiGroups:
-  - gateway.networking.k8s.io
-  resources:
   - referencegrants
   verbs:
   - get
   - list
+  - patch
   - watch
 - apiGroups:
   - gateway.networking.k8s.io
@@ -2749,13 +2762,19 @@ rules:
   - gatewayclasses/finalizers
   - gateways/finalizers
   verbs:
-  - update
   - patch
+  - update
 - apiGroups:
   - gateway.networking.k8s.io
   resources:
   - gatewayclasses/status
   - gateways/status
+  - grpcroutes/status
+  - httproutes/status
+  - listenersets/status
+  - tcproutes/status
+  - tlsroutes/status
+  - udproutes/status
   verbs:
   - get
   - patch
@@ -2765,10 +2784,10 @@ rules:
   resources:
   - grpcroutes
   - httproutes
+  - listenersets
   - tcproutes
   - tlsroutes
   - udproutes
-  - listenersets
   verbs:
   - get
   - list
@@ -2778,48 +2797,20 @@ rules:
   resources:
   - grpcroutes/finalizers
   - httproutes/finalizers
+  - listenersets/finalizers
   - tcproutes/finalizers
   - tlsroutes/finalizers
   - udproutes/finalizers
-  - listenersets/finalizers
   verbs:
   - update
 - apiGroups:
-  - gateway.networking.k8s.io
+  - networking.k8s.io
   resources:
-  - grpcroutes/status
-  - httproutes/status
-  - tcproutes/status
-  - tlsroutes/status
-  - udproutes/status
-  - listenersets/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - aga.k8s.aws
-  resources:
-  - globalaccelerators
+  - ingressclasses
   verbs:
   - get
   - list
-  - patch
   - watch
-- apiGroups:
-  - aga.k8s.aws
-  resources:
-  - globalaccelerators/finalizers
-  verbs:
-  - patch
-  - update
-- apiGroups:
-  - aga.k8s.aws
-  resources:
-  - globalaccelerators/status
-  verbs:
-  - patch
-  - update
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -2828,8 +2819,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller-leader-election-rolebinding
   namespace: kube-system
 roleRef:
@@ -2848,8 +2839,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -2868,8 +2859,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
     prometheus.io/service-monitor: "false"
   name: aws-load-balancer-webhook-service
   namespace: kube-system
@@ -2889,8 +2880,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-controller
   namespace: kube-system
 spec:
@@ -2942,7 +2933,7 @@ spec:
               apiVersion: v1
               fieldPath: spec.nodeName
         image: public.ecr.aws/eks/aws-load-balancer-controller:{{ or .CloudProvider.AWS.LoadBalancerController.Version
-          `v3.2.2` }}
+          `v3.3.0` }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 2
@@ -3012,8 +3003,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-serving-cert
   namespace: kube-system
 spec:
@@ -3034,8 +3025,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-selfsigned-issuer
   namespace: kube-system
 spec:
@@ -3048,8 +3039,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: alb
 ---
 apiVersion: networking.k8s.io/v1
@@ -3059,8 +3050,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: alb
 spec:
   controller: ingress.k8s.aws/alb
@@ -3074,8 +3065,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-webhook
 webhooks:
 - admissionReviewVersions:
@@ -3269,8 +3260,8 @@ metadata:
     app.kubernetes.io/instance: aws-load-balancer-controller
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/version: v3.2.1
-    helm.sh/chart: aws-load-balancer-controller-3.2.1
+    app.kubernetes.io/version: v3.3.0
+    helm.sh/chart: aws-load-balancer-controller-3.3.0
   name: aws-load-balancer-webhook
 webhooks:
 - admissionReviewVersions:
