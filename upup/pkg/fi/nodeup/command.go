@@ -28,6 +28,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -343,13 +344,23 @@ func (c *NodeUpCommand) Run(out io.Writer) error {
 		return fmt.Errorf("error building loader: %v", err)
 	}
 
-	for i, image := range nodeupConfig.Images[architecture] {
-		taskMap["LoadImage."+strconv.Itoa(i)] = &nodetasks.LoadImageTask{
+	for _, image := range nodeupConfig.Images[architecture] {
+		if len(image.Sources) == 0 {
+			return fmt.Errorf("image has no sources: %v", image)
+		}
+		u, err := url.Parse(image.Sources[0])
+		if err != nil {
+			return fmt.Errorf("invalid image source URL %q: %w", image.Sources[0], err)
+		}
+		key := "SideloadImage/" + path.Base(u.Path)
+		if _, ok := taskMap[key]; ok {
+			return fmt.Errorf("duplicate image task %q", key)
+		}
+		taskMap[key] = &nodetasks.LoadImageTask{
 			Sources: image.Sources,
 			Hash:    image.Hash,
 		}
 	}
-	// Protokube load image task is in ProtokubeBuilder
 
 	var target fi.NodeupTarget
 
