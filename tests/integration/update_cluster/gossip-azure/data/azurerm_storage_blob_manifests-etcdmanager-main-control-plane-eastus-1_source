@@ -18,8 +18,6 @@ spec:
       --volume-tag=k8s.io_role_control_plane=1 --volume-tag=kubernetes.io_cluster_gossip.k8s.local=owned
       > /tmp/pipe 2>&1
     env:
-    - name: AZURE_STORAGE_ACCOUNT
-      value: teststorage
     - name: ETCD_MANAGER_DAILY_BACKUPS_RETENTION
       value: 90d
     image: registry.k8s.io/etcd-manager/etcd-manager-slim:v3.0.20260227

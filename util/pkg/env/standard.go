@@ -79,9 +79,6 @@ func BuildSystemComponentEnvVars(spec *kops.ClusterSpec) EnvVars {
 	// Linode (Akamai) related values.
 	vars.addEnvVariableIfExist("LINODE_TOKEN")
 
-	// Azure related values.
-	vars.addEnvVariableIfExist("AZURE_STORAGE_ACCOUNT")
-
 	// Scaleway related values.
 	profile, err := scaleway.CreateValidScalewayProfile()
 	if err == nil {

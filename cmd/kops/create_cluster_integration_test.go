@@ -51,7 +51,6 @@ func TestCreateClusterGossipAWS(t *testing.T) {
 
 // TestCreateClusterGossipAzure creates a minimal Azure gossip cluster
 func TestCreateClusterGossipAzure(t *testing.T) {
-	t.Setenv("AZURE_STORAGE_ACCOUNT", "teststorage")
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/gossip-azure", "v1alpha2")
 }
 

@@ -1792,7 +1792,6 @@ func (i *integrationTest) runTestTerraformGCE(t *testing.T) {
 }
 
 func (i *integrationTest) runTestTerraformAzure(t *testing.T) {
-	t.Setenv("AZURE_STORAGE_ACCOUNT", "teststorage")
 	t.Setenv("KOPS_RUN_TOO_NEW_VERSION", "1")
 
 	featureflag.ParseFlags("+Azure,+AzureTerraform")

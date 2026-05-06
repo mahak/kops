@@ -249,22 +249,16 @@ func (p *MemFSPath) renderTerraformAzure(w *terraformWriter.TerraformWriter, nam
 		return fmt.Errorf("reading data: %v", err)
 	}
 
-	storageAccountName := os.Getenv("AZURE_STORAGE_ACCOUNT")
-	if storageAccountName == "" {
-		return fmt.Errorf("AZURE_STORAGE_ACCOUNT is not set")
-	}
-
 	source, err := w.AddFilePath("azurerm_storage_blob", name, "source", bytes, false)
 	if err != nil {
 		return fmt.Errorf("rendering Azure Blob file: %w", err)
 	}
 
-	// MemFSPath.location holds the full blob path (equivalent to AzureBlobPath.key).
-	// The container is hard-coded because memfs:// paths don't encode a container name.
-	blobKey := p.location
+	// memfs:// paths don't encode an Azure account or container, so this
+	// fallback (only used in integration tests) hard-codes test placeholders.
 	tf := &terraformAzureBlobFile{
-		Name:                 blobKey,
-		StorageAccountName:   storageAccountName,
+		Name:                 p.location,
+		StorageAccountName:   "teststorage",
 		StorageContainerName: "testcontainer",
 		Type:                 "Block",
 		Source:               source,

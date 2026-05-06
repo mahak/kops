@@ -19,7 +19,6 @@ package vfs
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"k8s.io/kops/upup/pkg/fi/cloudup/terraformWriter"
 )
@@ -41,9 +40,8 @@ func (p *AzureBlobPath) RenderTerraform(w *terraformWriter.TerraformWriter, name
 
 	w.EnsureTerraformProvider("azurerm", map[string]string{})
 
-	storageAccountName := os.Getenv("AZURE_STORAGE_ACCOUNT")
-	if storageAccountName == "" {
-		return fmt.Errorf("AZURE_STORAGE_ACCOUNT is not set")
+	if p.account == "" {
+		return fmt.Errorf("Azure storage account is not set on path %q", p.Path())
 	}
 
 	source, err := w.AddFilePath("azurerm_storage_blob", name, "source", bytes, false)
@@ -53,7 +51,7 @@ func (p *AzureBlobPath) RenderTerraform(w *terraformWriter.TerraformWriter, name
 
 	tf := &terraformAzureBlobFile{
 		Name:                 p.key,
-		StorageAccountName:   storageAccountName,
+		StorageAccountName:   p.account,
 		StorageContainerName: p.container,
 		Type:                 "Block",
 		Source:               source,
