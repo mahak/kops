@@ -2,7 +2,6 @@ Assets:
   amd64:
   - d857082946c28493e8fdc52227feabd962e0e0900b6c6e4f6510168043b79dd4@https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/kubelet
   - 123d8c8844f46b1244c547fffb3c17180c0c26dac9890589fe7e67763298748e@https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/kubectl
-  - b3b363538653ae745c10db25aa517d6ae6838a27bfff63476110894ba8c6fc9f@https://dl.k8s.io/release/v1.36.0/bin/linux/amd64/mounter
   - b5852509ab5c950485794afd49a3fd1c3d6166db988c15b683d2373b7055300f@https://artifacts.k8s.io/binaries/cloud-provider-gcp/v35.0.0/auth-provider-gcp/linux/amd64/auth-provider-gcp
   - b8e811578fb66023f90d2e238d80cec3bdfca4b44049af74c374d4fae0f9c090@https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
   - 4793dc5c1f34ebf8402990d0050f3c294aa3c794cd5a4baa403c1cf10602326d@https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-amd64.tar.gz
@@ -12,7 +11,6 @@ Assets:
   arm64:
   - 049d95107361583e64f3ac9b8c9bdaf73fc7e512a838972b13b423a33ece87e9@https://dl.k8s.io/release/v1.36.0/bin/linux/arm64/kubelet
   - 9f9d9c44a7b5264515ac9da5991584e2395bd50662e651132337e7b4d0c56f8f@https://dl.k8s.io/release/v1.36.0/bin/linux/arm64/kubectl
-  - eb2af998941e12016c46913c276ace08ed00bb7c540f1cb4fe0df61e4785f742@https://dl.k8s.io/release/v1.36.0/bin/linux/arm64/mounter
   - 510aee27ef32a27b76e461e9084719365210d56166057b37db290a72dfecbffa@https://artifacts.k8s.io/binaries/cloud-provider-gcp/v35.0.0/auth-provider-gcp/linux/arm64/auth-provider-gcp
   - 01e0e22acc7f7004e4588c1fe1871cc86d7ab562cd858e1761c4641d89ebfaa4@https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-arm64-v1.6.2.tgz
   - 88d6e32348c36628c8500a630c6dd4b3cb8c680b1d18dc8d1d19041f67757c6e@https://github.com/containerd/containerd/releases/download/v2.1.6/containerd-2.1.6-linux-arm64.tar.gz
