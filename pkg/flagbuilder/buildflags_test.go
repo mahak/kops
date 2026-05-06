@@ -94,12 +94,6 @@ func TestKubeletConfigSpec(t *testing.T) {
 		},
 		{
 			Config: &kops.KubeletConfigSpec{
-				EvictionPressureTransitionPeriod: &metav1.Duration{Duration: 5 * time.Second},
-			},
-			Expected: "--eviction-pressure-transition-period=5s",
-		},
-		{
-			Config: &kops.KubeletConfigSpec{
 				LogLevel: fi.PtrTo(int32(0)),
 			},
 			Expected: "",
@@ -111,41 +105,17 @@ func TestKubeletConfigSpec(t *testing.T) {
 			Expected: "--v=2",
 		},
 
-		// Test string pointers without the "flag-include-empty" tag
+		// Fields that have been migrated to the kubelet config file emit no flag.
 		{
 			Config: &kops.KubeletConfigSpec{
-				EvictionHard: fi.PtrTo("memory.available<100Mi"),
-			},
-			Expected: "--eviction-hard=memory.available<100Mi",
-		},
-		{
-			Config: &kops.KubeletConfigSpec{
-				EvictionHard: fi.PtrTo(""),
+				EvictionPressureTransitionPeriod: &metav1.Duration{Duration: 5 * time.Second},
+				EvictionHard:                     fi.PtrTo("memory.available<100Mi"),
+				ResolverConfig:                   fi.PtrTo("test"),
 			},
 			Expected: "",
 		},
-
-		// Test string pointers with the "flag-include-empty" tag
 		{
 			Config:   &kops.KubeletConfigSpec{},
-			Expected: "",
-		},
-		{
-			Config: &kops.KubeletConfigSpec{
-				ResolverConfig: fi.PtrTo("test"),
-			},
-			Expected: "--resolv-conf=test",
-		},
-		{
-			Config: &kops.KubeletConfigSpec{
-				ResolverConfig: fi.PtrTo(""),
-			},
-			Expected: "--resolv-conf=",
-		},
-		{
-			Config: &kops.KubeletConfigSpec{
-				ResolverConfig: nil,
-			},
 			Expected: "",
 		},
 	}
