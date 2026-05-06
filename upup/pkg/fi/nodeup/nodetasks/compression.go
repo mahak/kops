@@ -14,34 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package utils
+package nodetasks
 
 import (
+	"bufio"
+	"bytes"
 	"compress/gzip"
 	"io"
-	"os"
 )
 
-// UngzipFile extracts a .gzip file
-func UngzipFile(gzipPath string, destPath string) error {
-	reader, err := os.Open(gzipPath)
-	if err != nil {
-		return err
-	}
-	defer reader.Close()
+var gzipMagic = []byte{0x1f, 0x8b}
 
-	writer, err := os.Create(destPath)
-	if err != nil {
-		return err
+func maybeGzipReader(r io.Reader) (io.ReadCloser, error) {
+	buffered := bufio.NewReader(r)
+	header, err := buffered.Peek(len(gzipMagic))
+	if err != nil && err != io.EOF {
+		return nil, err
 	}
-	defer writer.Close()
-
-	archive, err := gzip.NewReader(reader)
-	if err != nil {
-		return err
+	if len(header) == len(gzipMagic) && bytes.Equal(header, gzipMagic) {
+		return gzip.NewReader(buffered)
 	}
-	defer archive.Close()
-
-	_, err = io.Copy(writer, archive)
-	return err
+	return io.NopCloser(buffered), nil
 }
