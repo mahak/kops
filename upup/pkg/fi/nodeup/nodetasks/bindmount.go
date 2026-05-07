@@ -48,7 +48,7 @@ func (e *BindMount) Dir() string {
 	return e.Mountpoint
 }
 
-var _ fi.HasName = (*Archive)(nil)
+var _ fi.HasName = (*BindMount)(nil)
 
 func (e *BindMount) GetName() *string {
 	return fi.PtrTo("BindMount-" + e.Mountpoint)

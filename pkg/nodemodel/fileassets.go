@@ -56,10 +56,6 @@ func BuildKubernetesFileAssets(ig model.InstanceGroup, assetBuilder *assets.Asse
 			fmt.Sprintf("/bin/linux/%s/kubectl", arch),
 		}
 
-		if needsMounterAsset(ig) {
-			k8sAssetsNames = append(k8sAssetsNames, fmt.Sprintf("/bin/linux/%s/mounter", arch))
-		}
-
 		for _, an := range k8sAssetsNames {
 			k, err := url.Parse(baseURL)
 			if err != nil {
@@ -177,16 +173,4 @@ func BuildNodeUpAssets(ctx context.Context, assetBuilder *assets.AssetBuilder) (
 	return &NodeUpAssets{
 		NodeUpAssets: nodeUpAssets,
 	}, nil
-}
-
-// needsMounterAsset checks if we need the mounter program
-// This is only needed currently on ContainerOS i.e. GCE, but we don't have a nice way to detect it yet
-func needsMounterAsset(ig model.InstanceGroup) bool {
-	// TODO: Do real detection of ContainerOS (but this has to work with image names, and maybe even forked images)
-	switch ig.GetCloudProvider() {
-	case kops.CloudProviderGCE:
-		return true
-	default:
-		return false
-	}
 }

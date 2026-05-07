@@ -128,16 +128,6 @@ func TestBindMountDependencies(t *testing.T) {
 			},
 		},
 		{
-			parent: &Archive{
-				TargetDir: containerizedMounterHome,
-			},
-			child: &BindMount{
-				Source:     containerizedMounterHome,
-				Mountpoint: containerizedMounterHome,
-				Options:    []string{"exec"},
-			},
-		},
-		{
 			parent: &BindMount{
 				Source:     containerizedMounterHome,
 				Mountpoint: containerizedMounterHome,

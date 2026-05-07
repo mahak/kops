@@ -39,7 +39,7 @@ func (s *Chattr) String() string {
 	return fmt.Sprintf("Chattr: chattr %s %s", s.Mode, s.File)
 }
 
-var _ fi.HasName = (*Archive)(nil)
+var _ fi.HasName = (*Chattr)(nil)
 
 func (e *Chattr) GetName() *string {
 	return fi.PtrTo("Chattr-" + e.File)

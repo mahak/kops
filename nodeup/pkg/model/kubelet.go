@@ -23,7 +23,6 @@ import (
 	"io"
 	"net"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -50,9 +49,6 @@ import (
 )
 
 const (
-	// containerizedMounterHome is the path where we install the containerized mounter (on ContainerOS)
-	containerizedMounterHome = "/home/kubernetes/containerized_mounter"
-
 	// kubeletService is the name of the kubelet service
 	kubeletService = "kubelet.service"
 
@@ -181,10 +177,6 @@ func (b *KubeletBuilder) Build(c *fi.NodeupModelBuilderContext) error {
 			Path: b.CNIConfDir(),
 			Type: nodetasks.FileType_Directory,
 		})
-	}
-
-	if err := b.addContainerizedMounter(c); err != nil {
-		return err
 	}
 
 	if b.UseExternalKubeletCredentialProvider() {
@@ -363,11 +355,6 @@ func (b *KubeletBuilder) buildSystemdEnvironmentFile(ctx context.Context, kubele
 		}
 	}
 
-	if b.usesContainerizedMounter() {
-		// We don't want to expose this in the model while it is experimental, but it is needed on COS
-		flags += " --experimental-mounter-path=" + path.Join(containerizedMounterHome, "mounter")
-	}
-
 	// Add container runtime spcific flags
 	flags += " --runtime-request-timeout=15m"
 	if b.NodeupConfig.ContainerdConfig.Address == nil {
@@ -447,16 +434,6 @@ func (b *KubeletBuilder) buildSystemdService() *nodetasks.Service {
 	}
 
 	return service
-}
-
-// usesContainerizedMounter returns true if we use the containerized mounter
-func (b *KubeletBuilder) usesContainerizedMounter() bool {
-	switch b.Distribution {
-	case distributions.DistributionContainerOS:
-		return true
-	default:
-		return false
-	}
 }
 
 // addECRCredentialProvider installs the ECR Kubelet Credential Provider
@@ -596,93 +573,6 @@ providers:
 		}
 		c.AddTask(t)
 	}
-	return nil
-}
-
-// addContainerizedMounter downloads and installs the containerized mounter, that we need on ContainerOS
-func (b *KubeletBuilder) addContainerizedMounter(c *fi.NodeupModelBuilderContext) error {
-	if !b.usesContainerizedMounter() {
-		return nil
-	}
-
-	// This is not a race because /etc is ephemeral on COS, and we start kubelet (also in /etc on COS)
-
-	// So what we do here is we download a tarred container image, expand it to containerizedMounterHome, then
-	// set up bind mounts so that the script is executable (most of containeros is noexec),
-	// and set up some bind mounts of proc and dev so that mounting can take place inside that container
-	// - it isn't a full docker container.
-
-	{
-		// @TODO Extract to common function?
-		assetName := "mounter"
-		assetPath := ""
-		asset, err := b.Assets.Find(assetName, assetPath)
-		if err != nil {
-			return fmt.Errorf("trying to locate asset %q: %v", assetName, err)
-		}
-		if asset == nil {
-			return fmt.Errorf("unable to locate asset %q", assetName)
-		}
-
-		t := &nodetasks.File{
-			Path:     path.Join(containerizedMounterHome, "mounter"),
-			Contents: asset,
-			Type:     nodetasks.FileType_File,
-			Mode:     s("0755"),
-		}
-		c.AddTask(t)
-	}
-
-	c.AddTask(&nodetasks.File{
-		Path: containerizedMounterHome,
-		Type: nodetasks.FileType_Directory,
-	})
-
-	// TODO: leverage assets for this tar file (but we want to avoid expansion of the archive)
-	c.AddTask(&nodetasks.Archive{
-		Name:      "containerized_mounter",
-		Source:    "https://storage.googleapis.com/kubernetes-release/gci-mounter/mounter.tar",
-		Hash:      "6a9f5f52e0b066183e6b90a3820b8c2c660d30f6ac7aeafb5064355bf0a5b6dd",
-		TargetDir: path.Join(containerizedMounterHome, "rootfs"),
-	})
-
-	c.AddTask(&nodetasks.File{
-		Path: path.Join(containerizedMounterHome, "rootfs/var/lib/kubelet"),
-		Type: nodetasks.FileType_Directory,
-	})
-
-	c.AddTask(&nodetasks.BindMount{
-		Source:     containerizedMounterHome,
-		Mountpoint: containerizedMounterHome,
-		Options:    []string{"exec"},
-	})
-
-	c.AddTask(&nodetasks.BindMount{
-		Source:     "/var/lib/kubelet/",
-		Mountpoint: path.Join(containerizedMounterHome, "rootfs/var/lib/kubelet"),
-		Options:    []string{"rshared"},
-		Recursive:  true,
-	})
-
-	c.AddTask(&nodetasks.BindMount{
-		Source:     "/proc",
-		Mountpoint: path.Join(containerizedMounterHome, "rootfs/proc"),
-		Options:    []string{"ro"},
-	})
-
-	c.AddTask(&nodetasks.BindMount{
-		Source:     "/dev",
-		Mountpoint: path.Join(containerizedMounterHome, "rootfs/dev"),
-		Options:    []string{"ro"},
-	})
-
-	// kube-up does a file cp, but we probably want to make changes visible (e.g. for gossip DNS)
-	c.AddTask(&nodetasks.BindMount{
-		Source:     "/etc/resolv.conf",
-		Mountpoint: path.Join(containerizedMounterHome, "rootfs/etc/resolv.conf"),
-		Options:    []string{"ro"},
-	})
-
 	return nil
 }
 
