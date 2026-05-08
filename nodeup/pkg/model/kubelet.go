@@ -24,18 +24,23 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
 	ec2types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	logsapi "k8s.io/component-base/logs/api/v1"
 
 	"k8s.io/klog/v2"
 	"k8s.io/kops/pkg/apis/kops"
+	kopsutil "k8s.io/kops/pkg/apis/kops/util"
 	"k8s.io/kops/pkg/flagbuilder"
 	"k8s.io/kops/pkg/rbac"
 	"k8s.io/kops/pkg/systemd"
@@ -55,6 +60,37 @@ const (
 	kubeletConfigFilePath            = "/var/lib/kubelet/kubelet.conf"
 	credentialProviderConfigFilePath = "/var/lib/kubelet/credential-provider.conf"
 )
+
+// Scheme registration is shared across all calls in this file because the
+// schemes are stateless after AddToScheme runs. Constructing them per-call
+// allocates a populated scheme map and walks the scheme registry on every
+// nodeup invocation.
+var (
+	kubeletV1Beta1Encoder runtime.Encoder
+	kubeletV1Encoder      runtime.Encoder
+)
+
+func init() {
+	v1beta1Scheme := runtime.NewScheme()
+	utilruntime.Must(kubelet.AddToScheme(v1beta1Scheme))
+	kubeletV1Beta1Encoder = mustYAMLEncoder(v1beta1Scheme, kubelet.SchemeGroupVersion)
+
+	v1Scheme := runtime.NewScheme()
+	utilruntime.Must(kubeletv1.AddToScheme(v1Scheme))
+	kubeletV1Encoder = mustYAMLEncoder(v1Scheme, kubeletv1.SchemeGroupVersion)
+}
+
+// mustYAMLEncoder returns a YAML encoder for the given scheme + GV, panicking
+// if the scheme has no YAML serializer registered (which would be a programmer
+// error since the kubelet types we register always have one).
+func mustYAMLEncoder(scheme *runtime.Scheme, gv runtime.GroupVersioner) runtime.Encoder {
+	codecFactory := serializer.NewCodecFactory(scheme)
+	info, ok := runtime.SerializerInfoForMediaType(codecFactory.SupportedMediaTypes(), "application/yaml")
+	if !ok {
+		panic(fmt.Sprintf("no YAML serializer registered for kubelet scheme %v", gv))
+	}
+	return codecFactory.EncoderForVersion(info.Serializer, gv)
+}
 
 // KubeletBuilder installs kubelet
 type KubeletBuilder struct {
@@ -98,7 +134,7 @@ func (b *KubeletBuilder) Build(c *fi.NodeupModelBuilderContext) error {
 			providerID = "azure://" + metadata.ResourceID
 		}
 
-		t, err := buildKubeletComponentConfig(kubeletConfig, providerID)
+		t, err := b.buildKubeletComponentConfig(kubeletConfig, providerID)
 		if err != nil {
 			return err
 		}
@@ -237,58 +273,149 @@ func (b *KubeletBuilder) Build(c *fi.NodeupModelBuilderContext) error {
 	return nil
 }
 
-func buildKubeletComponentConfig(kubeletConfig *kops.KubeletConfigSpec, providerID string) (*nodetasks.File, error) {
-	componentConfig := kubelet.KubeletConfiguration{}
-	if providerID != "" {
-		componentConfig.ProviderID = providerID
-	}
-	if kubeletConfig.CrashLoopBackOffMaxContainerRestartPeriod != nil {
-		componentConfig.CrashLoopBackOff.MaxContainerRestartPeriod = kubeletConfig.CrashLoopBackOffMaxContainerRestartPeriod
-	}
-	if kubeletConfig.ShutdownGracePeriod != nil {
-		componentConfig.ShutdownGracePeriod = *kubeletConfig.ShutdownGracePeriod
-	}
-	if kubeletConfig.ShutdownGracePeriodCriticalPods != nil {
-		componentConfig.ShutdownGracePeriodCriticalPods = *kubeletConfig.ShutdownGracePeriodCriticalPods
-	}
-	if kubeletConfig.ImageMaximumGCAge != nil {
-		componentConfig.ImageMaximumGCAge = *kubeletConfig.ImageMaximumGCAge
-	}
-	if kubeletConfig.ImageMinimumGCAge != nil {
-		componentConfig.ImageMinimumGCAge = *kubeletConfig.ImageMinimumGCAge
-	}
-	componentConfig.MaxParallelImagePulls = kubeletConfig.MaxParallelImagePulls
-	componentConfig.MemorySwap.SwapBehavior = kubeletConfig.MemorySwapBehavior
-	componentConfig.EventRecordQPS = kubeletConfig.EventRecordQPS
-	if kubeletConfig.NodeLeaseDurationSeconds != nil {
-		componentConfig.NodeLeaseDurationSeconds = *kubeletConfig.NodeLeaseDurationSeconds
-	}
-
-	s := runtime.NewScheme()
-	if err := kubelet.AddToScheme(s); err != nil {
+func (b *KubeletBuilder) buildKubeletComponentConfig(kubeletConfig *kops.KubeletConfigSpec, providerID string) (*nodetasks.File, error) {
+	componentConfig, err := b.kubeletConfiguration(kubeletConfig, providerID)
+	if err != nil {
 		return nil, err
 	}
 
-	gv := kubelet.SchemeGroupVersion
-	codecFactory := serializer.NewCodecFactory(s)
-	info, ok := runtime.SerializerInfoForMediaType(codecFactory.SupportedMediaTypes(), "application/yaml")
-	if !ok {
-		return nil, fmt.Errorf("failed to find serializer")
-	}
-	encoder := codecFactory.EncoderForVersion(info.Serializer, gv)
-	var w bytes.Buffer
-	if err := encoder.Encode(&componentConfig, &w); err != nil {
-		return nil, err
+	var buf bytes.Buffer
+	if err := kubeletV1Beta1Encoder.Encode(componentConfig, &buf); err != nil {
+		return nil, fmt.Errorf("encoding kubelet component config: %w", err)
 	}
 
-	t := &nodetasks.File{
-		Path:           "/var/lib/kubelet/kubelet.conf",
-		Contents:       fi.NewBytesResource(w.Bytes()),
+	return &nodetasks.File{
+		Path:           kubeletConfigFilePath,
+		Contents:       fi.NewBytesResource(buf.Bytes()),
 		Type:           nodetasks.FileType_File,
 		BeforeServices: []string{kubeletService},
+	}, nil
+}
+
+// kubeletConfiguration translates a kops.KubeletConfigSpec into the upstream
+// kubelet.KubeletConfiguration written to /var/lib/kubelet/kubelet.conf.
+// Most kubelet CLI flags are deprecated upstream in favor of this config
+// file; fields that have flag:"-" in the kops API land here.
+func (b *KubeletBuilder) kubeletConfiguration(kubeletConfig *kops.KubeletConfigSpec, providerID string) (*kubelet.KubeletConfiguration, error) {
+	cc := &kubelet.KubeletConfiguration{
+		CgroupDriver:                     kubeletConfig.CgroupDriver,
+		CgroupRoot:                       kubeletConfig.CgroupRoot,
+		TLSCertFile:                      filepath.Join(b.PathSrvKubernetes(), "kubelet-server.crt"),
+		TLSPrivateKeyFile:                filepath.Join(b.PathSrvKubernetes(), "kubelet-server.key"),
+		TLSCipherSuites:                  kubeletConfig.TLSCipherSuites,
+		TLSMinVersion:                    kubeletConfig.TLSMinVersion,
+		ClusterDNS:                       []string{kubeletConfig.ClusterDNS},
+		ClusterDomain:                    kubeletConfig.ClusterDomain,
+		EnableDebuggingHandlers:          kubeletConfig.EnableDebuggingHandlers,
+		HairpinMode:                      kubeletConfig.HairpinMode,
+		StaticPodPath:                    kubeletConfig.PodManifestPath,
+		VolumePluginDir:                  kubeletConfig.VolumePluginDirectory,
+		ProviderID:                       providerID,
+		KubeletCgroups:                   kubeletConfig.KubeletCgroups,
+		SystemCgroups:                    kubeletConfig.SystemCgroups,
+		PodCIDR:                          kubeletConfig.PodCIDR,
+		ResolverConfig:                   kubeletConfig.ResolverConfig,
+		SerializeImagePulls:              kubeletConfig.SerializeImagePulls,
+		MaxParallelImagePulls:            kubeletConfig.MaxParallelImagePulls,
+		AllowedUnsafeSysctls:             kubeletConfig.AllowedUnsafeSysctls,
+		CPUCFSQuota:                      kubeletConfig.CPUCFSQuota,
+		CPUCFSQuotaPeriod:                kubeletConfig.CPUCFSQuotaPeriod,
+		CPUManagerPolicy:                 kubeletConfig.CpuManagerPolicy,
+		RegistryPullQPS:                  kubeletConfig.RegistryPullQPS,
+		TopologyManagerPolicy:            kubeletConfig.TopologyManagerPolicy,
+		RotateCertificates:               fi.ValueOf(kubeletConfig.RotateCertificates),
+		ContainerLogMaxSize:              kubeletConfig.ContainerLogMaxSize,
+		ContainerLogMaxFiles:             kubeletConfig.ContainerLogMaxFiles,
+		PodPidsLimit:                     kubeletConfig.PodPidsLimit,
+		ImageGCHighThresholdPercent:      kubeletConfig.ImageGCHighThresholdPercent,
+		ImageGCLowThresholdPercent:       kubeletConfig.ImageGCLowThresholdPercent,
+		ImageMaximumGCAge:                fi.ValueOf(kubeletConfig.ImageMaximumGCAge),
+		NodeStatusUpdateFrequency:        fi.ValueOf(kubeletConfig.NodeStatusUpdateFrequency),
+		NodeLeaseDurationSeconds:         fi.ValueOf(kubeletConfig.NodeLeaseDurationSeconds),
+		SeccompDefault:                   kubeletConfig.SeccompDefault,
+		KubeReserved:                     kubeletConfig.KubeReserved,
+		KubeReservedCgroup:               kubeletConfig.KubeReservedCgroup,
+		SystemReserved:                   kubeletConfig.SystemReserved,
+		SystemReservedCgroup:             kubeletConfig.SystemReservedCgroup,
+		FailSwapOn:                       kubeletConfig.FailSwapOn,
+		EvictionPressureTransitionPeriod: fi.ValueOf(kubeletConfig.EvictionPressureTransitionPeriod),
+		EvictionMaxPodGracePeriod:        kubeletConfig.EvictionMaxPodGracePeriod,
+		EventRecordQPS:                   kubeletConfig.EventRecordQPS,
+		ProtectKernelDefaults:            fi.ValueOf(kubeletConfig.ProtectKernelDefaults),
+		KernelMemcgNotification:          fi.ValueOf(kubeletConfig.KernelMemcgNotification),
+		MaxPods:                          fi.ValueOf(kubeletConfig.MaxPods),
+		ReadOnlyPort:                     fi.ValueOf(kubeletConfig.ReadOnlyPort),
+		MemorySwap:                       kubelet.MemorySwapConfiguration{SwapBehavior: kubeletConfig.MemorySwapBehavior},
+		Logging:                          logsapi.LoggingConfiguration{Format: kubeletConfig.LogFormat},
+		CrashLoopBackOff:                 kubelet.CrashLoopBackOffConfig{MaxContainerRestartPeriod: kubeletConfig.CrashLoopBackOffMaxContainerRestartPeriod},
+		ShutdownGracePeriod:              fi.ValueOf(kubeletConfig.ShutdownGracePeriod),
+		ShutdownGracePeriodCriticalPods:  fi.ValueOf(kubeletConfig.ShutdownGracePeriodCriticalPods),
 	}
 
-	return t, nil
+	cc.Authentication.Anonymous.Enabled = kubeletConfig.AnonymousAuth
+	cc.Authentication.Webhook.Enabled = kubeletConfig.AuthenticationTokenWebhook
+	if kubeletConfig.ClientCAFile != "" {
+		cc.Authentication.X509.ClientCAFile = kubeletConfig.ClientCAFile
+	}
+	if kubeletConfig.AuthorizationMode != "" {
+		cc.Authorization.Mode = kubelet.KubeletAuthorizationMode(kubeletConfig.AuthorizationMode)
+	}
+
+	// EventQPS is the legacy kops field; EventRecordQPS is the newer alias
+	// matching the kubelet config field name. Preserve historical precedence
+	// where EventQPS overrides EventRecordQPS when both are set.
+	if kubeletConfig.EventQPS != nil {
+		cc.EventRecordQPS = kubeletConfig.EventQPS
+	}
+
+	if b.NodeupConfig.ContainerdConfig.Address == nil {
+		cc.ContainerRuntimeEndpoint = "unix:///run/containerd/containerd.sock"
+	} else {
+		cc.ContainerRuntimeEndpoint = "unix://" + fi.ValueOf(b.NodeupConfig.ContainerdConfig.Address)
+	}
+
+	if kubeletConfig.EvictionHard != nil {
+		evictionHard, err := parseKeyValueList(*kubeletConfig.EvictionHard, "<")
+		if err != nil {
+			return nil, fmt.Errorf("evictionHard: %w", err)
+		}
+		cc.EvictionHard = evictionHard
+	}
+	evictionSoft, err := parseKeyValueList(kubeletConfig.EvictionSoft, "<")
+	if err != nil {
+		return nil, fmt.Errorf("evictionSoft: %w", err)
+	}
+	cc.EvictionSoft = evictionSoft
+	evictionSoftGracePeriod, err := parseKeyValueList(kubeletConfig.EvictionSoftGracePeriod, "=")
+	if err != nil {
+		return nil, fmt.Errorf("evictionSoftGracePeriod: %w", err)
+	}
+	cc.EvictionSoftGracePeriod = evictionSoftGracePeriod
+	evictionMinimumReclaim, err := parseKeyValueList(kubeletConfig.EvictionMinimumReclaim, "=")
+	if err != nil {
+		return nil, fmt.Errorf("evictionMinimumReclaim: %w", err)
+	}
+	cc.EvictionMinimumReclaim = evictionMinimumReclaim
+
+	featureGates, err := parseFeatureGates(kubeletConfig.FeatureGates)
+	if err != nil {
+		return nil, fmt.Errorf("featureGates: %w", err)
+	}
+	cc.FeatureGates = featureGates
+
+	if kubeletConfig.EnforceNodeAllocatable != "" {
+		cc.EnforceNodeAllocatable = strings.Split(kubeletConfig.EnforceNodeAllocatable, ",")
+	}
+
+	for _, t := range kubeletConfig.Taints {
+		taint, err := parseTaint(t)
+		if err != nil {
+			return nil, fmt.Errorf("taints: %w", err)
+		}
+		cc.RegisterWithTaints = append(cc.RegisterWithTaints, taint)
+	}
+
+	return cc, nil
 }
 
 func (b *KubeletBuilder) binaryPath() string {
@@ -355,17 +482,6 @@ func (b *KubeletBuilder) buildSystemdEnvironmentFile(ctx context.Context, kubele
 		}
 	}
 
-	// Add container runtime spcific flags
-	flags += " --runtime-request-timeout=15m"
-	if b.NodeupConfig.ContainerdConfig.Address == nil {
-		flags += " --container-runtime-endpoint=unix:///run/containerd/containerd.sock"
-	} else {
-		flags += " --container-runtime-endpoint=unix://" + fi.ValueOf(b.NodeupConfig.ContainerdConfig.Address)
-	}
-
-	flags += " --tls-cert-file=" + b.PathSrvKubernetes() + "/kubelet-server.crt"
-	flags += " --tls-private-key-file=" + b.PathSrvKubernetes() + "/kubelet-server.key"
-
 	if b.IsIPv6Only() {
 		flags += " --node-ip=::"
 	}
@@ -388,6 +504,66 @@ func (b *KubeletBuilder) buildSystemdEnvironmentFile(ctx context.Context, kubele
 	}
 
 	return t, nil
+}
+
+// parseKeyValueList parses a comma-separated list of key/value pairs
+// separated by sep (for example "memory.available<100Mi" with sep="<").
+// Whitespace around keys and values is trimmed. An empty input returns
+// (nil, nil) so callers can leave the corresponding kubelet config field
+// unset. Returns an error if any entry is missing the separator.
+//
+// The kops API uses these CSV strings for fields that kubelet represents
+// as map[string]string: eviction-hard / eviction-soft use "<", while
+// eviction-soft-grace-period and eviction-minimum-reclaim use "=".
+func parseKeyValueList(in string, sep string) (map[string]string, error) {
+	if in == "" {
+		return nil, nil
+	}
+	result := make(map[string]string, strings.Count(in, ",")+1)
+	for kv := range strings.SplitSeq(in, ",") {
+		k, v, ok := strings.Cut(kv, sep)
+		if !ok {
+			return nil, fmt.Errorf("invalid key/value pair %q (expected separator %q)", kv, sep)
+		}
+		result[strings.TrimSpace(k)] = strings.TrimSpace(v)
+	}
+	return result, nil
+}
+
+// parseTaint converts the kops "key=value:Effect" taint string (the form
+// historically passed to --register-with-taints) into a v1.Taint, the type
+// the kubelet config field RegisterWithTaints requires.
+func parseTaint(s string) (v1.Taint, error) {
+	parsed, err := kopsutil.ParseTaint(s)
+	if err != nil {
+		return v1.Taint{}, err
+	}
+	return v1.Taint{
+		Key:    parsed["key"],
+		Value:  parsed["value"],
+		Effect: v1.TaintEffect(parsed["effect"]),
+	}, nil
+}
+
+// parseFeatureGates converts the kops map[string]string feature-gate
+// representation into the map[string]bool that the kubelet config schema
+// requires. Values are parsed with strconv.ParseBool, so "true"/"false",
+// "1"/"0", "t"/"f" etc. are all accepted. An empty or nil input returns
+// (nil, nil); an unparseable value returns an error naming the offending
+// gate.
+func parseFeatureGates(gates map[string]string) (map[string]bool, error) {
+	if len(gates) == 0 {
+		return nil, nil
+	}
+	out := make(map[string]bool, len(gates))
+	for name, raw := range gates {
+		parsed, err := strconv.ParseBool(raw)
+		if err != nil {
+			return nil, fmt.Errorf("invalid feature gate value %q=%q: %w", name, raw, err)
+		}
+		out[name] = parsed
+	}
+	return out, nil
 }
 
 // buildSystemdService is responsible for generating the kubelet systemd unit
@@ -498,30 +674,17 @@ func (b *KubeletBuilder) addECRCredentialProvider(c *fi.NodeupModelBuilderContex
 			},
 		}
 
-		sch := runtime.NewScheme()
-		if err := kubeletv1.AddToScheme(sch); err != nil {
-			return err
+		var buf bytes.Buffer
+		if err := kubeletV1Encoder.Encode(providerConfig, &buf); err != nil {
+			return fmt.Errorf("encoding ECR credential provider config: %w", err)
 		}
 
-		gv := kubeletv1.SchemeGroupVersion
-		codecFactory := serializer.NewCodecFactory(sch)
-		info, ok := runtime.SerializerInfoForMediaType(codecFactory.SupportedMediaTypes(), "application/yaml")
-		if !ok {
-			return fmt.Errorf("failed to find serializer")
-		}
-		encoder := codecFactory.EncoderForVersion(info.Serializer, gv)
-		var w bytes.Buffer
-		if err := encoder.Encode(providerConfig, &w); err != nil {
-			return err
-		}
-
-		t := &nodetasks.File{
+		c.AddTask(&nodetasks.File{
 			Path:     credentialProviderConfigFilePath,
-			Contents: fi.NewBytesResource(w.Bytes()),
+			Contents: fi.NewBytesResource(buf.Bytes()),
 			Type:     nodetasks.FileType_File,
 			Mode:     s("0644"),
-		}
-		c.AddTask(t)
+		})
 	}
 	return nil
 }
@@ -592,6 +755,13 @@ func (b *KubeletBuilder) buildKubeletConfigSpec(ctx context.Context) (*kops.Kube
 	c := b.NodeupConfig.KubeletConfig
 
 	c.ClientCAFile = filepath.Join(b.PathSrvKubernetes(), "ca.crt")
+
+	// Preserve the historical 15m default that used to be hard-coded into the
+	// kubelet env file. Stays as a CLI flag because the upstream config field
+	// is non-pointer with omitempty and would drop a zero value.
+	if c.RuntimeRequestTimeout == nil {
+		c.RuntimeRequestTimeout = &metav1.Duration{Duration: 15 * time.Minute}
+	}
 
 	// Wait less for pods to restart, especially during the bootstrap sequence
 	if b.IsKubernetesGTE("1.35") && b.IsMaster {
@@ -707,28 +877,12 @@ func (b *KubeletBuilder) buildKubeletServingCertificate(c *fi.NodeupModelBuilder
 		return err
 	}
 
+	var cert, key fi.Resource
 	if !b.HasAPIServer {
-		cert, key, err := b.GetBootstrapCert(name, fi.CertificateIDCA)
+		cert, key, err = b.GetBootstrapCert(name, fi.CertificateIDCA)
 		if err != nil {
 			return err
 		}
-
-		c.AddTask(&nodetasks.File{
-			Path:           filepath.Join(dir, name+".crt"),
-			Contents:       cert,
-			Type:           nodetasks.FileType_File,
-			Mode:           fi.PtrTo("0644"),
-			BeforeServices: []string{"kubelet.service"},
-		})
-
-		c.AddTask(&nodetasks.File{
-			Path:           filepath.Join(dir, name+".key"),
-			Contents:       key,
-			Type:           nodetasks.FileType_File,
-			Mode:           fi.PtrTo("0400"),
-			BeforeServices: []string{"kubelet.service"},
-		})
-
 	} else {
 		issueCert := &nodetasks.IssueCert{
 			Name:      name,
@@ -741,8 +895,30 @@ func (b *KubeletBuilder) buildKubeletServingCertificate(c *fi.NodeupModelBuilder
 			AlternateNames: names,
 		}
 		c.AddTask(issueCert)
-		return issueCert.AddFileTasks(c, dir, name, "", nil)
+		cert, key, _ = issueCert.GetResources()
+		c.EnsureTask(&nodetasks.File{
+			Path: dir,
+			Type: nodetasks.FileType_Directory,
+			Mode: fi.PtrTo("0755"),
+		})
 	}
+
+	c.AddTask(&nodetasks.File{
+		Path:           filepath.Join(dir, name+".crt"),
+		Contents:       cert,
+		Type:           nodetasks.FileType_File,
+		Mode:           fi.PtrTo("0644"),
+		BeforeServices: []string{kubeletService},
+	})
+
+	c.AddTask(&nodetasks.File{
+		Path:           filepath.Join(dir, name+".key"),
+		Contents:       key,
+		Type:           nodetasks.FileType_File,
+		Mode:           fi.PtrTo("0400"),
+		BeforeServices: []string{kubeletService},
+	})
+
 	return nil
 }
 
