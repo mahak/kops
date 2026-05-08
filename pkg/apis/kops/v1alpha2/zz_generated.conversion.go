@@ -2188,6 +2188,7 @@ func autoConvert_v1alpha2_CiliumNetworkingSpec_To_kops_CiliumNetworkingSpec(in *
 	} else {
 		out.GatewayAPI = nil
 	}
+	out.ExtraConfig = in.ExtraConfig
 	return nil
 }
 
@@ -2271,6 +2272,7 @@ func autoConvert_kops_CiliumNetworkingSpec_To_v1alpha2_CiliumNetworkingSpec(in *
 	} else {
 		out.GatewayAPI = nil
 	}
+	out.ExtraConfig = in.ExtraConfig
 	return nil
 }
 
