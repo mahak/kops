@@ -21,6 +21,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/blang/semver/v4"
 	"k8s.io/klog/v2"
 	"k8s.io/kops/pkg/apis/kops"
 	"k8s.io/kops/pkg/featureflag"
@@ -89,36 +90,36 @@ type etcdVersion struct {
 	SymlinkToVersion string
 }
 
-var etcdSupportedImages = []etcdVersion{
-	{Version: "3.4.3", SymlinkToVersion: "3.4.13"},
+// etcdLatestImages lists the latest etcd patch image bundled by kops for each
+// supported minor. All earlier patch versions within the same minor are
+// generated as SymlinkToVersion entries by etcdSupportedVersions.
+var etcdLatestImages = []etcdVersion{
 	{Version: "3.4.13", Image: "registry.k8s.io/etcd:v3.4.13"},
-	{Version: "3.5.0", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.1", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.3", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.4", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.6", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.7", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.9", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.13", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.17", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.21", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.23", SymlinkToVersion: "3.5.25"},
-	{Version: "3.5.24", SymlinkToVersion: "3.5.25"},
 	{Version: "3.5.25", Image: "registry.k8s.io/etcd:v3.5.25"},
-	{Version: "3.6.5", SymlinkToVersion: "3.6.6"},
 	{Version: "3.6.6", Image: "registry.k8s.io/etcd:v3.6.6"},
 }
 
 func etcdSupportedVersions() []etcdVersion {
 	var versions []etcdVersion
-	versions = append(versions, etcdSupportedImages...)
-	sort.Slice(versions, func(i, j int) bool { return versions[i].Version < versions[j].Version })
+	for _, latest := range etcdLatestImages {
+		sv := semver.MustParse(latest.Version)
+		versions = append(versions, latest)
+		for patch := uint64(0); patch < sv.Patch; patch++ {
+			versions = append(versions, etcdVersion{
+				Version:          fmt.Sprintf("%d.%d.%d", sv.Major, sv.Minor, patch),
+				SymlinkToVersion: latest.Version,
+			})
+		}
+	}
+	sort.Slice(versions, func(i, j int) bool {
+		return semver.MustParse(versions[i].Version).LT(semver.MustParse(versions[j].Version))
+	})
 	return versions
 }
 
 func etcdVersionIsSupported(version string) bool {
 	version = strings.TrimPrefix(version, "v")
-	for _, etcdVersion := range etcdSupportedImages {
+	for _, etcdVersion := range etcdSupportedVersions() {
 		if etcdVersion.Version == version {
 			return true
 		}
