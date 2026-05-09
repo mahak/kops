@@ -221,7 +221,7 @@ resource "aws_s3_object" "nodeupconfig-nodes" {
 resource "google_compute_disk" "a-etcd-events-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-events"  = "a-2fa-2cb-2cc"
+    "k8s-io-etcd-events"  = "a-2fa"
     "k8s-io-role-master"  = "master"
   }
   name = "a-etcd-events-ha-gce-example-com"
@@ -233,7 +233,7 @@ resource "google_compute_disk" "a-etcd-events-ha-gce-example-com" {
 resource "google_compute_disk" "a-etcd-main-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-main"    = "a-2fa-2cb-2cc"
+    "k8s-io-etcd-main"    = "a-2fa"
     "k8s-io-role-master"  = "master"
   }
   name = "a-etcd-main-ha-gce-example-com"
@@ -245,7 +245,7 @@ resource "google_compute_disk" "a-etcd-main-ha-gce-example-com" {
 resource "google_compute_disk" "b-etcd-events-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-events"  = "b-2fa-2cb-2cc"
+    "k8s-io-etcd-events"  = "b-2fb"
     "k8s-io-role-master"  = "master"
   }
   name = "b-etcd-events-ha-gce-example-com"
@@ -257,7 +257,7 @@ resource "google_compute_disk" "b-etcd-events-ha-gce-example-com" {
 resource "google_compute_disk" "b-etcd-main-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-main"    = "b-2fa-2cb-2cc"
+    "k8s-io-etcd-main"    = "b-2fb"
     "k8s-io-role-master"  = "master"
   }
   name = "b-etcd-main-ha-gce-example-com"
@@ -269,7 +269,7 @@ resource "google_compute_disk" "b-etcd-main-ha-gce-example-com" {
 resource "google_compute_disk" "c-etcd-events-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-events"  = "c-2fa-2cb-2cc"
+    "k8s-io-etcd-events"  = "c-2fc"
     "k8s-io-role-master"  = "master"
   }
   name = "c-etcd-events-ha-gce-example-com"
@@ -281,7 +281,7 @@ resource "google_compute_disk" "c-etcd-events-ha-gce-example-com" {
 resource "google_compute_disk" "c-etcd-main-ha-gce-example-com" {
   labels = {
     "k8s-io-cluster-name" = "ha-gce-example-com"
-    "k8s-io-etcd-main"    = "c-2fa-2cb-2cc"
+    "k8s-io-etcd-main"    = "c-2fc"
     "k8s-io-role-master"  = "master"
   }
   name = "c-etcd-main-ha-gce-example-com"

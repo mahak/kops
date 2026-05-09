@@ -262,21 +262,13 @@ func (b *MasterVolumeBuilder) addGCEVolume(c *fi.CloudupModelBuilderContext, pre
 		volumeType = DefaultGCEEtcdVolumeType
 	}
 
-	// TODO: Should no longer be needed because we trim prefixes
-	//// On GCE we are close to the length limits.  So,we remove the dashes from the keys
-	//// The name is normally something like "us-east1-a", and the dashes are particularly expensive
-	//// because of the escaping needed (3 characters for each dash)
-	//switch tf.cluster.Spec.CloudProvider {
-	//case string(kops.CloudProviderGCE):
-	//	// TODO: If we're still struggling for size, we don't need to put ourselves in the allmembers list
-	//	for i := range allMembers {
-	//		allMembers[i] = strings.Replace(allMembers[i], "-", "", -1)
-	//	}
-	//	meName = strings.Replace(meName, "-", "", -1)
-	//}
-
-	// This is the configuration of the etcd cluster
-	clusterSpec := m.Name + "/" + strings.Join(allMembers, ",")
+	// GCE labels are capped at 63 chars and EncodeGCELabel inflates non-alnum
+	// characters 3x, so a full member list overflows for clusters with many
+	// control planes (#17630). The historical "<name>/<allnames>" shape was
+	// only consumed by legacy protokube etcd bootstrap (removed in 2021); both
+	// kops's status reader and etcd-manager only read tokens[0]. Keep the "/"
+	// separator with a self-only allnames so older parsers still validate.
+	clusterSpec := m.Name + "/" + m.Name
 
 	clusterLabel := gce.LabelForCluster(b.ClusterName())
 
