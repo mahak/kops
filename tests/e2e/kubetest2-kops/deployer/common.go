@@ -380,6 +380,7 @@ func (d *deployer) defaultClusterName() (string, error) {
 		return "", errors.New("PULL_NUMBER must be set when JOB_TYPE=presubmit and --cluster-name is not set")
 	}
 
+	// TODO(hakman): revisit how dnsDomain is used, ignoring it is unexpected.
 	var suffix string
 	switch d.CloudProvider {
 	case "aws":
@@ -389,8 +390,13 @@ func (d *deployer) defaultClusterName() (string, error) {
 			suffix = dnsDomain
 		}
 	case "azure":
-		// Azure uses --dns=none and the domain is not needed
-		suffix = ""
+		if dnsDomain == "k8s.local" || strings.HasSuffix(dnsDomain, ".k8s.local") {
+			// Opt into gossip via a k8s.local KOPS_DNS_DOMAIN.
+			suffix = dnsDomain
+		} else {
+			// With --dns=none and the domain is not needed.
+			suffix = ""
+		}
 	default:
 		suffix = "k8s.local"
 	}
