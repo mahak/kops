@@ -35,7 +35,6 @@ type OpenStackCloudProvider struct {
 	clusterName  string
 	project      string
 	instanceName string
-	storageZone  string
 }
 
 var _ CloudProvider = &OpenStackCloudProvider{}
@@ -89,8 +88,7 @@ func (a *OpenStackCloudProvider) discoverTags() error {
 	if err != nil {
 		return fmt.Errorf("Could not establish storage availability zone: %v", err)
 	}
-	a.storageZone = az.ZoneName
-	klog.Infof("Found zone=%q", a.storageZone)
+	klog.Infof("Found zone=%q", az.ZoneName)
 
 	// Instance Name
 	{

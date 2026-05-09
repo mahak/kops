@@ -23,7 +23,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/digitalocean/godo"
@@ -34,10 +33,8 @@ import (
 )
 
 const (
-	dropletRegionMetadataURL = "http://169.254.169.254/metadata/v1/region"
-	dropletNameMetadataURL   = "http://169.254.169.254/metadata/v1/hostname"
-	dropletIDMetadataURL     = "http://169.254.169.254/metadata/v1/id"
-	dropletIDMetadataTags    = "http://169.254.169.254/metadata/v1/tags"
+	dropletNameMetadataURL = "http://169.254.169.254/metadata/v1/hostname"
+	dropletIDMetadataTags  = "http://169.254.169.254/metadata/v1/tags"
 )
 
 // TokenSource implements oauth2.TokenSource
@@ -49,9 +46,7 @@ type DOCloudProvider struct {
 	ClusterID  string
 	godoClient *godo.Client
 
-	region      string
 	dropletName string
-	dropletID   int
 	dropletTags []string
 }
 
@@ -84,20 +79,6 @@ func GetClusterID() (string, error) {
 }
 
 func NewDOCloudProvider() (*DOCloudProvider, error) {
-	region, err := getMetadataRegion()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get droplet region: %s", err)
-	}
-
-	dropletIDStr, err := getMetadataDropletID()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get droplet id: %s", err)
-	}
-	dropletID, err := strconv.Atoi(dropletIDStr)
-	if err != nil {
-		return nil, fmt.Errorf("failed to convert droplet ID to int: %s", err)
-	}
-
 	dropletName, err := getMetadataDropletName()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get droplet name: %s", err)
@@ -121,9 +102,7 @@ func NewDOCloudProvider() (*DOCloudProvider, error) {
 	return &DOCloudProvider{
 		godoClient:  godoClient,
 		ClusterID:   clusterID,
-		dropletID:   dropletID,
 		dropletName: dropletName,
-		region:      region,
 		dropletTags: dropletTags,
 	}, nil
 }
@@ -166,16 +145,8 @@ func (d *DOCloudProvider) InstanceID() string {
 	return d.dropletName
 }
 
-func getMetadataRegion() (string, error) {
-	return getMetadata(dropletRegionMetadataURL)
-}
-
 func getMetadataDropletName() (string, error) {
 	return getMetadata(dropletNameMetadataURL)
-}
-
-func getMetadataDropletID() (string, error) {
-	return getMetadata(dropletIDMetadataURL)
 }
 
 func getMetadataDropletTags() ([]string, error) {
