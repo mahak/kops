@@ -61,11 +61,6 @@ func NewGCECloudProvider() (*GCECloudProvider, error) {
 	return a, nil
 }
 
-// Project returns the current GCE project
-func (a *GCECloudProvider) Project() string {
-	return a.project
-}
-
 func (a *GCECloudProvider) discoverTags() error {
 	// Cluster Name
 	{

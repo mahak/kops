@@ -21,7 +21,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"k8s.io/klog/v2"
 	"k8s.io/kops/pkg/apis/kops"
@@ -146,15 +145,12 @@ func (t *ProtokubeBuilder) buildSystemdService() (*nodetasks.Service, error) {
 
 // ProtokubeFlags are the flags for protokube
 type ProtokubeFlags struct {
-	ClusterID         *string  `json:"clusterID,omitempty" flag:"cluster-id"`
-	Channels          []string `json:"channels,omitempty" flag:"channels"`
-	Cloud             *string  `json:"cloud,omitempty" flag:"cloud"`
-	Containerized     *bool    `json:"containerized,omitempty" flag:"containerized"`
-	DNSInternalSuffix *string  `json:"dnsInternalSuffix,omitempty" flag:"dns-internal-suffix"`
-	Gossip            *bool    `json:"gossip,omitempty" flag:"gossip"`
-	LogLevel          *int32   `json:"logLevel,omitempty" flag:"v"`
-	Master            *bool    `json:"master,omitempty" flag:"master"`
-	Zone              []string `json:"zone,omitempty" flag:"zone"`
+	Channels      []string `json:"channels,omitempty" flag:"channels"`
+	Cloud         *string  `json:"cloud,omitempty" flag:"cloud"`
+	Containerized *bool    `json:"containerized,omitempty" flag:"containerized"`
+	Gossip        *bool    `json:"gossip,omitempty" flag:"gossip"`
+	LogLevel      *int32   `json:"logLevel,omitempty" flag:"v"`
+	Master        *bool    `json:"master,omitempty" flag:"master"`
 
 	// BootstrapMasterNodeLabels applies the critical node-role labels to our node,
 	// which lets us bring up the controllers that can only run on masters, which are then
@@ -183,23 +179,6 @@ func (t *ProtokubeBuilder) ProtokubeFlags() (*ProtokubeFlags, error) {
 		Master:        b(t.IsMaster),
 	}
 
-	f.ClusterID = fi.PtrTo(t.NodeupConfig.ClusterName)
-
-	zone := t.NodeupConfig.DNSZone
-	if zone != "" {
-		if strings.Contains(zone, ".") {
-			// match by name
-			f.Zone = append(f.Zone, zone)
-		} else {
-			// match by id
-			f.Zone = append(f.Zone, "*/"+zone)
-		}
-	} else {
-		klog.Warningf("DNSZone not specified; protokube won't be able to update DNS")
-		// @TODO: Should we permit wildcard updates if zone is not specified?
-		// argv = append(argv, "--zone=*/*")
-	}
-
 	if t.UsesLegacyGossip() {
 		klog.Warningf("using (legacy) gossip DNS")
 		f.Gossip = fi.PtrTo(true)
@@ -214,15 +193,6 @@ func (t *ProtokubeBuilder) ProtokubeFlags() (*ProtokubeFlags, error) {
 				f.GossipSecretSecondary = t.NodeupConfig.GossipConfig.Secondary.Secret
 			}
 		}
-
-		// @TODO: This is hacky, but we want it so that we can have a different internal & external name
-		internalSuffix := t.APIInternalName()
-		internalSuffix = strings.TrimPrefix(internalSuffix, "api.")
-		f.DNSInternalSuffix = fi.PtrTo(internalSuffix)
-	}
-
-	if f.DNSInternalSuffix == nil {
-		f.DNSInternalSuffix = fi.PtrTo(".internal." + t.NodeupConfig.ClusterName)
 	}
 
 	f.BootstrapMasterNodeLabels = true

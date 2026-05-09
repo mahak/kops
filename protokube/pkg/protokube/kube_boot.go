@@ -25,15 +25,10 @@ import (
 	"k8s.io/klog/v2"
 )
 
-// RootFS is the root fs path
-var RootFS = "/"
-
 // KubeBoot is the options for the protokube service
 type KubeBoot struct {
 	// Channels is a list of channel to apply
 	Channels []string
-	// InternalDNSSuffix is the dns zone we are living in
-	InternalDNSSuffix string
 	// Kubernetes holds a kubernetes client
 	Kubernetes *KubernetesContext
 	// Master indicates we are a master node

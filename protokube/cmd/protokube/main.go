@@ -58,19 +58,14 @@ func main() {
 
 // run is responsible for running the protokube service controller
 func run() error {
-	var zones []string
 	var containerized, master, gossip bool
-	var cloud, clusterID, dnsInternalSuffix, gossipSecret, gossipListen, gossipProtocol, gossipSecretSecondary, gossipListenSecondary, gossipProtocolSecondary string
+	var cloud, gossipSecret, gossipListen, gossipProtocol, gossipSecretSecondary, gossipListenSecondary, gossipProtocolSecondary string
 	var flagChannels string
-	var dnsUpdateInterval int
 
 	flag.BoolVar(&containerized, "containerized", containerized, "Set if we are running containerized")
 	flag.BoolVar(&gossip, "gossip", gossip, "Set if we are using gossip dns")
 	flag.BoolVar(&master, "master", master, "Whether or not this node is a master")
 	flag.StringVar(&cloud, "cloud", "aws", "CloudProvider we are using (aws,digitalocean,gce,openstack)")
-	flag.StringVar(&clusterID, "cluster-id", clusterID, "Cluster ID for internal domain names")
-	flag.StringVar(&dnsInternalSuffix, "dns-internal-suffix", dnsInternalSuffix, "DNS suffix for internal domain names")
-	flags.IntVar(&dnsUpdateInterval, "dns-update-interval", 5, "Configure interval at which to update DNS records.")
 	flag.StringVar(&flagChannels, "channels", flagChannels, "channels to install")
 	flag.StringVar(&gossipProtocol, "gossip-protocol", "mesh", "mesh/memberlist")
 	flag.StringVar(&gossipListen, "gossip-listen", fmt.Sprintf("0.0.0.0:%d", wellknownports.ProtokubeGossipWeaveMesh), "address:port on which to bind for gossip")
@@ -78,16 +73,12 @@ func run() error {
 	flag.StringVar(&gossipProtocolSecondary, "gossip-protocol-secondary", "memberlist", "mesh/memberlist")
 	flag.StringVar(&gossipListenSecondary, "gossip-listen-secondary", fmt.Sprintf("0.0.0.0:%d", wellknownports.ProtokubeGossipMemberlist), "address:port on which to bind for gossip")
 	flags.StringVar(&gossipSecretSecondary, "gossip-secret-secondary", gossipSecret, "Secret to use to secure gossip")
-	flags.StringSliceVarP(&zones, "zone", "z", []string{}, "Configure permitted zones and their mappings")
 
 	bootstrapMasterNodeLabels := false
-	flag.BoolVar(&bootstrapMasterNodeLabels, "bootstrap-master-node-labels", bootstrapMasterNodeLabels, "Bootstrap the labels for master nodes (required in k8s 1.16)")
+	flag.BoolVar(&bootstrapMasterNodeLabels, "bootstrap-master-node-labels", bootstrapMasterNodeLabels, "Bootstrap the labels for master nodes")
 
 	nodeName := ""
 	flag.StringVar(&nodeName, "node-name", nodeName, "name of the node as will be created in kubernetes; used with bootstrap-master-node-labels")
-
-	var removeDNSNames string
-	flag.StringVar(&removeDNSNames, "remove-dns-names", removeDNSNames, "If set, will remove the DNS records specified")
 
 	// Trick to avoid 'logging before flag.Parse' warning
 	flag.CommandLine.Parse([]string{})
@@ -96,24 +87,10 @@ func run() error {
 	flags.AddGoFlagSet(flag.CommandLine)
 	flags.Parse(os.Args)
 
-	if dnsInternalSuffix == "" {
-		if clusterID == "" {
-			return fmt.Errorf("cluster-id is required when dns-internal-suffix is not set")
-		}
-		// TODO: Maybe only master needs DNS?
-		dnsInternalSuffix = ".internal." + clusterID
-		klog.Infof("Setting dns-internal-suffix to %q", dnsInternalSuffix)
-	}
-	// Make sure it's actually a suffix (starts with .)
-	if !strings.HasPrefix(dnsInternalSuffix, ".") {
-		dnsInternalSuffix = "." + dnsInternalSuffix
-	}
-
 	rootfs := "/"
 	if containerized {
 		rootfs = "/rootfs/"
 	}
-	protokube.RootFS = rootfs
 
 	if gossip {
 		var cloudProvider protokube.CloudProvider
@@ -209,7 +186,6 @@ func run() error {
 		BootstrapMasterNodeLabels: bootstrapMasterNodeLabels,
 		NodeName:                  nodeName,
 		Channels:                  channels,
-		InternalDNSSuffix:         dnsInternalSuffix,
 		Kubernetes:                protokube.NewKubernetesContext(),
 		Master:                    master,
 	}

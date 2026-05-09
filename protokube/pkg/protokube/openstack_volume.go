@@ -65,11 +65,6 @@ func NewOpenStackCloudProvider() (*OpenStackCloudProvider, error) {
 	return a, nil
 }
 
-// Project returns the current OpenStack project
-func (a *OpenStackCloudProvider) Project() string {
-	return a.meta.ProjectID
-}
-
 func (a *OpenStackCloudProvider) discoverTags() error {
 	// Cluster Name
 	{

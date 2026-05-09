@@ -106,7 +106,7 @@ definition: |
   Documentation=https://kops.sigs.k8s.io
 
   [Service]
-  ExecStart=/opt/kops/bin/protokube --bootstrap-master-node-labels=true --cloud=aws --cluster-id=minimal.example.com --containerized=false --dns-internal-suffix=.internal.minimal.example.com --master=true --node-name=master.hostname.invalid --v=4 --zone=*/Z1AFAKE1ZON3YO
+  ExecStart=/opt/kops/bin/protokube --bootstrap-master-node-labels=true --cloud=aws --containerized=false --master=true --node-name=master.hostname.invalid --v=4
   EnvironmentFile=/etc/sysconfig/protokube
   Restart=always
   RestartSec=3s
