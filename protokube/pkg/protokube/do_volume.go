@@ -37,11 +37,6 @@ const (
 	dropletIDMetadataTags  = "http://169.254.169.254/metadata/v1/tags"
 )
 
-// TokenSource implements oauth2.TokenSource
-type TokenSource struct {
-	AccessToken string
-}
-
 type DOCloudProvider struct {
 	ClusterID  string
 	godoClient *godo.Client
@@ -107,28 +102,14 @@ func NewDOCloudProvider() (*DOCloudProvider, error) {
 	}, nil
 }
 
-// Token() returns oauth2.Token
-func (t *TokenSource) Token() (*oauth2.Token, error) {
-	token := &oauth2.Token{
-		AccessToken: t.AccessToken,
-	}
-	return token, nil
-}
-
 func NewDOCloud() (*godo.Client, error) {
 	accessToken := os.Getenv("DIGITALOCEAN_ACCESS_TOKEN")
 	if accessToken == "" {
 		return nil, errors.New("DIGITALOCEAN_ACCESS_TOKEN is required")
 	}
 
-	tokenSource := &TokenSource{
-		AccessToken: accessToken,
-	}
-
-	oauthClient := oauth2.NewClient(context.TODO(), tokenSource)
-	client := godo.NewClient(oauthClient)
-
-	return client, nil
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken})
+	return godo.NewClient(oauth2.NewClient(context.TODO(), tokenSource)), nil
 }
 
 func (d *DOCloudProvider) GossipSeeds() (gossip.SeedProvider, error) {

@@ -55,11 +55,6 @@ type DOInstanceGroup struct {
 	Members           []string // will store the droplet names that matches.
 }
 
-// TokenSource implements oauth2.TokenSource
-type TokenSource struct {
-	AccessToken string
-}
-
 // DOCloud exposes all the interfaces required to operate on DigitalOcean resources
 type DOCloud interface {
 	fi.Cloud
@@ -100,14 +95,6 @@ type doCloudImplementation struct {
 	region string
 }
 
-// Token() returns oauth2.Token
-func (t *TokenSource) Token() (*oauth2.Token, error) {
-	token := &oauth2.Token{
-		AccessToken: t.AccessToken,
-	}
-	return token, nil
-}
-
 // NewDOCloud returns a Cloud, expecting the env var DIGITALOCEAN_ACCESS_TOKEN
 // NewDOCloud will return an err if DIGITALOCEAN_ACCESS_TOKEN is not defined
 func NewDOCloud(region string) (DOCloud, error) {
@@ -116,12 +103,8 @@ func NewDOCloud(region string) (DOCloud, error) {
 		return nil, errors.New("DIGITALOCEAN_ACCESS_TOKEN is required")
 	}
 
-	tokenSource := &TokenSource{
-		AccessToken: accessToken,
-	}
-
-	oauthClient := oauth2.NewClient(context.TODO(), tokenSource)
-	client := godo.NewClient(oauthClient)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken})
+	client := godo.NewClient(oauth2.NewClient(context.TODO(), tokenSource))
 
 	return &doCloudImplementation{
 		Client: client,

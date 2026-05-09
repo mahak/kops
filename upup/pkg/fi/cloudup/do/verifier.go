@@ -47,12 +47,8 @@ func NewVerifier(ctx context.Context, opt *DigitalOceanVerifierOptions) (bootstr
 		return nil, errors.New("DIGITALOCEAN_ACCESS_TOKEN is required")
 	}
 
-	tokenSource := &TokenSource{
-		AccessToken: accessToken,
-	}
-
-	oauthClient := oauth2.NewClient(ctx, tokenSource)
-	doClient := godo.NewClient(oauthClient)
+	tokenSource := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: accessToken})
+	doClient := godo.NewClient(oauth2.NewClient(ctx, tokenSource))
 
 	return &digitalOceanVerifier{
 		doClient: doClient,
