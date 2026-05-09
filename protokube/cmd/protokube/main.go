@@ -74,11 +74,8 @@ func run() error {
 	flag.StringVar(&gossipListenSecondary, "gossip-listen-secondary", fmt.Sprintf("0.0.0.0:%d", wellknownports.ProtokubeGossipMemberlist), "address:port on which to bind for gossip")
 	flags.StringVar(&gossipSecretSecondary, "gossip-secret-secondary", gossipSecret, "Secret to use to secure gossip")
 
-	bootstrapMasterNodeLabels := false
-	flag.BoolVar(&bootstrapMasterNodeLabels, "bootstrap-master-node-labels", bootstrapMasterNodeLabels, "Bootstrap the labels for master nodes")
-
 	nodeName := ""
-	flag.StringVar(&nodeName, "node-name", nodeName, "name of the node as will be created in kubernetes; used with bootstrap-master-node-labels")
+	flag.StringVar(&nodeName, "node-name", nodeName, "name of the node as will be created in kubernetes")
 
 	// Trick to avoid 'logging before flag.Parse' warning
 	flag.CommandLine.Parse([]string{})
@@ -183,11 +180,10 @@ func run() error {
 	}
 
 	k := &protokube.KubeBoot{
-		BootstrapMasterNodeLabels: bootstrapMasterNodeLabels,
-		NodeName:                  nodeName,
-		Channels:                  channels,
-		Kubernetes:                protokube.NewKubernetesContext(),
-		Master:                    master,
+		NodeName:   nodeName,
+		Channels:   channels,
+		Kubernetes: protokube.NewKubernetesContext(),
+		Master:     master,
 	}
 
 	k.RunSyncLoop()

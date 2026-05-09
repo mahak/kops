@@ -152,12 +152,7 @@ type ProtokubeFlags struct {
 	LogLevel      *int32   `json:"logLevel,omitempty" flag:"v"`
 	Master        *bool    `json:"master,omitempty" flag:"master"`
 
-	// BootstrapMasterNodeLabels applies the critical node-role labels to our node,
-	// which lets us bring up the controllers that can only run on masters, which are then
-	// responsible for node labels.  The node is specified by NodeName
-	BootstrapMasterNodeLabels bool `json:"bootstrapMasterNodeLabels,omitempty" flag:"bootstrap-master-node-labels"`
-
-	// NodeName is the name of the node as will be created in kubernetes.  Primarily used by BootstrapMasterNodeLabels.
+	// NodeName is the name of the node as will be created in kubernetes.
 	NodeName string `json:"nodeName,omitempty" flag:"node-name"`
 
 	GossipProtocol *string `json:"gossip-protocol" flag:"gossip-protocol"`
@@ -194,8 +189,6 @@ func (t *ProtokubeBuilder) ProtokubeFlags() (*ProtokubeFlags, error) {
 			}
 		}
 	}
-
-	f.BootstrapMasterNodeLabels = true
 
 	nodeName, err := t.NodeName()
 	if err != nil {

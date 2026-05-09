@@ -34,12 +34,7 @@ type KubeBoot struct {
 	// Master indicates we are a master node
 	Master bool
 
-	// BootstrapMasterNodeLabels controls the initial application of node labels to our node
-	// The node is found by matching NodeName
-	BootstrapMasterNodeLabels bool
-
 	// NodeName is the name of our node as it will be registered in k8s.
-	// Used by BootstrapMasterNodeLabels
 	NodeName string
 }
 
@@ -81,10 +76,8 @@ func (k *KubeBoot) syncOnce(ctx context.Context) error {
 				klog.Warningf("error applying channel %q: %v", channel, err)
 			}
 		}
-		if k.BootstrapMasterNodeLabels {
-			if err := bootstrapMasterNodeLabels(ctx, k.Kubernetes, k.NodeName); err != nil {
-				klog.Warningf("error bootstrapping master node labels: %v", err)
-			}
+		if err := bootstrapMasterNodeLabels(ctx, k.Kubernetes, k.NodeName); err != nil {
+			klog.Warningf("error bootstrapping master node labels: %v", err)
 		}
 	}
 
