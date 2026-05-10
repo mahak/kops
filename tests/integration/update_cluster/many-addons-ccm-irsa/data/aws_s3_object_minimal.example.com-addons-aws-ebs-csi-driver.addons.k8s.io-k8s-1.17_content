@@ -1366,5 +1366,4 @@ metadata:
   name: ebs.csi.aws.com
 spec:
   attachRequired: true
-  nodeAllocatableUpdatePeriodSeconds: 10
   podInfoOnMount: false
