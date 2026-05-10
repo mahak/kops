@@ -1147,7 +1147,9 @@ metadata:
 spec:
   attachRequired: true
   podInfoOnMount: false
+{{ if IsKubernetesGTE "1.35.0" }}
   nodeAllocatableUpdatePeriodSeconds: 10
+{{ end }}
   # Disabled because the field is immutable and kOps doesn't have a way to delete and recreate the resource
   # fsGroupPolicy: File
 {{ if KopsFeatureEnabled "SELinuxMount" }}
