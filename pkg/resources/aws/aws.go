@@ -1593,7 +1593,25 @@ func DescribeELBs(cloud fi.Cloud) ([]elbtypes.LoadBalancerDescription, map[strin
 
 		tagResponse, err := c.ELB().DescribeTags(ctx, tagRequest)
 		if err != nil {
-			return nil, nil, fmt.Errorf("error listing elb Tags: %v", err)
+			// An ELB may be deleted between DescribeLoadBalancers and DescribeTags;
+			// in that case the batched call fails, so fall back to per-ELB lookups.
+			if awsup.AWSErrorCode(err) != "LoadBalancerNotFound" {
+				return nil, nil, fmt.Errorf("error listing elb Tags: %v", err)
+			}
+			tagResponse = &elb.DescribeTagsOutput{}
+			for _, name := range tagRequest.LoadBalancerNames {
+				resp, err := c.ELB().DescribeTags(ctx, &elb.DescribeTagsInput{
+					LoadBalancerNames: []string{name},
+				})
+				if err != nil {
+					if awsup.AWSErrorCode(err) == "LoadBalancerNotFound" {
+						klog.V(2).Infof("ELB %q was deleted before tags could be listed", name)
+						continue
+					}
+					return nil, nil, fmt.Errorf("error listing elb Tags: %v", err)
+				}
+				tagResponse.TagDescriptions = append(tagResponse.TagDescriptions, resp.TagDescriptions...)
+			}
 		}
 
 		for _, t := range tagResponse.TagDescriptions {
