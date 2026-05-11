@@ -14,6 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# boskos-heartbeat refreshes the lease kubetest2-kops acquired; the owner
+# string must match its acquire (JOB_NAME-kubetest2). No-op for non-GCE.
+function boskos-heartbeat() {
+    if [[ "${CLOUD_PROVIDER}" != "gce" || -z "${GCP_PROJECT:-}" ]]; then
+        return 0
+    fi
+    local url
+    url="http://${BOSKOS_HOST:-boskos.test-pods.svc.cluster.local}/update?name=${GCP_PROJECT}&state=busy&owner=${JOB_NAME:-kops-upgrade}-kubetest2"
+    if curl -fsS -o /dev/null -X POST "${url}"; then
+        echo "Boskos heartbeat sent for ${GCP_PROJECT}"
+    else
+        echo "Boskos heartbeat failed for ${GCP_PROJECT}"
+    fi
+}
+
 # kops-upgrade runs an A->B kops upgrade test. Source after lib/common.sh.
 # Caller passes the create-args string; sets KOPS_VERSION_{A,B} and K8S_VERSION_{A,B}.
 function kops-upgrade() {
@@ -120,7 +135,9 @@ function kops-upgrade() {
     "${KOPS_B}" reconcile cluster --allow-kops-downgrade
 
     # Apply changes
+    boskos-heartbeat
     "${KOPS_B}" reconcile cluster --allow-kops-downgrade --yes
+    boskos-heartbeat
 
     # Verify no additional changes
     "${KOPS_B}" update cluster
@@ -153,6 +170,7 @@ function kops-upgrade() {
         test_package_args+=" --test-package-version=${TEST_PACKAGE_VERSION}"
     fi
 
+    boskos-heartbeat
     # shellcheck disable=SC2086
     ${KUBETEST2} \
         --cloud-provider="${CLOUD_PROVIDER}" \
