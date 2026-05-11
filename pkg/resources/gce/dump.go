@@ -73,6 +73,9 @@ func DumpManagedInstance(op *resources.DumpOperation, r *resources.Resource) err
 	}
 
 	for _, ni := range instanceDetails.NetworkInterfaces {
+		if ni == nil {
+			continue
+		}
 		if ni.NetworkIP != "" {
 			i.PrivateAddresses = append(i.PrivateAddresses, ni.NetworkIP)
 		}
@@ -80,6 +83,9 @@ func DumpManagedInstance(op *resources.DumpOperation, r *resources.Resource) err
 			i.PrivateAddresses = append(i.PrivateAddresses, ni.Ipv6Address)
 		}
 		for _, ac := range ni.AccessConfigs {
+			if ac == nil {
+				continue
+			}
 			if ac.NatIP != "" {
 				i.PublicAddresses = append(i.PublicAddresses, ac.NatIP)
 			}
