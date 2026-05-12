@@ -1,13 +1,5 @@
 # Pulled and modified using: kustomize build https://github.com/hetznercloud/csi-driver.git/deploy
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hcloud-csi
-  namespace: kube-system
-stringData:
-  token: '{{ HCLOUD_TOKEN }}'
----
 # Source: hcloud-csi/templates/controller/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -244,7 +236,7 @@ spec:
             - name: HCLOUD_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: hcloud-csi
+                  name: hcloud
                   key: token
           resources:
             limits: {}
