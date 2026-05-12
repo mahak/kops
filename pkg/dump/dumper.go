@@ -415,6 +415,23 @@ func (n *logDumperNode) dump(ctx context.Context) []error {
 		errors = append(errors, err)
 	}
 
+	// Capture containerd configuration files (config.toml, CNI templates, certs.d hosts.toml).
+	containerdFiles, err := n.findFiles(ctx, "/etc/containerd")
+	if err != nil {
+		errors = append(errors, fmt.Errorf("error listing /etc/containerd: %v", err))
+	}
+	for _, f := range containerdFiles {
+		if !strings.HasSuffix(f, ".toml") && !strings.HasSuffix(f, ".template") {
+			continue
+		}
+		rel := strings.TrimPrefix(f, "/etc/containerd/")
+		dest := filepath.Join(n.dir, "containerd", rel)
+		cmd := "sudo cat '" + strings.ReplaceAll(f, "'", `'\''`) + "'"
+		if err := n.shellToFile(ctx, cmd, dest); err != nil {
+			errors = append(errors, err)
+		}
+	}
+
 	return errors
 }
 
