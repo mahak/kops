@@ -342,23 +342,6 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 		}
 	}
 
-	// @check if podsecuritypolicies are enabled and if so, push the default kube-system policy
-	if b.Cluster.Spec.KubeAPIServer != nil && b.Cluster.Spec.KubeAPIServer.HasAdmissionController("PodSecurityPolicy") {
-		key := "podsecuritypolicy.addons.k8s.io"
-
-		{
-			location := key + "/k8s-1.12.yaml"
-			id := "k8s-1.12"
-
-			addons.Add(&channelsapi.AddonSpec{
-				Name:     fi.PtrTo(key),
-				Selector: map[string]string{"k8s-addon": key},
-				Manifest: fi.PtrTo(location),
-				Id:       id,
-			})
-		}
-	}
-
 	kubeDNS := b.Cluster.Spec.KubeDNS
 
 	if kubeDNS.Provider == "" {
