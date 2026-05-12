@@ -119,7 +119,7 @@ func DumpVMScaleSetVM(op *resources.DumpOperation, r *resources.Resource) error 
 			if ni == nil || ni.Properties == nil || ni.Properties.VirtualMachine == nil || ni.Properties.VirtualMachine.ID == nil {
 				continue
 			}
-			if *ni.Properties.VirtualMachine.ID != r.ID {
+			if !strings.EqualFold(*ni.Properties.VirtualMachine.ID, r.ID) {
 				continue
 			}
 			for _, ip := range ni.Properties.IPConfigurations {
