@@ -99,6 +99,14 @@ resource "aws_s3_object" "minimal-example-com-addons-hcloud-cloud-controller-add
   server_side_encryption = "AES256"
 }
 
+resource "aws_s3_object" "minimal-example-com-addons-hcloud-config-addons-k8s-io-k8s-1-22" {
+  bucket                 = "testingBucket"
+  content                = file("${path.module}/data/aws_s3_object_minimal.example.com-addons-hcloud-config.addons.k8s.io-k8s-1.22_content")
+  key                    = "tests/minimal.example.com/addons/hcloud-config.addons.k8s.io/k8s-1.22.yaml"
+  provider               = aws.files
+  server_side_encryption = "AES256"
+}
+
 resource "aws_s3_object" "minimal-example-com-addons-hcloud-csi-driver-addons-k8s-io-k8s-1-22" {
   bucket                 = "testingBucket"
   content                = file("${path.module}/data/aws_s3_object_minimal.example.com-addons-hcloud-csi-driver.addons.k8s.io-k8s-1.22_content")

@@ -1,15 +1,6 @@
 # Pulled and modified using: kustomize build https://github.com/hetznercloud/hcloud-cloud-controller-manager.git/deploy
 
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: hcloud
-  namespace: kube-system
-stringData:
-  network: "{{ HCLOUD_NETWORK }}"
-  token: "{{ HCLOUD_TOKEN }}"
----
 # Source: hcloud-cloud-controller-manager/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
