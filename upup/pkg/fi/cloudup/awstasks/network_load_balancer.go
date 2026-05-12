@@ -19,6 +19,7 @@ package awstasks
 import (
 	"context"
 	"fmt"
+	"maps"
 	"sort"
 	"strconv"
 	"strings"
@@ -480,10 +481,9 @@ func (_ *NetworkLoadBalancer) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *Ne
 
 	revision := e.revision
 
-	// TODO: Use maps.Clone when we are >= go1.21 on supported branches
-	tags := make(map[string]string)
-	for k, v := range e.Tags {
-		tags[k] = v
+	tags := maps.Clone(e.Tags)
+	if tags == nil {
+		tags = make(map[string]string)
 	}
 
 	// We removed revision for the diff/plan, but we want to set it
