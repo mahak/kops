@@ -179,8 +179,6 @@ func (t *Tester) addZoneFlag() error {
 	klog.Infof("Setting --gce-zone=%s", zone)
 	t.TestArgs += " --gce-zone=" + zone
 
-	// TODO: Pass the new gce-zones flag for 1.21 with all zones?
-
 	return nil
 }
 
