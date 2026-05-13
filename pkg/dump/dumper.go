@@ -440,7 +440,7 @@ func (n *logDumperNode) findFiles(ctx context.Context, dir string) ([]string, er
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 
-	err := n.client.ExecPiped(ctx, "sudo find "+dir+" -print0", &stdout, &stderr)
+	err := n.client.ExecPiped(ctx, "sudo find "+dir+" -type f -print0", &stdout, &stderr)
 	if err != nil {
 		return nil, fmt.Errorf("error listing %q: %v", dir, err)
 	}
