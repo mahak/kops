@@ -245,8 +245,8 @@ func (d *deployer) createCluster(zones []string, adminAccess string, yes bool) e
 		args = appendIfUnset(args, "--node-size", "Standard_D4ls_v6")
 	case "gce":
 		if isArm {
-			args = appendIfUnset(args, "--control-plane-size", "t2a-standard-2")
-			args = appendIfUnset(args, "--node-size", "t2a-standard-2")
+			args = appendIfUnset(args, "--control-plane-size", "n4a-standard-2")
+			args = appendIfUnset(args, "--node-size", "n4a-standard-2")
 		} else {
 			args = appendIfUnset(args, "--control-plane-size", "e2-standard-2")
 			args = appendIfUnset(args, "--node-size", "e2-standard-2")
