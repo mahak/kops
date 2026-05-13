@@ -28,8 +28,14 @@ spec:
     selector:
       k8s-addon: limit-range.addons.k8s.io
   - id: k8s-1.22
+    manifest: hcloud-config.addons.k8s.io/k8s-1.22.yaml
+    manifestHash: 52209e0e000e180a4d452fffb6f12b76515a73ad1fc6a89696481dfd4faa738d
+    name: hcloud-config.addons.k8s.io
+    selector:
+      k8s-addon: hcloud-config.addons.k8s.io
+  - id: k8s-1.22
     manifest: hcloud-cloud-controller.addons.k8s.io/k8s-1.22.yaml
-    manifestHash: 690f7824bc9b626dd7a2412fa894a73afe6b6160147b6bf57a2d11821c1caa62
+    manifestHash: df56e8c18f23d0d883691039a2dc6527e4b76a44ee447df8acef28d0528d3bc3
     name: hcloud-cloud-controller.addons.k8s.io
     selector:
       k8s-addon: hcloud-cloud-controller.addons.k8s.io

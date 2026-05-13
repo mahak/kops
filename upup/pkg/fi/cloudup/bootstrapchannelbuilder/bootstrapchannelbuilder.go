@@ -734,6 +734,18 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 
 	if b.Cluster.GetCloudProvider() == kops.CloudProviderHetzner {
 		{
+			key := "hcloud-config.addons.k8s.io"
+			id := "k8s-1.22"
+			location := key + "/" + id + ".yaml"
+
+			addons.Add(&channelsapi.AddonSpec{
+				Name:     fi.PtrTo(key),
+				Selector: map[string]string{"k8s-addon": key},
+				Manifest: fi.PtrTo(location),
+				Id:       id,
+			})
+		}
+		{
 			key := "hcloud-cloud-controller.addons.k8s.io"
 			id := "k8s-1.22"
 			location := key + "/" + id + ".yaml"

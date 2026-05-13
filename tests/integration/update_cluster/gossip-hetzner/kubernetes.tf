@@ -75,6 +75,14 @@ resource "aws_s3_object" "gossip-k8s-local-addons-hcloud-cloud-controller-addons
   server_side_encryption = "AES256"
 }
 
+resource "aws_s3_object" "gossip-k8s-local-addons-hcloud-config-addons-k8s-io-k8s-1-22" {
+  bucket                 = "testingBucket"
+  content                = file("${path.module}/data/aws_s3_object_gossip.k8s.local-addons-hcloud-config.addons.k8s.io-k8s-1.22_content")
+  key                    = "tests/gossip.k8s.local/addons/hcloud-config.addons.k8s.io/k8s-1.22.yaml"
+  provider               = aws.files
+  server_side_encryption = "AES256"
+}
+
 resource "aws_s3_object" "gossip-k8s-local-addons-hcloud-csi-driver-addons-k8s-io-k8s-1-22" {
   bucket                 = "testingBucket"
   content                = file("${path.module}/data/aws_s3_object_gossip.k8s.local-addons-hcloud-csi-driver.addons.k8s.io-k8s-1.22_content")
