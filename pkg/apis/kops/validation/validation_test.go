@@ -1081,6 +1081,35 @@ func Test_Validate_Calico(t *testing.T) {
 				},
 			},
 		},
+		{
+			Description: "Calico BPF with kube-proxy explicitly disabled",
+			Input: caliInput{
+				Cluster: &kops.ClusterSpec{
+					KubeProxy: &kops.KubeProxyConfig{Enabled: fi.PtrTo(false)},
+				},
+				Calico: &kops.CalicoNetworkingSpec{BPFEnabled: true},
+			},
+		},
+		{
+			Description: "Calico BPF with kube-proxy implicitly enabled",
+			Input: caliInput{
+				Cluster: &kops.ClusterSpec{
+					KubeProxy: &kops.KubeProxyConfig{},
+				},
+				Calico: &kops.CalicoNetworkingSpec{BPFEnabled: true},
+			},
+			ExpectedErrors: []string{"Forbidden::spec.kubeProxy.enabled"},
+		},
+		{
+			Description: "Calico BPF with kube-proxy explicitly enabled",
+			Input: caliInput{
+				Cluster: &kops.ClusterSpec{
+					KubeProxy: &kops.KubeProxyConfig{Enabled: fi.PtrTo(true)},
+				},
+				Calico: &kops.CalicoNetworkingSpec{BPFEnabled: true},
+			},
+			ExpectedErrors: []string{"Forbidden::spec.kubeProxy.enabled"},
+		},
 	}
 	rootFieldPath := field.NewPath("calico")
 	for _, g := range grid {

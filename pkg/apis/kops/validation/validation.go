@@ -1669,6 +1669,10 @@ func validateNetworkingCalico(c *kops.ClusterSpec, v *kops.CalicoNetworkingSpec,
 		}
 	}
 
+	if v.BPFEnabled && c.KubeProxy != nil && (c.KubeProxy.Enabled == nil || *c.KubeProxy.Enabled) {
+		allErrs = append(allErrs, field.Forbidden(field.NewPath("spec", "kubeProxy", "enabled"), "calico in BPF mode (spec.networking.calico.bpfEnabled=true) requires kubeProxy to be disabled"))
+	}
+
 	if v.BPFExternalServiceMode != "" {
 		valid := []string{"Tunnel", "DSR"}
 		allErrs = append(allErrs, IsValidValue(fldPath.Child("bpfExternalServiceMode"), &v.BPFExternalServiceMode, valid)...)
