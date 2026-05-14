@@ -431,6 +431,7 @@ func (v *AutoscalingGroup) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *Autos
 		if e.UseMixedInstancesPolicy() {
 			request.MixedInstancesPolicy = &autoscalingtypes.MixedInstancesPolicy{
 				InstancesDistribution: &autoscalingtypes.InstancesDistribution{
+					OnDemandAllocationStrategy:          e.MixedOnDemandAllocationStrategy,
 					OnDemandPercentageAboveBaseCapacity: e.MixedOnDemandAboveBase,
 					OnDemandBaseCapacity:                e.MixedOnDemandBase,
 					SpotAllocationStrategy:              e.MixedSpotAllocationStrategy,
@@ -523,6 +524,10 @@ func (v *AutoscalingGroup) RenderAWS(t *awsup.AWSAPITarget, a, e, changes *Autos
 			changes.LaunchTemplate = nil
 		}
 
+		if changes.MixedOnDemandAllocationStrategy != nil {
+			setup(request).InstancesDistribution.OnDemandAllocationStrategy = e.MixedOnDemandAllocationStrategy
+			changes.MixedOnDemandAllocationStrategy = nil
+		}
 		if changes.MixedOnDemandAboveBase != nil {
 			setup(request).InstancesDistribution.OnDemandPercentageAboveBaseCapacity = e.MixedOnDemandAboveBase
 			changes.MixedOnDemandAboveBase = nil
