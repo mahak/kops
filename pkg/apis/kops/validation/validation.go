@@ -2055,9 +2055,6 @@ func validateNodeTerminationHandler(cluster *kops.Cluster, spec *kops.NodeTermin
 		if spec.EnableSpotInterruptionDraining != nil && !*spec.EnableSpotInterruptionDraining {
 			allErrs = append(allErrs, field.Forbidden(fldPath.Child("enableSpotInterruptionDraining"), "spot interruption draining cannot be disabled in Queue Processor mode"))
 		}
-		if spec.EnableScheduledEventDraining != nil && !*spec.EnableScheduledEventDraining {
-			allErrs = append(allErrs, field.Forbidden(fldPath.Child("enableScheduledEventDraining"), "scheduled event draining cannot be disabled in Queue Processor mode"))
-		}
 		if !fi.ValueOf(spec.EnableRebalanceDraining) && fi.ValueOf(spec.EnableRebalanceMonitoring) {
 			allErrs = append(allErrs, field.Forbidden(fldPath.Child("enableRebalanceMonitoring"), "rebalance events can only drain in Queue Processor mode"))
 		}
