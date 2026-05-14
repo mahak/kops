@@ -198,6 +198,11 @@ resource "aws_autoscaling_group" "nodes-minimal-example-com" {
     value               = ""
   }
   tag {
+    key                 = "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"
+    propagate_at_launch = true
+    value               = ":NoSchedule"
+  }
+  tag {
     key                 = "k8s.io/role/node"
     propagate_at_launch = true
     value               = "1"
@@ -542,6 +547,7 @@ resource "aws_launch_template" "nodes-minimal-example-com" {
       "aws-node-termination-handler/managed"                                       = ""
       "k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/gpu"              = "1"
       "k8s.io/cluster-autoscaler/node-template/label/node-role.kubernetes.io/node" = ""
+      "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"               = ":NoSchedule"
       "k8s.io/role/node"                                                           = "1"
       "kops.k8s.io/instancegroup"                                                  = "nodes"
       "kubernetes.io/cluster/minimal.example.com"                                  = "owned"
@@ -555,6 +561,7 @@ resource "aws_launch_template" "nodes-minimal-example-com" {
       "aws-node-termination-handler/managed"                                       = ""
       "k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/gpu"              = "1"
       "k8s.io/cluster-autoscaler/node-template/label/node-role.kubernetes.io/node" = ""
+      "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"               = ":NoSchedule"
       "k8s.io/role/node"                                                           = "1"
       "kops.k8s.io/instancegroup"                                                  = "nodes"
       "kubernetes.io/cluster/minimal.example.com"                                  = "owned"
@@ -568,6 +575,7 @@ resource "aws_launch_template" "nodes-minimal-example-com" {
       "aws-node-termination-handler/managed"                                       = ""
       "k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/gpu"              = "1"
       "k8s.io/cluster-autoscaler/node-template/label/node-role.kubernetes.io/node" = ""
+      "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"               = ":NoSchedule"
       "k8s.io/role/node"                                                           = "1"
       "kops.k8s.io/instancegroup"                                                  = "nodes"
       "kubernetes.io/cluster/minimal.example.com"                                  = "owned"
@@ -579,6 +587,7 @@ resource "aws_launch_template" "nodes-minimal-example-com" {
     "aws-node-termination-handler/managed"                                       = ""
     "k8s.io/cluster-autoscaler/node-template/label/kops.k8s.io/gpu"              = "1"
     "k8s.io/cluster-autoscaler/node-template/label/node-role.kubernetes.io/node" = ""
+    "k8s.io/cluster-autoscaler/node-template/taint/nvidia.com/gpu"               = ":NoSchedule"
     "k8s.io/role/node"                                                           = "1"
     "kops.k8s.io/instancegroup"                                                  = "nodes"
     "kubernetes.io/cluster/minimal.example.com"                                  = "owned"

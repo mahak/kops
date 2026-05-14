@@ -190,10 +190,11 @@ func (b *KopsModelContext) CloudTagsForInstanceGroup(ig *kops.InstanceGroup) (ma
 
 	// Apply labels for cluster autoscaler node taints
 	for _, v := range ig.Spec.Taints {
-		splits := strings.SplitN(v, "=", 2)
-		if len(splits) > 1 {
-			labels[clusterAutoscalerNodeTemplateTaint+splits[0]] = splits[1]
+		taint, err := util.ParseTaint(v)
+		if err != nil || taint["effect"] == "" {
+			continue
 		}
+		labels[clusterAutoscalerNodeTemplateTaint+taint["key"]] = taint["value"] + ":" + taint["effect"]
 	}
 
 	switch b.Cluster.GetCloudProvider() {
