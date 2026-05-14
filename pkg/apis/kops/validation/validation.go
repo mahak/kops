@@ -218,6 +218,9 @@ func validateClusterSpec(spec *kops.ClusterSpec, c *kops.Cluster, fieldPath *fie
 		if spec.Assets.ContainerProxy != nil && spec.Assets.ContainerRegistry != nil {
 			allErrs = append(allErrs, field.Forbidden(fieldPath.Child("assets", "containerProxy"), "containerProxy cannot be used in conjunction with containerRegistry"))
 		}
+		if spec.Assets.FileRepository != nil {
+			allErrs = append(allErrs, validateFileRepository(*spec.Assets.FileRepository, fieldPath.Child("assets", "fileRepository"))...)
+		}
 	}
 
 	for i, sysctlParameter := range spec.SysctlParameters {
@@ -762,6 +765,24 @@ func validateFileAssetSpec(v *kops.FileAssetSpec, fieldPath *field.Path) field.E
 	}
 	if v.Content == "" {
 		allErrs = append(allErrs, field.Required(fieldPath.Child("content"), ""))
+	}
+
+	return allErrs
+}
+
+func validateFileRepository(s string, fieldPath *field.Path) field.ErrorList {
+	allErrs := field.ErrorList{}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		allErrs = append(allErrs, field.Invalid(fieldPath, s, fmt.Sprintf("cannot parse fileRepository URL: %v", err)))
+		return allErrs
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		allErrs = append(allErrs, field.Invalid(fieldPath, s, "fileRepository must be an http:// or https:// URL"))
+	}
+	if u.Host == "" {
+		allErrs = append(allErrs, field.Invalid(fieldPath, s, "fileRepository must include a host"))
 	}
 
 	return allErrs
