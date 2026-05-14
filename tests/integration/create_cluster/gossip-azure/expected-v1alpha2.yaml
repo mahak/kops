@@ -74,6 +74,8 @@ spec:
   machineType: Standard_B2s
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-eastus-1
   role: Master
   subnets:
   - gossip.k8s.local
@@ -94,6 +96,8 @@ spec:
   machineType: Standard_B2s
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-eastus-1
   role: Node
   subnets:
   - gossip.k8s.local

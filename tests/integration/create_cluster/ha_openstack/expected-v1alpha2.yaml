@@ -90,6 +90,8 @@ spec:
   machineType: n1-standard-1
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test1-1
   role: Master
   subnets:
   - us-test1
@@ -108,6 +110,8 @@ spec:
   machineType: n1-standard-1
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test1-2
   role: Master
   subnets:
   - us-test1
@@ -126,6 +130,8 @@ spec:
   machineType: n1-standard-1
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test1-3
   role: Master
   subnets:
   - us-test1
@@ -144,6 +150,8 @@ spec:
   machineType: n1-standard-1
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-us-test1
   role: Node
   subnets:
   - us-test1

@@ -91,6 +91,8 @@ spec:
   machineType: m3.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test-1a
   role: Master
   subnets:
   - us-test-1a
@@ -109,6 +111,8 @@ spec:
   machineType: m3.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test-1b
   role: Master
   subnets:
   - us-test-1b
@@ -127,6 +131,8 @@ spec:
   machineType: m3.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test-1c
   role: Master
   subnets:
   - us-test-1c
@@ -145,6 +151,8 @@ spec:
   machineType: t2.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-us-test-1a
   role: Node
   subnets:
   - us-test-1a
@@ -163,6 +171,8 @@ spec:
   machineType: t2.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-us-test-1b
   role: Node
   subnets:
   - us-test-1b
@@ -181,6 +191,8 @@ spec:
   machineType: t2.medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-us-test-1c
   role: Node
   subnets:
   - us-test-1c
