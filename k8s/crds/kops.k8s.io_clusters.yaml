@@ -5203,7 +5203,12 @@ spec:
                           Options: Disable (default for IPv4), Enable, or DoNothing
                         type: string
                       bpfEnabled:
-                        description: BPFEnabled enables the eBPF dataplane mode.
+                        description: |-
+                          BPFEnabled enables the eBPF dataplane mode. When set to true, kube-proxy
+                          must be disabled (spec.kubeProxy.enabled=false); kops will default it
+                          at cluster creation. Calico's BPF mode replaces kube-proxy and from
+                          v3.31 binds the kube-proxy healthz port (10256), so running both
+                          produces a port conflict.
                         type: boolean
                       bpfExternalServiceMode:
                         description: |-

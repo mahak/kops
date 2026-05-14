@@ -675,6 +675,19 @@ func RunCreateCluster(ctx context.Context, f *util.Factory, out io.Writer, c *Cr
 		return err
 	}
 
+	// Calico's eBPF dataplane replaces kube-proxy and from v3.31 also binds the
+	// kube-proxy healthz port (10256), so kube-proxy must be disabled to avoid
+	// a port conflict that breaks the BPF dataplane.
+	// https://docs.tigera.io/calico-enterprise/latest/operations/ebpf/install#disable-kube-proxy-or-avoid-conflicts
+	if calico := cluster.Spec.Networking.Calico; calico != nil && calico.BPFEnabled {
+		if cluster.Spec.KubeProxy == nil {
+			cluster.Spec.KubeProxy = &api.KubeProxyConfig{}
+		}
+		if cluster.Spec.KubeProxy.Enabled == nil {
+			cluster.Spec.KubeProxy.Enabled = fi.PtrTo(false)
+		}
+	}
+
 	cloud, err := cloudup.BuildCloud(cluster)
 	if err != nil {
 		return err

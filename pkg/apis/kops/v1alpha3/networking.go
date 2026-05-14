@@ -152,7 +152,11 @@ type CalicoNetworkingSpec struct {
 	// AWSSrcDstCheck enables/disables ENI source/destination checks (AWS IPv4 only)
 	// Options: Disable (default for IPv4), Enable, or DoNothing
 	AWSSrcDstCheck string `json:"awsSrcDstCheck,omitempty"`
-	// BPFEnabled enables the eBPF dataplane mode.
+	// BPFEnabled enables the eBPF dataplane mode. When set to true, kube-proxy
+	// must be disabled (spec.kubeProxy.enabled=false); kops will default it
+	// at cluster creation. Calico's BPF mode replaces kube-proxy and from
+	// v3.31 binds the kube-proxy healthz port (10256), so running both
+	// produces a port conflict.
 	BPFEnabled bool `json:"bpfEnabled,omitempty"`
 	// BPFExternalServiceMode controls how traffic from outside the cluster to NodePorts and ClusterIPs is handled.
 	// In Tunnel mode, packet is tunneled from the ingress host to the host with the backing pod and back again.
