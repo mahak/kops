@@ -198,6 +198,25 @@ func getGroups(k8sClient kubernetes.Interface, cloud awsup.AWSCloud) map[string]
 	return groups
 }
 
+func TestIsExitableError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"nil", nil, false},
+		{"plain error", fmt.Errorf("boom"), false},
+		{"validation timeout", &ValidationTimeoutError{operation: " after node update", err: fmt.Errorf("x")}, true},
+		{"deregister error", &DeregisterError{err: fmt.Errorf("x")}, true},
+		{"wrapped deregister error", fmt.Errorf("failed to drain node %q: %w", "n", &DeregisterError{err: fmt.Errorf("x")}), true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Equal(t, tc.want, isExitableError(tc.err))
+		})
+	}
+}
+
 func getGroupsAllNeedUpdate(k8sClient kubernetes.Interface, cloud awsup.AWSCloud) map[string]*cloudinstances.CloudInstanceGroup {
 	groups := make(map[string]*cloudinstances.CloudInstanceGroup)
 	makeGroup(groups, k8sClient, cloud, "node-1", kopsapi.InstanceGroupRoleNode, 3, 3)
