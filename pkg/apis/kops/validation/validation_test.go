@@ -2115,3 +2115,41 @@ func TestValidateAzureBlobAccountUniformity(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateFileRepository(t *testing.T) {
+	grid := []struct {
+		Input          string
+		ExpectedErrors []string
+	}{
+		{
+			Input: "https://example.com/files",
+		},
+		{
+			Input: "http://example.com/files",
+		},
+		{
+			Input:          "s3://example-k8s-assets/kops",
+			ExpectedErrors: []string{"Invalid value::spec.assets.fileRepository"},
+		},
+		{
+			Input:          "gs://example-k8s-assets/kops",
+			ExpectedErrors: []string{"Invalid value::spec.assets.fileRepository"},
+		},
+		{
+			Input:          "example.com/files",
+			ExpectedErrors: []string{"Invalid value::spec.assets.fileRepository"},
+		},
+		{
+			Input:          "",
+			ExpectedErrors: []string{"Invalid value::spec.assets.fileRepository"},
+		},
+		{
+			Input:          "https://",
+			ExpectedErrors: []string{"Invalid value::spec.assets.fileRepository"},
+		},
+	}
+	for _, g := range grid {
+		errs := validateFileRepository(g.Input, field.NewPath("spec", "assets", "fileRepository"))
+		testErrors(t, g.Input, errs, g.ExpectedErrors)
+	}
+}
