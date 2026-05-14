@@ -782,9 +782,6 @@ github.com/mitchellh/go-homedir
 # github.com/mitchellh/go-wordwrap v1.0.1
 ## explicit; go 1.14
 github.com/mitchellh/go-wordwrap
-# github.com/mitchellh/hashstructure/v2 v2.0.2
-## explicit; go 1.14
-github.com/mitchellh/hashstructure/v2
 # github.com/mitchellh/reflectwalk v1.0.2
 ## explicit
 github.com/mitchellh/reflectwalk
@@ -895,12 +892,6 @@ github.com/sagikazarmark/locafero
 # github.com/sahilm/fuzzy v0.1.1
 ## explicit
 github.com/sahilm/fuzzy
-# github.com/samber/lo v1.51.0
-## explicit; go 1.18
-github.com/samber/lo
-github.com/samber/lo/internal/constraints
-github.com/samber/lo/internal/rand
-github.com/samber/lo/mutable
 # github.com/scaleway/scaleway-sdk-go v1.0.0-beta.35
 ## explicit; go 1.24.0
 github.com/scaleway/scaleway-sdk-go/api/block/v1alpha1
@@ -984,14 +975,10 @@ github.com/spotinst/spotinst-sdk-go/spotinst/util/jsonutil
 github.com/spotinst/spotinst-sdk-go/spotinst/util/stringutil
 github.com/spotinst/spotinst-sdk-go/spotinst/util/uritemplates
 github.com/spotinst/spotinst-sdk-go/spotinst/util/useragent
-# github.com/stretchr/objx v0.5.2
-## explicit; go 1.20
-github.com/stretchr/objx
 # github.com/stretchr/testify v1.11.1
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-github.com/stretchr/testify/mock
 github.com/stretchr/testify/require
 # github.com/subosito/gotenv v1.6.0
 ## explicit; go 1.18
@@ -1839,19 +1826,6 @@ k8s.io/client-go/util/jsonpath
 k8s.io/client-go/util/keyutil
 k8s.io/client-go/util/watchlist
 k8s.io/client-go/util/workqueue
-# k8s.io/cloud-provider v0.36.0
-## explicit; go 1.26.0
-k8s.io/cloud-provider
-k8s.io/cloud-provider/service/helpers
-# k8s.io/cloud-provider-aws v1.34.1
-## explicit; go 1.24.4
-k8s.io/cloud-provider-aws/pkg/providers/v1
-k8s.io/cloud-provider-aws/pkg/providers/v1/batcher
-k8s.io/cloud-provider-aws/pkg/providers/v1/config
-k8s.io/cloud-provider-aws/pkg/providers/v1/iface
-k8s.io/cloud-provider-aws/pkg/providers/v1/variant
-k8s.io/cloud-provider-aws/pkg/providers/v1/variant/fargate
-k8s.io/cloud-provider-aws/pkg/services
 # k8s.io/component-base v0.36.0
 ## explicit; go 1.26.0
 k8s.io/component-base/cli/flag

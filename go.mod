@@ -87,7 +87,6 @@ require (
 	k8s.io/apimachinery v0.36.0
 	k8s.io/cli-runtime v0.36.0
 	k8s.io/client-go v0.36.0
-	k8s.io/cloud-provider-aws v1.34.1
 	k8s.io/component-base v0.36.0
 	k8s.io/gengo v0.0.0-20250922181213-ec3ebc5fd46b
 	k8s.io/klog/v2 v2.140.0
@@ -195,7 +194,6 @@ require (
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
-	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/sys/mountinfo v0.7.2 // indirect
 	github.com/moby/term v0.5.2 // indirect
@@ -222,14 +220,12 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
 	github.com/sahilm/fuzzy v0.1.1 // indirect
-	github.com/samber/lo v1.51.0 // indirect
 	github.com/sean-/seed v0.0.0-20170313163322-e2103e2c3529 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
-	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/vbatts/tar-split v0.12.2 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
@@ -254,7 +250,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
 	k8s.io/apiextensions-apiserver v0.36.0 // indirect
-	k8s.io/cloud-provider v0.36.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260317180543-43fb72c5454a // indirect
 	sigs.k8s.io/gateway-api v1.4.0 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
