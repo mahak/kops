@@ -102,6 +102,12 @@ const TagNameKopsRole = "kubernetes.io/kops/role"
 // TagNameClusterOwnershipPrefix is the AWS tag used for ownership
 const TagNameClusterOwnershipPrefix = "kubernetes.io/cluster/"
 
+// TagNameSubnetInternalELB is the well-known subnet tag that designates a subnet for internal load balancers.
+const TagNameSubnetInternalELB = "kubernetes.io/role/internal-elb"
+
+// TagNameSubnetPublicELB is the well-known subnet tag that designates a subnet for public load balancers.
+const TagNameSubnetPublicELB = "kubernetes.io/role/elb"
+
 const tagNameDetachedInstance = "kops.k8s.io/detached-from-asg"
 
 const (
