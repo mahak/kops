@@ -98,6 +98,13 @@ func TestCreateClusterOpenStackNoDNS(t *testing.T) {
 }
 
 // TestCreateClusterCilium runs kops with the cilium networking flags
+// TestCreateClusterCalicoBPF verifies that --set cluster.spec.networking.calico.bpfEnabled=true
+// causes kops to default spec.kubeProxy.enabled=false, because Calico's BPF mode replaces
+// kube-proxy and from v3.31 binds the kube-proxy healthz port.
+func TestCreateClusterCalicoBPF(t *testing.T) {
+	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/calico_bpf", "v1alpha2")
+}
+
 func TestCreateClusterCilium(t *testing.T) {
 	runCreateClusterIntegrationTest(t, "../../tests/integration/create_cluster/cilium-eni", "v1alpha2")
 }
