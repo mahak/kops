@@ -69,6 +69,8 @@ spec:
   machineType: e2-medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: control-plane-us-test1-a
   role: Master
   subnets:
   - us-test1
@@ -89,6 +91,8 @@ spec:
   machineType: e2-medium
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes-us-test1-a
   role: Node
   subnets:
   - us-test1

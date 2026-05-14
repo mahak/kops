@@ -587,6 +587,8 @@ func NewCluster(opt *NewClusterOptions, clientset simple.Clientset) (*NewCluster
 		if len(g.Spec.Subnets) == 0 {
 			return nil, fmt.Errorf("unable to infer any Subnets for InstanceGroup %s ", g.ObjectMeta.Name)
 		}
+
+		ig.AddInstanceGroupNodeLabel()
 	}
 
 	result := NewClusterResult{
