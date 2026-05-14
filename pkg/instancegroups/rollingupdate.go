@@ -251,7 +251,10 @@ func sortGroups(groupMap map[string]*cloudinstances.CloudInstanceGroup) []string
 //
 // For example, if a cluster is unable to be validated by the deadline, then it
 // is unlikely that it will validate on the next instance roll, so an early exit as a
-// warning to the user is more appropriate.
+// warning to the user is more appropriate. Likewise, if we cannot deregister an
+// instance from cloud load balancers, continuing would leave traffic routed to
+// nodes that are being terminated, so we bail out instead of plowing through
+// the remaining instance groups.
 func isExitableError(err error) bool {
-	return stderrors.Is(err, &ValidationTimeoutError{})
+	return stderrors.Is(err, &ValidationTimeoutError{}) || stderrors.Is(err, &DeregisterError{})
 }
