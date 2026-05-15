@@ -17,6 +17,12 @@ cloudControllerManager:
   clusterCIDR: "{{ .Networking.PodCIDR }}"
   leaderElect: "{{ .ExternalCloudControllerManager.LeaderElection.LeaderElect }}"
   logVerbosity: "{{ .ExternalCloudControllerManager.LogLevel }}"
+  # Load cloud config from the azure-cloud-provider Secret. enableDynamicReloading
+  # activates the Secret code path; without it cloudConfigSecretName is ignored.
+  # cloudConfig must be empty or a non-empty --cloud-config path wins over the Secret.
+  cloudConfig: ""
+  cloudConfigSecretName: "azure-cloud-provider"
+  enableDynamicReloading: "true"
 
 cloudNodeManager:
   # Overridden by kustomize patch.

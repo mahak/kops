@@ -251,12 +251,14 @@ spec:
       containers:
       - args:
         - --allocate-node-cidrs=false
-        - --cloud-config=/etc/kubernetes/azure.json
+        - --cloud-config=
+        - --cloud-config-secret-name=azure-cloud-provider
         - --cloud-provider=azure
         - --cluster-cidr=100.96.0.0/11
         - --cluster-name=gossip.k8s.local
         - --configure-cloud-routes=false
         - --controllers=*,-cloud-node
+        - --enable-dynamic-reloading=true
         - --leader-elect=true
         - --route-reconciliation-period=10s
         - --secure-port=10268
