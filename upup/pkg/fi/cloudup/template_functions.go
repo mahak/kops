@@ -555,7 +555,7 @@ func (tf *TemplateFunctions) CloudControllerConfigArgv() ([]string, error) {
 	case kops.CloudProviderHetzner:
 		// Hetzner does not use cloud config.
 	case kops.CloudProviderAzure:
-		argv = append(argv, "--cloud-config=/etc/kubernetes/azure.json")
+		// Azure reads its cloud config from the azure-cloud-provider Secret.
 	default:
 		argv = append(argv, "--cloud-config=/etc/kubernetes/cloud.config")
 	}
