@@ -203,7 +203,7 @@ func (b *KubeProxyBuilder) buildPod() (*v1.Pod, error) {
 		container.Args = append(container.Args, sortedStrings(flags)...)
 	}
 	{
-		kubemanifest.AddHostPathMapping(pod, container, "kubeconfig", "/var/lib/kube-proxy/kubeconfig")
+		kubemanifest.AddHostPathMapping(pod, container, "kubeconfig", "/var/lib/kube-proxy")
 		// @note: mapping the host modules directory to fix the missing ipvs kernel module
 		kubemanifest.AddHostPathMapping(pod, container, "modules", "/lib/modules")
 
