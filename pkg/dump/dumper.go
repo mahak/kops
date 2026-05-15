@@ -244,6 +244,11 @@ func (d *logDumper) dumpNotRegistered(ctx context.Context, node *resources.Insta
 	return "", fmt.Errorf("no known addresses for node %s", node.Name)
 }
 
+// nodeDumpTimeout bounds the time spent connecting to and dumping a single node.
+// A healthy node dumps in well under a minute. Without this cap, an SSH operation
+// against an unreachable node blocks until the OS TCP timeout (~15 min) expires.
+const nodeDumpTimeout = time.Minute
+
 // DumpNode connects to a node and dumps the logs.
 func (d *logDumper) dumpNode(ctx context.Context, name string, ip string, useBastion bool) error {
 	if ip == "" {
@@ -251,6 +256,9 @@ func (d *logDumper) dumpNode(ctx context.Context, name string, ip string, useBas
 	}
 
 	klog.Infof("Dumping node %s", name)
+
+	ctx, cancel := context.WithTimeout(ctx, nodeDumpTimeout)
+	defer cancel()
 
 	n, err := d.connectToNode(ctx, name, ip, useBastion)
 	if err != nil {
