@@ -124,20 +124,6 @@ type Config struct {
 	// Azure-specific
 	// AzureAdminUser is the admin user of VMs.
 	AzureAdminUser string `json:",omitempty"`
-	// AzureLocation is the location of the resource group that the cluster is deployed in.
-	AzureLocation string `json:",omitempty"`
-	// AzureSubscriptionID is the ID of the Azure Subscription that the cluster is deployed in.
-	AzureSubscriptionID string `json:",omitempty"`
-	// AzureTenantID is the ID of the tenant that the cluster is deployed in.
-	AzureTenantID string `json:",omitempty"`
-	// AzureResourceGroup is the name of the resource group that the cluster is deployed in.
-	AzureResourceGroup string `json:",omitempty"`
-	// AzureRouteTableName is the name of the route table attached to the subnet that the cluster is deployed in.
-	AzureRouteTableName string `json:",omitempty"`
-	// AzureSecurityGroupName is the name of the network security group attached to the subnet.
-	AzureSecurityGroupName string `json:",omitempty"`
-	// AzureSubnetName is the name of the subnet that the cluster is deployed in.
-	AzureSubnetName string `json:",omitempty"`
 
 	// GCE-specific
 	Multizone          *bool   `json:"multizone,omitempty"`
@@ -303,13 +289,6 @@ func NewConfig(cluster *kops.Cluster, instanceGroup *kops.InstanceGroup) (*Confi
 	}
 
 	if cluster.Spec.CloudProvider.Azure != nil {
-		config.AzureLocation = cluster.Spec.Networking.Subnets[0].Region
-		config.AzureSubscriptionID = cluster.Spec.CloudProvider.Azure.SubscriptionID
-		config.AzureTenantID = cluster.Spec.CloudProvider.Azure.TenantID
-		config.AzureResourceGroup = cluster.AzureResourceGroupName()
-		config.AzureRouteTableName = cluster.AzureRouteTableName()
-		config.AzureSecurityGroupName = cluster.AzureNetworkSecurityGroupName()
-		config.AzureSubnetName = cluster.Spec.Networking.Subnets[0].Name
 		config.Networking.NetworkID = cluster.Spec.Networking.NetworkID
 		config.AzureAdminUser = cluster.Spec.CloudProvider.Azure.AdminUser
 	}
