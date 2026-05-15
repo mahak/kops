@@ -401,11 +401,16 @@ func (d *deployer) defaultClusterName() (string, error) {
 		suffix = "k8s.local"
 	}
 
-	if len(jobName) > 79 { // SNS has char limit of 80
+	// Most pull request jobs have the "pull-" prefix.
+	jobName = strings.TrimPrefix(jobName, "pull-")
+
+	// SNS has char limit of 80
+	if len(jobName) > 79 {
 		jobName = jobName[:79]
 	}
+
 	if jobType == "presubmit" {
-		jobName = fmt.Sprintf("e2e-pr%s.%s", pullNumber, jobName)
+		jobName = fmt.Sprintf("pr%s-%s", pullNumber, jobName)
 	} else {
 		jobName = fmt.Sprintf("e2e-%s", jobName)
 	}
