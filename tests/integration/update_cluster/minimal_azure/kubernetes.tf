@@ -555,6 +555,15 @@ resource "azurerm_storage_blob" "manifests-static-kube-apiserver-healthcheck" {
   type                   = "Block"
 }
 
+resource "azurerm_storage_blob" "minimal-azure-example-com-addons-azure-cloud-config-addons-k8s-io-k8s-1-31" {
+  name                   = "tests/minimal-azure.example.com/addons/azure-cloud-config.addons.k8s.io/k8s-1.31.yaml"
+  provider               = azurerm.files
+  source                 = "${path.module}/data/azurerm_storage_blob_minimal-azure.example.com-addons-azure-cloud-config.addons.k8s.io-k8s-1.31_source"
+  storage_account_name   = "teststorage"
+  storage_container_name = "testcontainer"
+  type                   = "Block"
+}
+
 resource "azurerm_storage_blob" "minimal-azure-example-com-addons-azure-cloud-controller-addons-k8s-io-k8s-1-31" {
   name                   = "tests/minimal-azure.example.com/addons/azure-cloud-controller.addons.k8s.io/k8s-1.31.yaml"
   provider               = azurerm.files

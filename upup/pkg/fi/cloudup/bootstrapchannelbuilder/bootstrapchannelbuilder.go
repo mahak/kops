@@ -773,6 +773,18 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 
 	if b.Cluster.IsKubernetesGTE("1.31") && b.Cluster.GetCloudProvider() == kops.CloudProviderAzure {
 		{
+			key := "azure-cloud-config.addons.k8s.io"
+			id := "k8s-1.31"
+			location := key + "/" + id + ".yaml"
+
+			addons.Add(&channelsapi.AddonSpec{
+				Name:     fi.PtrTo(key),
+				Selector: map[string]string{"k8s-addon": key},
+				Manifest: fi.PtrTo(location),
+				Id:       id,
+			})
+		}
+		{
 			key := "azure-cloud-controller.addons.k8s.io"
 			id := "k8s-1.31"
 			location := key + "/" + id + ".yaml"
@@ -784,9 +796,6 @@ func (b *BootstrapChannelBuilder) buildAddons(c *fi.CloudupModelBuilderContext) 
 				Id:       id,
 			})
 		}
-	}
-
-	if b.Cluster.IsKubernetesGTE("1.31") && b.Cluster.GetCloudProvider() == kops.CloudProviderAzure {
 		{
 			key := "azuredisk-csi-driver.addons.k8s.io"
 			id := "k8s-1.31"

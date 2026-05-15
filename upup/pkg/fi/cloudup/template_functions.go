@@ -163,6 +163,7 @@ func (tf *TemplateFunctions) AddTo(dest template.FuncMap, secretStore fi.SecretS
 	dest["DnsControllerArgv"] = tf.DNSControllerArgv
 	dest["ExternalDnsArgv"] = tf.ExternalDNSArgv
 	dest["CloudControllerConfigArgv"] = tf.CloudControllerConfigArgv
+	dest["AzureCloudConfig"] = tf.AzureCloudConfig
 	// TODO: Only for GCE?
 	dest["EncodeGCELabel"] = gce.EncodeGCELabel
 	dest["Region"] = func() string {
@@ -560,6 +561,21 @@ func (tf *TemplateFunctions) CloudControllerConfigArgv() ([]string, error) {
 	}
 
 	return argv, nil
+}
+
+// AzureCloudConfig returns the base64-encoded Azure cloud provider
+// configuration. kOps publishes it in the azure-cloud-provider Secret, which the
+// cloud-controller-manager and CSI drivers load via --cloud-config-secret-name.
+func (tf *TemplateFunctions) AzureCloudConfig() (string, error) {
+	config, err := azure.BuildCloudConfig(tf.Cluster)
+	if err != nil {
+		return "", err
+	}
+	data, err := json.Marshal(config)
+	if err != nil {
+		return "", fmt.Errorf("marshaling Azure cloud config: %w", err)
+	}
+	return base64.StdEncoding.EncodeToString(data), nil
 }
 
 // DNSControllerArgv returns the args to the DNS controller
