@@ -3,7 +3,7 @@ path: /etc/kubernetes/manifests
 type: directory
 ---
 contents: |
-  DAEMON_ARGS="--cloud-provider=external --kubeconfig=/var/lib/kubelet/kubeconfig --register-schedulable=true --runtime-request-timeout=15m0s --v=2 --cloud-config=/etc/kubernetes/in-tree-cloud.config --config=/var/lib/kubelet/kubelet.conf --image-credential-provider-config=/var/lib/kubelet/credential-provider.conf --image-credential-provider-bin-dir=/usr/local/bin"
+  DAEMON_ARGS="--cloud-provider=external --kubeconfig=/var/lib/kubelet/kubeconfig --register-schedulable=true --runtime-request-timeout=15m0s --v=2 --config=/var/lib/kubelet/kubelet.conf --image-credential-provider-config=/var/lib/kubelet/credential-provider.conf --image-credential-provider-bin-dir=/usr/local/bin"
   HOME="/root"
 path: /etc/sysconfig/kubelet
 type: file
