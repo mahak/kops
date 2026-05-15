@@ -32,7 +32,7 @@ contents: |
       volumeMounts:
       - mountPath: /var/log/kube-proxy.log
         name: logfile
-      - mountPath: /var/lib/kube-proxy/kubeconfig
+      - mountPath: /var/lib/kube-proxy
         name: kubeconfig
         readOnly: true
       - mountPath: /lib/modules
@@ -53,7 +53,7 @@ contents: |
         path: /var/log/kube-proxy.log
       name: logfile
     - hostPath:
-        path: /var/lib/kube-proxy/kubeconfig
+        path: /var/lib/kube-proxy
       name: kubeconfig
     - hostPath:
         path: /lib/modules
