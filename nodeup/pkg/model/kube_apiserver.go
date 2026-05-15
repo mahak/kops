@@ -628,10 +628,6 @@ func (b *KubeAPIServerBuilder) buildPod(ctx context.Context, kubeAPIServer *kops
 		return nil, fmt.Errorf("error building kube-apiserver flags: %v", err)
 	}
 
-	if b.IsKubernetesLT("1.33") {
-		flags = append(flags, fmt.Sprintf("--cloud-config=%s", InTreeCloudConfigFilePath))
-	}
-
 	pod := &v1.Pod{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: "v1",
@@ -786,8 +782,6 @@ func (b *KubeAPIServerBuilder) buildPod(ctx context.Context, kubeAPIServer *kops
 		name := strings.ReplaceAll(path, "/", "")
 		kubemanifest.AddHostPathMapping(pod, container, name, path)
 	}
-
-	kubemanifest.AddHostPathMapping(pod, container, "cloudconfig", InTreeCloudConfigFilePath)
 
 	kubemanifest.AddHostPathMapping(pod, container, "kubernetesca", filepath.Join(b.PathSrvKubernetes(), "ca.crt"))
 

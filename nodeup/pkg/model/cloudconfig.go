@@ -28,12 +28,8 @@ import (
 )
 
 const (
-	CloudConfigFilePath       = "/etc/kubernetes/cloud.config"
-	AzureCloudConfigFilePath  = "/etc/kubernetes/azure.json"
-	InTreeCloudConfigFilePath = "/etc/kubernetes/in-tree-cloud.config"
-
-	// VM UUID is set by cloud-init
-	VM_UUID_FILE_PATH = "/etc/vmware/vm_uuid"
+	CloudConfigFilePath      = "/etc/kubernetes/cloud.config"
+	AzureCloudConfigFilePath = "/etc/kubernetes/azure.json"
 )
 
 // azureCloudConfig is the configuration passed to Cloud Provider Azure.
@@ -70,16 +66,10 @@ func (b *CloudConfigBuilder) Build(c *fi.NodeupModelBuilderContext) error {
 		return nil
 	}
 
-	if err := b.build(c, true); err != nil {
-		return err
-	}
-	if err := b.build(c, false); err != nil {
-		return err
-	}
-	return nil
+	return b.build(c)
 }
 
-func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool) error {
+func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext) error {
 	// Add cloud config file if needed
 	var lines []string
 
@@ -108,10 +98,8 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 		if b.NodeupConfig.NLBSecurityGroupMode != nil {
 			lines = append(lines, "NLBSecurityGroupMode = "+*b.NodeupConfig.NLBSecurityGroupMode)
 		}
-		if !inTree {
-			for _, family := range b.NodeupConfig.NodeIPFamilies {
-				lines = append(lines, "NodeIPFamilies = "+family)
-			}
+		for _, family := range b.NodeupConfig.NodeIPFamilies {
+			lines = append(lines, "NodeIPFamilies = "+family)
 		}
 	case kops.CloudProviderOpenstack:
 		lines = append(lines, openstack.MakeCloudConfig(b.NodeupConfig.Openstack)...)
@@ -150,9 +138,7 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext, inTree bool)
 		config = "[global]\n" + strings.Join(lines, "\n") + "\n"
 	}
 	path := CloudConfigFilePath
-	if inTree {
-		path = InTreeCloudConfigFilePath
-	} else if cloudProvider == kops.CloudProviderAzure {
+	if cloudProvider == kops.CloudProviderAzure {
 		path = AzureCloudConfigFilePath
 	}
 	t := &nodetasks.File{
