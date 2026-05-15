@@ -73,13 +73,6 @@ Assets:
   - 25b57b0555fad42e5762246334681bf1c943794fcecdb680a79e482be5c08815@https://artifacts.k8s.io/binaries/kops/1.34.0-beta.1/linux/arm64/protokube,https://github.com/kubernetes/kops/releases/download/v1.34.0-beta.1/protokube-linux-arm64
   - 04470f8313796032fce85b974da4fc26420f36931e574fff6d117d21caf22770@https://artifacts.k8s.io/binaries/kops/1.34.0-beta.1/linux/arm64/channels,https://github.com/kubernetes/kops/releases/download/v1.34.0-beta.1/channels-linux-arm64
 AzureAdminUser: admin-user
-AzureLocation: eastus
-AzureResourceGroup: minimal-azure.example.com
-AzureRouteTableName: minimal-azure.example.com
-AzureSecurityGroupName: minimal-azure.example.com
-AzureSubnetName: eastus
-AzureSubscriptionID: sub-123
-AzureTenantID: tenant-123
 CAs:
   apiserver-aggregator-ca: |
     -----BEGIN CERTIFICATE-----

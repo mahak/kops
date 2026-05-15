@@ -17,7 +17,6 @@ limitations under the License.
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -28,29 +27,8 @@ import (
 )
 
 const (
-	CloudConfigFilePath      = "/etc/kubernetes/cloud.config"
-	AzureCloudConfigFilePath = "/etc/kubernetes/azure.json"
+	CloudConfigFilePath = "/etc/kubernetes/cloud.config"
 )
-
-// azureCloudConfig is the configuration passed to Cloud Provider Azure.
-// The specification is described in https://cloud-provider-azure.sigs.k8s.io/install/configs/.
-// Field order follows the upstream documentation: auth configs first, then cluster config.
-type azureCloudConfig struct {
-	// Auth configs
-	TenantID                    string `json:"tenantId,omitempty"`
-	SubscriptionID              string `json:"subscriptionId,omitempty"`
-	UseManagedIdentityExtension bool   `json:"useManagedIdentityExtension,omitempty"`
-
-	// Cluster config
-	ResourceGroup               string `json:"resourceGroup,omitempty"`
-	Location                    string `json:"location,omitempty"`
-	VnetName                    string `json:"vnetName,omitempty"`
-	SubnetName                  string `json:"subnetName,omitempty"`
-	RouteTableName              string `json:"routeTableName,omitempty"`
-	SecurityGroupName           string `json:"securityGroupName,omitempty"`
-	UseInstanceMetadata         bool   `json:"useInstanceMetadata,omitempty"`
-	DisableAvailabilitySetNodes bool   `json:"disableAvailabilitySetNodes,omitempty"`
-}
 
 // CloudConfigBuilder creates the cloud configuration file
 type CloudConfigBuilder struct {
@@ -60,9 +38,13 @@ type CloudConfigBuilder struct {
 var _ fi.NodeupModelBuilder = &CloudConfigBuilder{}
 
 func (b *CloudConfigBuilder) Build(c *fi.NodeupModelBuilderContext) error {
-	// Azure worker nodes need azure.json for the azuredisk-csi-driver to query
-	// zone information from IMDS, so we always write it regardless of role.
-	if !b.HasAPIServer && b.NodeupConfig.KubeletConfig.CloudProvider == "external" && b.CloudProvider() != kops.CloudProviderAzure {
+	// Azure reads its cloud config from the azure-cloud-provider Secret, so
+	// nodeup does not write a cloud config file for Azure nodes.
+	if b.CloudProvider() == kops.CloudProviderAzure {
+		return nil
+	}
+
+	if !b.HasAPIServer && b.NodeupConfig.KubeletConfig.CloudProvider == "external" {
 		return nil
 	}
 
@@ -75,8 +57,6 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext) error {
 
 	cloudProvider := b.CloudProvider()
 
-	var config string
-	requireGlobal := true
 	switch cloudProvider {
 	case kops.CloudProviderGCE:
 		if b.NodeupConfig.NodeTags != nil {
@@ -103,44 +83,10 @@ func (b *CloudConfigBuilder) build(c *fi.NodeupModelBuilderContext) error {
 		}
 	case kops.CloudProviderOpenstack:
 		lines = append(lines, openstack.MakeCloudConfig(b.NodeupConfig.Openstack)...)
-
-	case kops.CloudProviderAzure:
-		requireGlobal = false
-
-		vnetName := b.NodeupConfig.Networking.NetworkID
-		if vnetName == "" {
-			vnetName = b.NodeupConfig.ClusterName
-		}
-
-		c := &azureCloudConfig{
-			// Auth
-			TenantID:                    b.NodeupConfig.AzureTenantID,
-			SubscriptionID:              b.NodeupConfig.AzureSubscriptionID,
-			UseManagedIdentityExtension: true,
-			// Cluster
-			ResourceGroup:               b.NodeupConfig.AzureResourceGroup,
-			Location:                    b.NodeupConfig.AzureLocation,
-			VnetName:                    vnetName,
-			SubnetName:                  b.NodeupConfig.AzureSubnetName,
-			RouteTableName:              b.NodeupConfig.AzureRouteTableName,
-			SecurityGroupName:           b.NodeupConfig.AzureSecurityGroupName,
-			UseInstanceMetadata:         true,
-			DisableAvailabilitySetNodes: true,
-		}
-		data, err := json.Marshal(c)
-		if err != nil {
-			return fmt.Errorf("error marshalling azure config: %s", err)
-		}
-		config = string(data)
 	}
 
-	if requireGlobal {
-		config = "[global]\n" + strings.Join(lines, "\n") + "\n"
-	}
+	config := "[global]\n" + strings.Join(lines, "\n") + "\n"
 	path := CloudConfigFilePath
-	if cloudProvider == kops.CloudProviderAzure {
-		path = AzureCloudConfigFilePath
-	}
 	t := &nodetasks.File{
 		Path:     path,
 		Contents: fi.NewStringResource(config),

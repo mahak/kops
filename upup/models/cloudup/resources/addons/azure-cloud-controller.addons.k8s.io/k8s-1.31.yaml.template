@@ -209,12 +209,15 @@ spec:
       containers:
       - args:
         - --allocate-node-cidrs=false
-        - --cloud-config=/etc/kubernetes/azure.json
+        - --cloud-config=
+        - --cloud-config-secret-name=azure-cloud-provider
         - --cloud-provider=azure
         - --cluster-cidr={{ .Networking.PodCIDR }}
         - --cluster-name={{ ClusterName }}
-        - --configure-cloud-routes={{ WithDefaultBool .ExternalCloudControllerManager.ConfigureCloudRoutes false }}
+        - --configure-cloud-routes={{ WithDefaultBool .ExternalCloudControllerManager.ConfigureCloudRoutes
+          false }}
         - --controllers=*,-cloud-node
+        - --enable-dynamic-reloading=true
         - --leader-elect={{ .ExternalCloudControllerManager.LeaderElection.LeaderElect
           }}
         - --route-reconciliation-period=10s

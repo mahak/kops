@@ -125,7 +125,7 @@ ClusterName: gossip.k8s.local
 ConfigBase: memfs://tests/gossip.k8s.local
 InstanceGroupName: nodes-eastus-1
 InstanceGroupRole: Node
-NodeupConfigHash: fcsX2QneMy3wdlG7nuf95wCwFlL9I+4hPQqV+ot9TMI=
+NodeupConfigHash: fX5WLvjzmSE+ecKdEQf3gG9RrwrCbFgrgpIhATEso+g=
 
 __EOF_KUBE_ENV
 

@@ -15,8 +15,8 @@
 # limitations under the License.
 
 # Regenerate k8s-1.31.yaml.template from the upstream azuredisk-csi-driver
-# Helm chart. No kops-specific patches; the driver uses the default cloud
-# config path (/etc/kubernetes/azure.json) and reads zone info from IMDS.
+# Helm chart. Chart version is pinned in kustomization.yaml; kops overrides
+# are in helm-values.yaml.
 set -euo pipefail
 cd "$(dirname "$0")"
 

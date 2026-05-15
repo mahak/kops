@@ -78,14 +78,20 @@ spec:
     selector:
       k8s-addon: storage-azure.addons.k8s.io
   - id: k8s-1.31
+    manifest: azure-cloud-config.addons.k8s.io/k8s-1.31.yaml
+    manifestHash: 94a40383b09b2f704497ec467f84635949abed8d5c2035311f86a3d34287894b
+    name: azure-cloud-config.addons.k8s.io
+    selector:
+      k8s-addon: azure-cloud-config.addons.k8s.io
+  - id: k8s-1.31
     manifest: azure-cloud-controller.addons.k8s.io/k8s-1.31.yaml
-    manifestHash: 8315b2eaff1a40b104ebd339f20f51104022a23e3fe97396700371e446e26f14
+    manifestHash: 539bf5e117db1a903ff8c4dae393b197f140cc57b003687a91aa8e5b3d17b3f4
     name: azure-cloud-controller.addons.k8s.io
     selector:
       k8s-addon: azure-cloud-controller.addons.k8s.io
   - id: k8s-1.31
     manifest: azuredisk-csi-driver.addons.k8s.io/k8s-1.31.yaml
-    manifestHash: c8ce61445026fcc09d8a38f14916975baa1e577a2d1ad0cf1a4325f6e1636d06
+    manifestHash: c4e39eea11e49c4ae1dbf981e9d98256de3183c496becbb1f175306a6c354eb3
     name: azuredisk-csi-driver.addons.k8s.io
     prune:
       kinds:

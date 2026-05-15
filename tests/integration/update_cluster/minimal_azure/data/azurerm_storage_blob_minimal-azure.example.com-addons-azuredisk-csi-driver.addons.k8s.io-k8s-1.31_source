@@ -896,11 +896,11 @@ spec:
         - --drivername=disk.csi.azure.com
         - --volume-attach-limit=-1
         - --reserved-data-disk-slot-num=0
-        - --cloud-config-secret-name=
-        - --cloud-config-secret-namespace=
+        - --cloud-config-secret-name=azure-cloud-provider
+        - --cloud-config-secret-namespace=kube-system
         - --custom-user-agent=
         - --user-agent-suffix=kops
-        - --allow-empty-cloud-config=true
+        - --allow-empty-cloud-config=false
         - --support-zone=true
         - --get-node-info-from-labels=false
         - --get-nodeid-from-imds=false

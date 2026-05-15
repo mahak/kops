@@ -17,12 +17,9 @@ limitations under the License.
 package model
 
 import (
-	"encoding/json"
 	"io"
-	"reflect"
 	"testing"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/kops/pkg/apis/kops"
 	"k8s.io/kops/pkg/apis/nodeup"
 	"k8s.io/kops/pkg/diff"
@@ -31,42 +28,12 @@ import (
 )
 
 func TestBuildAzure(t *testing.T) {
-	const (
-		subscriptionID    = "subID"
-		tenantID          = "tenantID"
-		resourceGroupName = "test-resource-group"
-		vnetName          = "test-vnet"
-	)
-	cluster := &kops.Cluster{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "testcluster.test.com",
-		},
-		Spec: kops.ClusterSpec{
-			CloudProvider: kops.CloudProviderSpec{
-				Azure: &kops.AzureSpec{
-					SubscriptionID:    subscriptionID,
-					TenantID:          tenantID,
-					ResourceGroupName: resourceGroupName,
-				},
-			},
-			Networking: kops.NetworkingSpec{
-				NetworkID: vnetName,
-				Subnets: []kops.ClusterSubnetSpec{
-					{
-						Name:   "test-subnet",
-						Region: "eastus",
-					},
-				},
-			},
-			KubeAPIServer: &kops.KubeAPIServerConfig{},
-		},
-	}
-
-	nodeupConfig, bootConfig := nodeup.NewConfig(cluster, &kops.InstanceGroup{})
 	b := &CloudConfigBuilder{
 		NodeupModelContext: &NodeupModelContext{
-			BootConfig:   bootConfig,
-			NodeupConfig: nodeupConfig,
+			BootConfig: &nodeup.BootConfig{
+				CloudProvider: kops.CloudProviderAzure,
+			},
+			NodeupConfig: &nodeup.Config{},
 			HasAPIServer: true,
 		},
 	}
@@ -76,43 +43,12 @@ func TestBuildAzure(t *testing.T) {
 	if err := b.Build(ctx); err != nil {
 		t.Fatalf("unexpected error from Build(): %v", err)
 	}
-	var task *nodetasks.File
+	// Azure reads its cloud config from the azure-cloud-provider Secret, so
+	// nodeup must not write a cloud config file.
 	for _, v := range ctx.Tasks {
 		if f, ok := v.(*nodetasks.File); ok {
-			task = f
-			break
+			t.Errorf("unexpected File task for Azure: %q", f.Path)
 		}
-	}
-	if task == nil {
-		t.Fatalf("no File task found")
-	}
-	r, err := task.Contents.Open()
-	if err != nil {
-		t.Fatalf("unexpected error from task.Contents.Open(): %v", err)
-	}
-	data, err := io.ReadAll(r)
-	if err != nil {
-		t.Fatalf("unexpected error from io.ReadAll(): %v", err)
-	}
-	var actual azureCloudConfig
-	if err := json.Unmarshal(data, &actual); err != nil {
-		t.Fatalf("unexpected error from json.Unmarshal(%q): %v", string(data), err)
-	}
-	expected := azureCloudConfig{
-		SubscriptionID:              subscriptionID,
-		TenantID:                    tenantID,
-		Location:                    "eastus",
-		ResourceGroup:               resourceGroupName,
-		VnetName:                    vnetName,
-		SubnetName:                  "test-subnet",
-		RouteTableName:              cluster.Name,
-		SecurityGroupName:           vnetName,
-		UseInstanceMetadata:         true,
-		UseManagedIdentityExtension: true,
-		DisableAvailabilitySetNodes: true,
-	}
-	if !reflect.DeepEqual(actual, expected) {
-		t.Errorf("expected %+v, but got %+v", expected, actual)
 	}
 }
 
