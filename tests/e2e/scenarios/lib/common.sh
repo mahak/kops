@@ -58,6 +58,9 @@ fi
 
 # Always tear-down the cluster when we're done
 function kops-finish {
+    # The env file persists the kops binary used for --up. After an A->B upgrade
+    # that is the older binary, so keep the one the test last selected.
+    local down_kops="${KOPS-}"
     # If we failed to start the cluster, we might not have sourced KOPS_STATE_STORE, so try to source it if we have an env file
     if [[ -z "${ENV_FILE-}" ]]; then
         ENV_FILE="${WORKSPACE}/env"
@@ -67,9 +70,12 @@ function kops-finish {
         . "${ENV_FILE}"
         export KOPS_STATE_STORE
     fi
+    if [[ -n "${down_kops}" ]]; then
+        KOPS="${down_kops}"
+    fi
 
     # shellcheck disable=SC2153
-    ${KUBETEST2} --kops-binary-path="${KOPS}" --down || echo "kubetest2 down failed"
+    ${KUBETEST2} --kops-binary-path="${KOPS-}" --down || echo "kubetest2 down failed"
 }
 trap kops-finish EXIT
 
